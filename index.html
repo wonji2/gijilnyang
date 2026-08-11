@@ -2643,9 +2643,9 @@ function postToTalk(){
   alert('올렸어요! 🍪 까까 0.5개 적립 (2개 올리면 1개)');
   goTalk();
 }
-/* ===== js/wallet.js (76) ===== */
+/* ===== js/wallet.js (106) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 보관함 · 오늘의 한마디 ══════════════ */
-/* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,490원. */
+/* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
 const KKA_PACKS=[
   {n:1, bonus:0, talk:0, name:'맛보기'},
@@ -2653,6 +2653,22 @@ const KKA_PACKS=[
   {n:5, bonus:0, talk:6, name:'육아 3년차'},
   {n:10,bonus:1, talk:9, name:'까까 한 봉지', best:true}
 ];
+/* ── 상담만 소액으로 충전 (2026-08-12) ──────────────────────────────
+   사주아이는 채팅 충전을 330원/3회(회당 110원)로 따로 판다. 우리 까까는
+   1,000원부터라 "조금만 더 얘기하고 싶은" 사람이 못 들어온다. 사다리의 첫 칸.
+   원가는 1회 약 22원이라 회당 100원이어도 마진 4배 이상. */
+const TALK_PACKS=[
+  {talk:3,  won:300,  name:'조금만 더'},
+  {talk:8,  won:700,  name:'오늘 밤엔 길게', best:true},
+  {talk:20, won:1500, name:'푹 털어놓기'}
+];
+function wonStr(w){return w.toLocaleString('ko-KR')+'원';}
+function buyTalk(i){
+  const p=TALK_PACKS[i];if(!p)return;
+  if(!confirm(p.name+' · 상담 '+p.talk+'회를 '+wonStr(p.won)+'에 충전할까요?\n(데모: 결제 없이 바로 충전됩니다)'))return;
+  CHAT.paid+=p.talk;renderSnack();renderWallet();save();
+  alert('💬 상담 '+p.talk+'회가 충전됐어요!');
+}
 function openWallet(){show('s-wallet');renderWallet();}
 function renderWallet(){
   const el=document.getElementById('wallet-body');if(!el)return;
@@ -2663,7 +2679,21 @@ function renderWallet(){
       <p class="small">오늘 무료 수다 ${CHAT.free}회 · 매일 자정에 다시 채워져요</p>
     </div>
     <div class="card">
+      <h3 style="font-size:1rem;margin-bottom:2px">💬 상담만 조금 더</h3>
+      <p class="small" style="margin-bottom:8px">무료 2회를 다 썼는데 얘기가 안 끝났을 때</p>
+      ${TALK_PACKS.map((p,i)=>`
+        <div class="book" style="align-items:center;cursor:pointer" onclick="buyTalk(${i})">
+          <div class="bicon">💬</div>
+          <div style="flex:1">
+            <b style="font-family:'Jua'">${p.name}</b>${p.best?' <span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
+            <p class="small">상담 ${p.talk}회 · 회당 ${Math.round(p.won/p.talk)}원</p>
+          </div>
+          <b style="font-family:'Jua';white-space:nowrap">${wonStr(p.won)}</b>
+        </div>`).join('')}
+    </div>
+    <div class="card">
       <h3 style="font-size:1rem;margin-bottom:8px">까까상점</h3>
+      <p class="small" style="margin-bottom:8px">리포트를 열 때 쓰는 화폐예요 · 까까 1개로 상담도 ${KKA_TALK}회</p>
       ${KKA_PACKS.map((p,i)=>`
         <div class="book" style="align-items:center;cursor:pointer" onclick="buyKka(${i})">
           <div class="bicon"><i class="ddeok-i"></i></div>
