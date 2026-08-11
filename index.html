@@ -214,6 +214,26 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   box-shadow:0 4px 14px rgba(46,42,58,.18)}
 .hero-intro{font-size:.9rem;line-height:1.75;color:var(--sub);margin-top:12px}
 .hero-intro b{color:var(--ink);font-weight:400;font-family:'Jua'}
+
+/* ── 오른쪽 맨 위 상태바 (까까 잔액 + 까까상점) ── 2026-08-12 ── */
+.topbar{position:absolute;top:10px;right:12px;z-index:6;display:flex;align-items:center;gap:6px}
+.kka-pill{display:inline-flex;align-items:center;gap:5px;background:var(--card);
+  border:1.5px solid var(--line);border-radius:99px;padding:5px 11px 5px 8px;
+  font-family:'Jua';font-size:.86rem;color:var(--ink);cursor:pointer;line-height:1;
+  box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.kka-pill:active{transform:scale(.96)}
+.kka-pill b{font-family:'Jua';font-size:.95rem}
+.ddeok{width:18px;height:18px;flex:none}          /* 떡뻥 아이콘 */
+.kka-shop{font-family:'Gowun Dodum';font-size:.7rem;color:var(--sub);margin-left:2px}
+.topbar-menu{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--sub);padding:0 2px;line-height:1}
+@media (max-width:360px){.kka-shop{display:none}}   /* 좁은 폰에선 글자 숨기고 개수만 */
+
+/* 홈 섹션 소제목 */
+.sec-label{font-family:'Jua';font-size:.95rem;color:var(--sub);margin:18px 0 8px 2px}
+
+/* 떡뻥 아이콘 (글자 속에 섞어 쓰는 용) — 🍪 대체. 이모지에 떡뻥이 없어서 직접 그림. */
+.ddeok-i{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='12' rx='10.2' ry='9.2' fill='%23F4E6C9' stroke='%23DCC49B' stroke-width='1.3'/%3E%3Ccircle cx='8.4' cy='9.6' r='1.15' fill='%23E6D2AC'/%3E%3Ccircle cx='14.2' cy='8.9' r='.95' fill='%23E6D2AC'/%3E%3Ccircle cx='10.8' cy='14.2' r='1.05' fill='%23E6D2AC'/%3E%3Ccircle cx='15.8' cy='13.8' r='.85' fill='%23E6D2AC'/%3E%3C/svg%3E") center/contain no-repeat}
 </style>
 </head>
 <body>
@@ -221,7 +241,22 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 
 <!-- ═══════════ 홈 ═══════════ -->
 <section class="screen on" id="s-home">
-  <button onclick="show('s-info')" aria-label="사이트 정보" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--sub);z-index:5">☰</button>
+  <!-- 오른쪽 맨 위 상태바 : 까까 잔액 + 까까상점 (2026-08-12 사장님 지시)
+       사주아이가 상단에 츄르/무료권을 항상 띄워두는 것과 같은 자리. -->
+  <div class="topbar">
+    <button class="kka-pill" onclick="openWallet()" aria-label="까까상점 열기">
+      <svg class="ddeok" viewBox="0 0 24 24" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="10.2" ry="9.2" fill="#F4E6C9" stroke="#DCC49B" stroke-width="1.3"/>
+        <circle cx="8.4"  cy="9.6"  r="1.15" fill="#E6D2AC"/>
+        <circle cx="14.2" cy="8.9"  r=".95"  fill="#E6D2AC"/>
+        <circle cx="10.8" cy="14.2" r="1.05" fill="#E6D2AC"/>
+        <circle cx="15.8" cy="13.8" r=".85"  fill="#E6D2AC"/>
+        <circle cx="12.3" cy="11.4" r=".7"   fill="#E6D2AC"/>
+      </svg>
+      <b id="snack-n">2</b><span class="kka-shop">까까상점 ›</span>
+    </button>
+    <button onclick="show('s-info')" aria-label="사이트 정보" class="topbar-menu">☰</button>
+  </div>
   <div class="hero">
     <div class="cats">
       <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
@@ -232,22 +267,12 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
       여기는 <b>발표된 육아 논문과 검증된 척도</b>를 학습한 두 연구원이,<br>
       <b>우리 아이 기질</b>과 <b>부모 성향</b>을 재고 <b>둘의 궁합</b>까지 봐주는 곳이다냥.<br>
       고민이 있으면 <b>원하는 연구원에게 면담을 신청</b>해라냥. 🐾</p>
-    <div class="mt8"><span class="snack-pill" role="button" onclick="openWallet()" style="cursor:pointer">🍪 까까 <b id="snack-n">2</b>개 <span style="font-family:'Gowun Dodum';font-size:.72rem;color:var(--sub)">까까상점 ›</span></span></div>
   </div>
 
   <div class="daily">
     <span class="d-label">🌤 오늘의 육아 한마디 · 매일 무료</span>
     <div class="d-text" id="daily-text">검사를 완료하면 열려요</div>
     <button class="btn pri mt8" id="daily-cta" style="padding:11px" onclick="startTest('child')">검사하러 가기 →</button>
-  </div>
-
-  <div class="pretalk" onclick="goChat()">
-    <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비 연구원" width="46" height="46">
-    <p><b>츄비 연구원 면담</b> 어떤 얘기든 공감이 필요할 때</p><span class="small">›</span>
-  </div>
-  <div class="pretalk" onclick="goChat()">
-    <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸 연구원" width="46" height="46">
-    <p><b>칸쵸 연구원 면담</b> 감정 빼고 객관적인 조언이 필요할 때</p><span class="small">›</span>
   </div>
 
   <div class="grid2">
@@ -262,7 +287,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
       <div class="sub">엄마·아빠·조부모 누구나<br>3분이면 끝 <span id="st-parent"></span></div>
     </div>
     <div class="tile" style="background:var(--pink-soft)" role="button" tabindex="0" onclick="goFit()">
-      <span class="price">🍪 1</span>
+      <span class="price"><i class="ddeok-i"></i> 1</span>
       <div class="big">부모×아이<br>궁합</div>
       <div class="sub">마찰 지점과 처방까지<br><span id="st-fit">두 검사 완료 후</span></div>
     </div>
@@ -272,7 +297,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
       <div class="sub">나를 키운 방식이 내 육아에?<br>조부모×손주 궁합까지 <span id="st-fam"></span></div>
     </div>
     <div class="tile" style="background:#FDF0F6;grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="startCareer()">
-      <span class="price">🍪 1</span>
+      <span class="price"><i class="ddeok-i"></i> 1</span>
       <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 우리 아이 미래 직업</div><div class="sub">지금 기질에 잘 맞는 일 3가지 · 친구들이랑 비교해보세요</div></div>
       <span class="small">›</span>
     </div>
@@ -281,6 +306,18 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
       <span class="small">›</span>
     </div>
   </div>
+
+  <!-- 검사 항목 아래에 연구원 면담 (2026-08-12 사장님 지시로 순서 이동) -->
+  <p class="sec-label">🐾 연구원 면담</p>
+  <div class="pretalk" onclick="goChat()">
+    <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비 연구원" width="46" height="46">
+    <p><b>츄비 연구원 면담</b> 어떤 얘기든 공감이 필요할 때</p><span class="small">›</span>
+  </div>
+  <div class="pretalk" onclick="goChat()">
+    <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸 연구원" width="46" height="46">
+    <p><b>칸쵸 연구원 면담</b> 감정 빼고 객관적인 조언이 필요할 때</p><span class="small">›</span>
+  </div>
+
   <div class="menu">
     <div class="card" role="button" tabindex="0" onclick="goChat()">
       <div class="icon">💬</div>
@@ -330,8 +367,8 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <div class="grid2" style="margin-bottom:0">
       <div class="tile" style="background:var(--amber-soft);min-height:92px" onclick="startTest('child')"><span class="price free">무료</span><div class="big" style="font-size:1.05rem">우리 아이는<br>어떤 기질일까</div><div class="sub">4분 · 연령 맞춤 검사</div></div>
       <div class="tile" style="background:var(--moss-soft);min-height:92px" onclick="startTest('parent')"><span class="price free">무료</span><div class="big" style="font-size:1.05rem">배우자는 어떤<br>양육자일까</div><div class="sub">남편·아내도 3분 검사</div></div>
-      <div class="tile" style="background:var(--pink-soft);min-height:92px" onclick="goFit()"><span class="price">🍪 1</span><div class="big" style="font-size:1.05rem">나 × 아이<br>궁합</div><div class="sub">유형 매치 + 마찰 처방</div></div>
-      <div class="tile" style="background:var(--lav-soft);min-height:92px" onclick="startTest('family')"><span class="price">🍪 1</span><div class="big" style="font-size:1.05rem">이 성향은<br>어디서 왔을까</div><div class="sub">원가족 리포트</div></div>
+      <div class="tile" style="background:var(--pink-soft);min-height:92px" onclick="goFit()"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big" style="font-size:1.05rem">나 × 아이<br>궁합</div><div class="sub">유형 매치 + 마찰 처방</div></div>
+      <div class="tile" style="background:var(--lav-soft);min-height:92px" onclick="startTest('family')"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big" style="font-size:1.05rem">이 성향은<br>어디서 왔을까</div><div class="sub">원가족 리포트</div></div>
     </div>
   </div>
 </section>
@@ -414,7 +451,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   </div>
   <div class="card" style="text-align:center;background:var(--pri-soft);border-color:var(--pri)">
     <p style="font-size:.9rem"><b>👨‍👩‍👧 가족 종합 리포트</b> <span class="tag pri" style="font-size:.6rem;vertical-align:2px">준비 중</span></p>
-    <p class="small mt8">원가족 → 내 성향 → 아이 기질 → 궁합까지 한 권의 이야기로 (🍪 3 · 4,470원)</p>
+    <p class="small mt8">원가족 → 내 성향 → 아이 기질 → 궁합까지 한 권의 이야기로 (<i class="ddeok-i"></i> 3 · 4,470원)</p>
   </div>
   <div class="card" id="fit-books">
     <h3 style="font-size:1rem;margin-bottom:8px">📚 더 깊이 알고 싶다면</h3>
@@ -491,7 +528,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <h3 style="font-size:1rem;margin-bottom:8px">다음으로 가볼 만한 곳</h3>
     <div class="grid2" style="margin-bottom:0">
       <div class="tile" style="background:var(--moss-soft);min-height:96px" onclick="startTest('parent')"><span class="price free">무료</span><div class="big" style="font-size:1.1rem">내 성향과<br>연결하기</div><div class="sub">원가족 × 지금의 나</div></div>
-      <div class="tile" style="background:var(--pink-soft);min-height:96px" onclick="goFit()"><span class="price">🍪 1</span><div class="big" style="font-size:1.1rem">아이와의<br>궁합 보기</div><div class="sub">대물림 대신 새 조합</div></div>
+      <div class="tile" style="background:var(--pink-soft);min-height:96px" onclick="goFit()"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big" style="font-size:1.1rem">아이와의<br>궁합 보기</div><div class="sub">대물림 대신 새 조합</div></div>
       <div class="tile" style="background:var(--amber-soft);min-height:96px" onclick="goChat()"><span class="price free">오늘 무료</span><div class="big" style="font-size:1.1rem">츄비에게<br>털어놓기</div><div class="sub">이 결과로 수다 시작</div></div>
       <div class="tile" style="background:var(--lav-soft);min-height:96px" onclick="goTalk()"><span class="price free">무료</span><div class="big" style="font-size:1.1rem">스몰톡에<br>물어보기</div><div class="sub">투표로 다른 집 구경</div></div>
     </div>
@@ -572,7 +609,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   </div>
   <div class="grid2">
     <div class="tile" style="background:var(--moss-soft)" onclick="S.myRole=S.myRole||'보호자';S.activeP=S.myRole;beginTest('parent')"><span class="price free">무료</span><div class="big">지금의 나<br>성향검사</div><div class="sub">5가지 축 · 3분</div></div>
-    <div class="tile" style="background:var(--lav-soft)" onclick="startTest('family')"><span class="price">🍪 1</span><div class="big">나를 만든 집<br>원가족검사</div><div class="sub">따뜻함×통제 · 대물림 지도</div></div>
+    <div class="tile" style="background:var(--lav-soft)" onclick="startTest('family')"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big">나를 만든 집<br>원가족검사</div><div class="sub">따뜻함×통제 · 대물림 지도</div></div>
   </div>
   <div class="card">
     <p style="font-size:.88rem"><b>🌱 예비부모라면</b> — 내 성향검사 결과가 곧 '앞으로의 양육 에너지 예보'예요. 아이를 만나기 전에 내 무기와 살펴볼 지점을 미리 알아두는 것, 그게 가장 빠른 육아 준비입니다.</p>
@@ -650,7 +687,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <div id="cr-lock-inner"><div id="cr-deep"></div></div>
     <div class="lock-cover" id="cr-cover">
       <p style="font-size:.9rem"><b>계열 해설 · AI 시대 관점 · 지금 해줄 것 · 오해받기 쉬운 지점</b></p>
-      <button class="btn pri" style="width:auto;padding:12px 20px" onclick="unlockCareer()">🍪 까까 1개로 열기 (1,490원)</button>
+      <button class="btn pri" style="width:auto;padding:12px 20px" onclick="unlockCareer()"><i class="ddeok-i"></i> 까까 1개로 열기 (1,490원)</button>
     </div>
   </div>
   <div class="card" id="cr-routes"></div>
@@ -681,7 +718,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="result-hero" style="padding-bottom:10px">
     <span class="tag">까까상점</span>
-    <div class="typename">🍪 까까</div>
+    <div class="typename"><i class="ddeok-i"></i> 까까</div>
     <div class="typedesc">까까 1개로 심화 리포트 한 편을 열 수 있어요</div>
   </div>
   <div id="wallet-body"></div>
@@ -724,7 +761,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <button class="back" onclick="show('s-chat-list')">← 상담실</button>
   <div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:10px">
     <div style="flex:1"><b class="jua" id="chat-cat-name">츄비</b> <span class="small" id="chat-cat-tag"></span></div>
-    <span class="snack-pill" role="button" onclick="openWallet()" style="font-size:.75rem;cursor:pointer">💬 <b id="free-left">3</b>회 · 🍪 <b id="kka-chat">2</b></span>
+    <span class="snack-pill" role="button" onclick="openWallet()" style="font-size:.75rem;cursor:pointer">💬 <b id="free-left">3</b>회 · <i class="ddeok-i"></i> <b id="kka-chat">2</b></span>
   </div>
   <div id="chat-log" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
   <div id="chat-chips" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"></div>
@@ -736,7 +773,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <button class="back mt8" style="width:100%;text-align:center" onclick="postToTalk()">🎋 이 대화를 익명으로 대나무숲에 올리기 · 까까 적립</button>
   </div>
   <div class="card" id="chat-recharge" style="display:none;text-align:center">
-    <h3 style="font-size:1.05rem">🍪 까까 1개로 상담 8번 더</h3>
+    <h3 style="font-size:1.05rem"><i class="ddeok-i"></i> 까까 1개로 상담 8번 더</h3>
     <p class="small mt8">까까 1개 = 1,490원 · 상담 8회<br>한 번 충전하면 꽤 길게 얘기할 수 있어요<br>충전하면 바로 이어서 대화할 수 있어요</p>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn ghost" style="flex:1" onclick="hideRecharge()">취소</button>
@@ -1309,7 +1346,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (63) ===== */
+/* ===== js/state.js (83) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);try{if(window.__booted)save();}catch(e){}}
@@ -1317,11 +1354,31 @@ S.myRole=null;
 const UNLOCKS={};let PAIR_SEL={p:null,k:null};
 const CHAT={cat:'chuvi',free:2,paid:0,hist:{chuvi:[],kancho:[]},intakeDone:false,intake:{},busy:false,upsold:false};
 /* ── 화폐: 까까 하나로 통일 (방울 폐지, 2026-08-11) ──
-   까까 1개 = 1,490원. 수다는 매일 무료 3회 + 까까 1개당 5회. */
-const KKA_PRICE=1490;
-const KKA_TALK=8;                  // 까까 1개로 늘어나는 수다 횟수
+   까까 1개 = 1,000원 (2026-08-12 사장님 결정. 사주아이 990원과 같은 급으로 맞춤).
+   상담은 매일 무료 2회 + 까까 1개당 8회.
+   ⚠️ 이 두 값은 서버(supabase/sql/02_wallet.sql 의 free_cap·kka_talk)와 반드시 같아야 한다. */
+const KKA_PRICE=1000;
+const KKA_TALK=8;                  // 까까 1개로 늘어나는 상담 횟수
 let KKA=2, FIT_UNLOCKED=false;     // 첫 방문 웰컴 까까 2개
 function kkaWon(n){return (KKA_PRICE*n).toLocaleString('ko-KR')+'원';}
+
+/* ── 이름 뒤 조사 (아준는 ✗ → 아준이는 ✓) ──────────────────
+   한글 이름 끝글자에 받침이 있으면 '이'를 붙여 부른다.
+   josa('아준','는') → '아준이는' / josa('지우','는') → '지우는'
+   받침 유무만 보면 되므로 유니코드 음절 계산으로 판별한다.       */
+function hasJong(w){
+  if(!w)return false;
+  const c=w.charCodeAt(w.length-1);
+  if(c<0xAC00||c>0xD7A3)return false;      // 한글 음절이 아니면 받침 없음으로 본다
+  return (c-0xAC00)%28!==0;
+}
+const JOSA_PAIR={'은':'는','는':'는','이':'가','가':'가','을':'를','를':'를','와':'와','과':'와','으로':'로','로':'로'};
+function josa(name,j){
+  name=(name||'').trim();
+  if(!name)return '';
+  const base=JOSA_PAIR[j]||j;              // 받침 없는 쪽 형태로 통일
+  return hasJong(name) ? name+'이'+base : name+base;
+}
 /* 까까가 모자라면 충전을 묻고, 충전했으면 true. (정식: 결제 연동) */
 function needKka(n){
   n=n||1;
@@ -1492,8 +1549,22 @@ function onboardStart(){
   S.activeK=S.kids.length-1;
   beginTest('child');
 }
-/* ===== js/render/test.js (29) ===== */
+/* ===== js/render/test.js (43) ===== */
 function startTest(mode){if(mode==='family'){beginTest('family');return;}chooseWho(mode);}
+/* ── 부모 검사로 가는 단 하나의 입구 ────────────────────────────
+   화면 여러 곳에 "나는 어떤 부모일까?" 버튼이 있는데 서로 다른 함수를
+   부르고 있었다(chooseWho vs beginTest). 눌러도 아무 일이 없다는 제보가
+   나온 자리라, 입구를 하나로 모으고 어떤 경우에도 죽지 않게 한다.
+   (2026-08-12)                                                      */
+function goParentTest(){
+  try{
+    chooseWho('parent');                       // 누구의 검사인지 먼저 고르게
+  }catch(e){                                   // 목록 화면이 깨져도 버튼은 살아야 한다
+    console.error('chooseWho 실패 → 바로 검사 시작', e);
+    S.activeP=S.activeP||S.myRole||'보호자';
+    beginTest('parent');
+  }
+}
 function beginTest(mode){S.mode=mode;S.idx=0;S[mode==='parent'?'pAns':mode==='family'?'fAns':'cAns']=[];show('s-test');renderQ();}
 function items(){if(S.mode==='parent')return S.activeP==='예비부모'?P_ITEMS:P_ITEMS.concat(P_EXTRA);if(S.mode==='family')return F_ITEMS;const k=S.kids[S.activeK];if(!k)return C_ITEMS;return k.band==='t'?C_ITEMS_T:k.band==='s'?C_ITEMS_S:k.band==='a'?C_ITEMS_A:C_ITEMS;}
 function renderQ(){
@@ -1595,7 +1666,7 @@ function renderParentReport(){
   inviteReward();
 
 }
-/* ===== js/render/child.js (114) ===== */
+/* ===== js/render/child.js (118) ===== */
 function renderChildReport(){
   const avg=(S.kids[S.activeK]&&S.kids[S.activeK].score)||S.cScore;
   // Thomas & Chess 군집 — 연속체로 계산 (rhy, app, ada, int, moo 5개 결정 차원)
@@ -1628,11 +1699,11 @@ function renderChildReport(){
   const lead=aV>=0.45?'세 기질 중 뚜렷하게 가장 진해요':aV>=0.38?'세 기질 중 한 발 앞서 가장 진해요':'근소한 차이로 가장 진해요';
   let tale;
   if(isMix){
-    tale=`<b>${nm}는 ${aN} ${pct100(aV)}%, ${bN} ${pct100(bV)}%.</b> 두 기질이 거의 같은 크기로 자리를 잡고 있어요. `
+    tale=`<b>${josa(nm,'는')} ${aN} ${pct100(aV)}%, ${bN} ${pct100(bV)}%.</b> 두 기질이 거의 같은 크기로 자리를 잡고 있어요. `
       +`${MIX_LEAD[mixKey]||'서로 다른 두 결이 한 아이 안에서 번갈아 나옵니다.'}</p>`
       +`<p class="mt8">${CLUSTER_MIX_LONG[mixKey]||CLUSTER_MIX[mixKey]||''}`;
   }else{
-    tale=`<b>${nm}는 ${aN}이 ${pct100(aV)}%로, ${lead}.</b> ${CLUSTER_MAIN[aN]||''} 여기에 ${bN} 기질이 ${pct100(bV)}% 섞여 있어요. ${CLUSTER_MIX[mixKey]||''}`;
+    tale=`<b>${josa(nm,'는')} ${aN}이 ${pct100(aV)}%로, ${lead}.</b> ${CLUSTER_MAIN[aN]||''} 여기에 ${bN} 기질이 ${pct100(bV)}% 섞여 있어요. ${CLUSTER_MIX[mixKey]||''}`;
   }
   const HOOK={"햇살형":"순한 게 아니라, 안정된 겁니다","불꽃형":"떼가 센 게 아니라, 화력이 큰 겁니다","새벽형":"느린 게 아니라, 신중한 겁니다"};
   const hook=isMix?(MIX_HOOK[mixKey]||'두 가지 온도를 다 가진 아이'):(HOOK[aN]||'한 가지 색으로는 설명이 안 되는 아이');
@@ -1645,7 +1716,7 @@ function renderChildReport(){
    `<p style="font-family:'Jua';font-size:1.05rem;line-height:1.5">${hook}</p>
     <p class="mt8">${tale}</p>
     <p class="mt8"><b>일상에서는 이렇게 보여요.</b> ${dailyTxt}</p>
-    <p class="mt8">지금까지 ${nm}를 키우며 느꼈던 '왜 이럴까'의 절반은, 사실 타고난 기질이었을 거예요. 고쳐야 할 목록이 아니라 함께 살아갈 지도 — 그 지도를 손에 쥐었다는 것만으로 오늘부터의 육아는 조금 달라집니다.</p>`;
+    <p class="mt8">지금까지 ${josa(nm,'를')} 키우며 느꼈던 '왜 이럴까'의 절반은, 사실 타고난 기질이었을 거예요. 고쳐야 할 목록이 아니라 함께 살아갈 지도 — 그 지도를 손에 쥐었다는 것만으로 오늘부터의 육아는 조금 달라집니다.</p>`;
   // Rothbart 3상위요인 (한국판 CBQ 3요인 구조 근거): 외향성 / 부정적 정서 / 의도적 통제
   const sup={
     "세상에 다가가는 힘":(avg.act+avg.app)/2,
@@ -1688,12 +1759,12 @@ function renderChildReport(){
     const kt=isMix?'무지개형':aN;
     const match=KID_PARENT_MATCH[kt]||KID_PARENT_MATCH['무지개형'];
     const matchHtml=
-      `<p style="font-size:.94rem;line-height:1.85"><b>${kt} ${nm}에게는 ${match.good.map(x=>'<b style="color:var(--pri)">'+x+'</b>').join(' · ')} 부모</b>가 특히 잘 맞아요.<br>${match.why}</p>`
+      `<p style="font-size:.94rem;line-height:1.85"><b>${kt} ${josa(nm,'에게')}는 ${match.good.map(x=>'<b style="color:var(--pri)">'+x+'</b>').join(' · ')} 부모</b>가 특히 잘 맞아요.<br>${match.why}</p>`
       +`<p class="mt8" style="font-size:.94rem;line-height:1.85"><b>${match.care.map(x=>'<b style="color:#C2544E">'+x+'</b>').join(' · ')} 부모</b>라면 조금 더 신경 쓸 부분이 있어요.<br>${match.careWhy}</p>`;
     const body=matchHtml+(picks.slice(0,2).concat([FITPAR.base])).map(t=>`<p style="font-size:.9rem;line-height:1.8;margin-top:8px">${t}</p>`).join('');
     const hasPr2=Object.values(S.parents).some(x=>x&&x.score);
-    const btn=hasPr2?`<button class="btn pri mt8" onclick="goFit()">${nm}랑 나, 얼마나 맞을까? 보러가기</button>`
-                    :`<button class="btn pri mt8" onclick="startTest('parent')">나는 어떤 부모일까? 보러가기</button>`;
+    const btn=hasPr2?`<button class="btn pri mt8" onclick="goFit()">${josa(nm,'랑')} 나, 얼마나 맞을까? 보러가기</button>`
+                    :`<button class="btn pri mt8" onclick="goParentTest()">나는 어떤 부모일까? 보러가기</button>`;
     fpEl.innerHTML=`<h3 style="font-size:1rem;margin-bottom:2px">💞 이런 아이는, 이런 부모와 잘 맞아요</h3>${body}${btn}`;
   }
   // 일부무료: 상세 해설 잠금 (아이별)
@@ -1704,8 +1775,12 @@ function renderChildReport(){
   else{ccover.style.display='flex';cinner.classList.add('locked-peek');}
   const cta=document.getElementById('c-cta');
   const hasPr=Object.values(S.parents).some(x=>x&&x.score);
-  if(hasPr){cta.textContent=nm+'랑 나, 얼마나 맞을까? 보러가기';cta.onclick=goFit;}
-  else{const who=S.activeP||S.myRole||'보호자';cta.textContent='나는 어떤 부모일까? 보러가기';cta.onclick=()=>{S.activeP=who;beginTest('parent');};}
+  /* 🔴 두 버튼(본문 CTA·하단 CTA)이 서로 다른 함수로 가던 것을 goParentTest 한 갈래로 통일.
+        index.html 의 인라인 onclick="goFit()" 도 아래에서 반드시 덮어쓴다.
+        (2026-08-12: "나는 어떤 부모일까 눌러도 안 넘어간다" 제보) */
+  cta.removeAttribute('onclick');
+  if(hasPr){cta.textContent=josa(nm,'랑')+' 나, 얼마나 맞을까? 보러가기';cta.onclick=goFit;}
+  else{cta.textContent='나는 어떤 부모일까? 보러가기';cta.onclick=goParentTest;}
   const R2=document.getElementById('c-routes');if(R2)R2.innerHTML=nextRoutes('child');
   inviteReward();
 }
@@ -2371,9 +2446,9 @@ function addProductCard(){
   const m=CAT_META[CHAT.cat];
   const reason=CHAT.cat==='chuvi'?'같은 상황이 반복되는 건 조합 전체를 봐야 풀려요.':'반복 패턴은 대증요법으론 못 잡는다냥. 조합 전체를 봐야 한다냥.';
   CHAT.hist[CHAT.cat].push({role:'cat',html:`<div class="card" style="border-color:var(--amber);margin:0;max-width:88%;align-self:flex-start;padding:14px">
-    <span class="tag amber" style="font-size:.65rem">🧩 궁합 심층 리포트 · 🍪 까까 1개</span>
+    <span class="tag amber" style="font-size:.65rem">🧩 궁합 심층 리포트 · <i class="ddeok-i"></i> 까까 1개</span>
     <p style="font-size:.85rem;margin-top:6px"><b>${m.name}가 추천하는 이유:</b> ${reason}</p>
-    <button class="btn amber mt8" style="padding:10px" onclick="lightOpenFit()">🍪 까까 1개로 바로 열기</button></div>`});
+    <button class="btn amber mt8" style="padding:10px" onclick="lightOpenFit()"><i class="ddeok-i"></i> 까까 1개로 바로 열기</button></div>`});
   renderChat();
 }
 function addTalkBridge(){
@@ -2521,14 +2596,14 @@ function renderWallet(){
   el.innerHTML=`
     <div class="card" style="text-align:center">
       <p class="small">내 까까</p>
-      <p style="font-family:'Jua';font-size:2.4rem;line-height:1.1">🍪 ${KKA}</p>
+      <p style="font-family:'Jua';font-size:2.4rem;line-height:1.1"><i class="ddeok-i"></i> ${KKA}</p>
       <p class="small">오늘 무료 수다 ${CHAT.free}회 · 매일 자정에 다시 채워져요</p>
     </div>
     <div class="card">
       <h3 style="font-size:1rem;margin-bottom:8px">까까상점</h3>
       ${KKA_PACKS.map((p,i)=>`
         <div class="book" style="align-items:center;cursor:pointer" onclick="buyKka(${i})">
-          <div class="bicon">🍪</div>
+          <div class="bicon"><i class="ddeok-i"></i></div>
           <div style="flex:1">
             <b style="font-family:'Jua'">${p.name}</b>${p.best?' <span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
             <p class="small">까까 ${p.n}개${p.bonus?` <b style="color:var(--pri)">+${p.bonus}개 덤</b>`:''}${p.talk?` · 수다 ${p.talk}회 덤`:''}</p>
@@ -2539,8 +2614,8 @@ function renderWallet(){
     </div>
     <div class="card">
       <h3 style="font-size:1rem;margin-bottom:6px">까까로 할 수 있는 것</h3>
-      <div class="book"><div class="bicon">🍪</div><div><b>리포트 심화 열기</b><p class="small">아이 · 부모 · 궁합 · 원가족 각 1개</p></div></div>
-      <div class="book"><div class="bicon">🍪🍪</div><div><b>심층 코칭</b><p class="small">상황 해석 → 행동 교정 → 변화 예언</p></div></div>
+      <div class="book"><div class="bicon"><i class="ddeok-i"></i></div><div><b>리포트 심화 열기</b><p class="small">아이 · 부모 · 궁합 · 원가족 각 1개</p></div></div>
+      <div class="book"><div class="bicon"><i class="ddeok-i"></i><i class="ddeok-i"></i></div><div><b>심층 코칭</b><p class="small">상황 해석 → 행동 교정 → 변화 예언</p></div></div>
       <div class="book"><div class="bicon">💬</div><div><b>상담 ${KKA_TALK}회 충전</b><p class="small">매일 주는 무료 2회를 다 쓴 뒤에</p></div></div>
     </div>`;
 }
@@ -2582,7 +2657,7 @@ function unlockDeep(){
   if(!needKka(2))return;
   KKA-=2;DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;renderSnack();applyDeepLock();save();
 }
-/* ===== js/talk.js (106) ===== */
+/* ===== js/talk.js (126) ===== */
 /* ══════════════ 스몰톡 (판정 없는 참여형 커뮤니티: 하트·댓글·베댓·AI답변) ══════════════ */
 const TALK=[
  {text:"등원길에 신발 색이 마음에 안 든다고 20분 실랑이… 결국 지각했어요. 다들 어떻게 하세요?",hearts:12,liked:false,ai:null,
@@ -2632,8 +2707,15 @@ function renderTalk(){
       }).join('')+`<p class="small" style="margin-top:4px">${p.poll.voted?'총 '+tot+'명 참여':'🗳 투표로 답해주세요 (익명)'}</p></div>`;
     }
     const cHtml="";
-    const aiHtml=p.ai?`<div class="bubble moss" style="margin-top:10px;font-size:.86rem"><span class="who">칸쵸의 답변</span>${p.ai}</div>`
-      :`<button class="heart-btn" style="margin-top:8px" onclick="talkAi(${i})">🐾 칸쵸 답변 받기</button>`;
+    /* 🔴 원래 칸쵸로만 하드코딩돼 있었다. 우리 컨셉은 연구원 두 명이므로
+          손님이 공감(츄비) / 팩트(칸쵸) 중에 골라야 한다. (2026-08-12 사장님 지적) */
+    const aiCat=p.aiCat||'kancho';
+    const aiHtml=p.ai
+      ?`<div class="bubble ${aiCat==='chuvi'?'amber':'moss'}" style="margin-top:10px;font-size:.86rem"><span class="who">${aiCat==='chuvi'?'츄비':'칸쵸'}의 답변</span>${p.ai}</div>`
+      :`<div style="display:flex;gap:6px;margin-top:8px">
+          <button class="heart-btn" style="flex:1" onclick="talkAi(${i},'chuvi')">🧡 츄비에게 공감 받기</button>
+          <button class="heart-btn" style="flex:1" onclick="talkAi(${i},'kancho')">🐾 칸쵸에게 조언 받기</button>
+        </div>`;
     const askHtml=`<button class="btn ghost mt8" style="padding:9px;font-size:.85rem" onclick="askLikeThis(${i})">나도 물어보기 →</button>`;
     box.insertAdjacentHTML('beforeend',`<div class="talk-post">
       ${p.who?`<p class="small" style="margin-bottom:4px">🐣 ${p.who} · 익명${p.mine?' · 내 글':''}</p>`:''}
@@ -2665,15 +2747,28 @@ function addTalk(){
 }
 function heartPost(i){const p=TALK[i];p.liked=!p.liked;p.hearts+=p.liked?1:-1;renderTalk();}
 
-async function talkAi(i){
+/* 대나무숲 글에 연구원이 답을 단다. cat: 'chuvi'(공감) | 'kancho'(팩트)
+   두 연구원의 역할이 실제로 갈리게 프롬프트를 따로 쓴다. 같은 글에 같은
+   말투가 나오면 캐릭터를 둘로 나눈 의미가 없다. */
+const TALK_SYS={
+  chuvi:`너는 '츄비', 기질냥구소의 공감 담당 연구원(흰 바탕에 회색 무늬, 호박색 눈)이다.
+짧은 육아 글에 2~3문장으로 답한다. 순서: ①감정을 먼저 그대로 받아준다 ②그 마음이 드는 게 당연한 이유를 기질·발달로 짚어준다 ③오늘 당장 해볼 수 있는 작은 것 하나.
+말투는 따뜻한 반말, 끝에 가끔 '~다냥'. 다그치거나 가르치려 들지 않는다.`,
+  kancho:`너는 '칸쵸', 기질냥구소의 팩트 담당 연구원(고등어태비에 흰색, 초록 눈)이다.
+짧은 육아 글에 2~3문장으로 답한다. 순서: ①감정 표현은 최소한으로 ②원인을 기질·발달 관점에서 객관적으로 짚는다 ③구체적인 행동 처방 1개.
+말투는 담백하고 단정적인 반말, 끝에 가끔 '~다냥'. 위로보다 정확함을 우선한다.`
+};
+const TALK_RULE=` 공통 규칙: 진단명 금지, 부모 비난 금지(원인은 기질·발달로 돌린다), 자해·폭력·학대 암시가 보이면 조언 대신 자살예방 109·가정폭력 1366 을 안내한다.`;
+
+async function talkAi(i,cat){
   const p=TALK[i];if(p.ai)return;
+  cat=(cat==='chuvi'||cat==='kancho')?cat:'kancho';
   if(!aiKey()&&!setAiKey())return;
-  p.ai='…';renderTalk();
+  p.aiCat=cat;p.ai='…';renderTalk();
   try{
-    p.ai=(await aiCall(
-      `너는 '칸쵸', 갈색 고양이 육아 코치다. 짧은 육아 스몰톡 글에 2~3문장으로 답한다: 공감 반 문장 + 기질 관점의 해석 또는 오늘 쓸 수 있는 행동 1개. 말투는 담백한 반말, 끝에 가끔 '~다냥'. 규칙: 진단명 금지, 부모 비난 금지(원인은 기질·발달로), 자해·폭력·학대 암시가 보이면 조언 대신 자살예방 109·가정폭력 1366 안내.`,
+    p.ai=(await aiCall(TALK_SYS[cat]+TALK_RULE,
       [{role:'user',content:p.text}],1000))||'다시 한 번 물어봐 달라냥.';
-  }catch(e){p.ai=null;alert('앗, '+((e&&e.message)||'연결이 잠깐 끊겼어요')+'. 다시 시도해주세요!');}
+  }catch(e){p.ai=null;p.aiCat=null;alert('앗, '+((e&&e.message)||'연결이 잠깐 끊겼어요')+'. 다시 시도해주세요!');}
   renderTalk();
 }
 
