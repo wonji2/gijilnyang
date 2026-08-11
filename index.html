@@ -239,6 +239,17 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 .memo{align-self:flex-start;max-width:88%;background:#FFF8DC;border:1.5px solid #F0DFA8;
   border-radius:14px;padding:10px 13px;font-size:.9rem;line-height:1.6;color:var(--ink)}
 .memo-who{display:block;font-family:'Jua';font-size:.75rem;color:#A98B3C;margin-bottom:3px}
+
+/* ── 홈 첫 화면: 훅 → 스토리 → 오퍼 → 근거 (2026-08-12) ──
+   첫 문장은 손님의 고민이어야 한다. 기능 설명이 아니라. */
+.hero-hook{font-family:'Jua';font-size:1.32rem;line-height:1.45;color:var(--ink);margin-top:10px}
+.hero-story{font-size:.95rem;line-height:1.75;color:var(--sub);margin-top:12px}
+.hero-story b{color:var(--ink)}
+.hero-offer{font-size:.95rem;line-height:1.8;color:var(--ink);margin-top:14px}
+.hero-offer b{color:var(--pri)}
+.hero-cta{margin-top:16px;padding:14px;font-size:1.02rem}
+.hero-proof{font-size:.76rem;line-height:1.65;color:var(--sub);margin-top:10px}
+@media (max-width:360px){.hero-hook{font-size:1.18rem}}
 </style>
 </head>
 <body>
@@ -268,10 +279,18 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
       <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
     </div>
     <h1>기질냥구소</h1>
-    <p class="hero-intro">우리 냥구소에 온 걸 환영한다냥.<br>
-      여기는 <b>발표된 육아 논문과 검증된 척도</b>를 학습한 두 연구원이,<br>
-      <b>우리 아이 기질</b>과 <b>부모 성향</b>을 재고 <b>둘의 궁합</b>까지 봐주는 곳이다냥.<br>
-      고민이 있으면 <b>원하는 연구원에게 면담을 신청</b>해라냥. 🐾</p>
+    <!-- 훅 → 스토리 → 오퍼 → 근거 순서 (2026-08-12 전면 교체)
+         이전엔 "여기는 ~해주는 곳이다냥" 하고 기능을 설명했다. 그건 카테고리 설명이지
+         손님이 지금 하고 있는 고민이 아니다. 첫 문장은 반드시 손님의 고민이어야 한다. -->
+    <p class="hero-hook">애한테 소리지르고<br>재우고 나서 후회한 밤이 있다면</p>
+    <p class="hero-story">옆집 애는 안 그러는데 왜 우리 애만 이럴까 —<br>
+      <b>엄마가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
+    <p class="hero-offer"><b>우리 아이 기질</b>과 <b>내 성향</b>,<br>
+      둘이 <b>부딪히는 정확한 지점</b>과<br>
+      <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요.</p>
+    <button class="btn pri hero-cta" onclick="startTest('child')">무료로 우리 아이 기질 재보기 →</button>
+    <p class="hero-proof">🐾 검증된 기질 척도(Rothbart CBQ · Thomas &amp; Chess)를 학습한<br>
+      두 연구원 <b>츄비</b>와 <b>칸쵸</b>가 봐드려요</p>
   </div>
 
   <div class="daily">
