@@ -234,6 +234,11 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 /* 떡뻥 아이콘 (글자 속에 섞어 쓰는 용) — 🍪 대체. 이모지에 떡뻥이 없어서 직접 그림. */
 .ddeok-i{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='12' rx='10.2' ry='9.2' fill='%23F4E6C9' stroke='%23DCC49B' stroke-width='1.3'/%3E%3Ccircle cx='8.4' cy='9.6' r='1.15' fill='%23E6D2AC'/%3E%3Ccircle cx='14.2' cy='8.9' r='.95' fill='%23E6D2AC'/%3E%3Ccircle cx='10.8' cy='14.2' r='1.05' fill='%23E6D2AC'/%3E%3Ccircle cx='15.8' cy='13.8' r='.85' fill='%23E6D2AC'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* 연구원 메모 (긴 답변 맨 앞의 한 줄 요약) — 사주아이 '복냥이 메모' 자리 */
+.memo{align-self:flex-start;max-width:88%;background:#FFF8DC;border:1.5px solid #F0DFA8;
+  border-radius:14px;padding:10px 13px;font-size:.9rem;line-height:1.6;color:var(--ink)}
+.memo-who{display:block;font-family:'Jua';font-size:.75rem;color:#A98B3C;margin-bottom:3px}
 </style>
 </head>
 <body>
@@ -2283,7 +2288,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (296) ===== */
+/* ===== js/chat.js (335) ===== */
 /* ══════════════ 수다방 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -2440,6 +2445,40 @@ function msgHTML(role,text){
   return `<div class="bubble ${m.cls}" style="max-width:88%;align-self:flex-start"><span class="who">${m.name}</span>${text}</div>`;
 }
 function addMsg(role,text){CHAT.hist[CHAT.cat].push({role:role==='user'?'user':'cat',text});renderChat();window.scrollTo(0,document.body.scrollHeight);}
+
+/* ══════════ 답변을 여러 말풍선으로 나눠 순서대로 띄우기 ══════════
+   사주아이는 한 줄 물으면 말풍선 열 개가 다다다다 온다. 같은 글자수라도
+   한 덩어리로 오는 것보다 훨씬 정성껏 답해준 느낌이 나고, 그게 곧 값어치다.
+   맨 앞의 [메모] 한 줄은 노란 박스로 따로 띄운다. (2026-08-12)          */
+function splitReply(text){
+  const t=(text||'').trim();
+  let memo=null, body=t;
+  const mm=body.match(/^\s*\[메모\]\s*(.+?)\s*(?:\n|$)/);
+  if(mm){memo=mm[1].trim();body=body.slice(mm[0].length).trim();}
+  let parts=body.split(/\n{2,}/).map(s=>s.trim()).filter(Boolean);
+  if(parts.length<2){                       // 빈 줄이 없으면 문장 2개씩 묶는다
+    const sents=body.split(/(?<=[.!?…])\s+/).map(s=>s.trim()).filter(Boolean);
+    parts=[];
+    for(let i=0;i<sents.length;i+=2)parts.push(sents.slice(i,i+2).join(' '));
+  }
+  parts=parts.filter(Boolean).slice(0,8);   // 너무 잘게 쪼개지지 않게 상한
+  return {memo, parts:parts.length?parts:[t]};
+}
+function memoHTML(memo){
+  const m=CAT_META[CHAT.cat];
+  return `<div class="memo"><span class="memo-who">${m.name}의 메모</span>${memo}</div>`;
+}
+/* 한 덩어리 답변을 쪼개서 시간차로 붙인다. */
+async function addCatReply(text){
+  const {memo,parts}=splitReply(text);
+  if(memo){CHAT.hist[CHAT.cat].push({role:'cat',text:memo,html:memoHTML(memo)});renderChat();
+           window.scrollTo(0,document.body.scrollHeight);
+           await new Promise(r=>setTimeout(r,300));}
+  for(let i=0;i<parts.length;i++){
+    if(i)await new Promise(r=>setTimeout(r,380));
+    addMsg('cat',parts[i]);
+  }
+}
 function addProductCard(){
   if(CHAT.upsold||FIT_UNLOCKED||!S.pScore||!S.cScore)return;
   CHAT.upsold=true;
@@ -2505,7 +2544,12 @@ function sysPrompt(){
 2. 진단 금지: ADHD, 자폐, 발달지연, 우울증 등 진단명 언급·암시 절대 금지. 발달 걱정 질문엔 "검사로는 알 수 없고 소아청소년과나 육아종합지원센터 상담을 권해요"라고만.
 3. 자해·자살·가정폭력·아동학대 암시가 보이면 상담을 이어가지 말고 자살예방상담전화 109, 가정폭력상담 1366을 안내하고 전문가와 이야기하길 권한다.
 4. 육아·기질·가족 관계 외 주제(투자, 코딩 등)는 정중히 사양한다.
-5. 답변은 한국어, 최대 4문장. 가능하면 검사 결과의 구체적 차원 이름을 언급해 개인화한다.
+5. 답변 형식 — 반드시 이대로 쓴다. (한 줄 물었는데 성의 없이 짧게 답하면 손님은 돈 낼 이유를 못 느낀다)
+   · 맨 첫 줄: `[메모] ` 로 시작하는 한 문장. 손님의 마음을 한 줄로 감싸주는 말. (예: `[메모] 슬픔은 사랑한 크기만큼 커요. 토닥토닥.`)
+   · 그다음 본문은 **빈 줄로 구분된 문단 4~6개**. 각 문단은 1~2문장씩 짧게.
+   · 문단 순서: ①감정을 그대로 받아준다 ②검사 결과의 구체적 차원 이름을 들어 "그래서 유독 그렇게 느껴진다"를 설명한다 ③그 상황이 아이 입장에서는 어떻게 보이는지 ④오늘 당장 해볼 행동 딱 1개 ⑤그렇게 하면 아이가 무엇을 배우는지 한 문장
+   · 츄비는 ①을 길게 ④를 짧게, 칸쵸는 ①을 한 문장으로 줄이고 ②④를 길게 쓴다.
+   · 한국어. 문단을 절대 한 덩어리로 붙여 쓰지 않는다.
 6. 다른 부모들의 경험이 도움이 될 만한 고민(훈육 방식 선택, 습관 잡기 등)이면 가끔 "이건 대나무숲에 투표로 물어봐도 재밌겠어요"라고 한 문장 제안한다. 매번 하지는 않는다.
 7. 답변의 맨 끝에 '|||'를 쓰고, 방금 나눈 대화 흐름에서 이 사용자가 다음에 물어볼 법한 짧은 질문 2개를 '|'로 구분해 붙여라. 사용자의 말투를 닮은 1인칭 질문으로. (예: |||내일 아침 등원 때 뭐라고 말해줘?|나만 이렇게 힘든 거 맞아?) '|||' 앞부분만 사용자에게 보인다.`;
 }
@@ -2528,7 +2572,7 @@ async function sendChat(){
       const seg=reply.split('|||');reply=seg[0].trim();
       chips=seg.slice(1).join('|').split('|').map(s=>s.trim()).filter(s=>s&&s.length<60).slice(0,2);
     }
-    CHAT.hist[CHAT.cat].pop();addMsg('cat',reply);
+    CHAT.hist[CHAT.cat].pop();await addCatReply(reply);
     const catN=CHAT.hist[CHAT.cat].filter(m=>m.role==='cat').length;
     if(catN===2)addProductCard();
     if(catN===3)addTalkBridge();
