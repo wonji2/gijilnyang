@@ -585,10 +585,10 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="result-hero"><span class="tag">사이트 정보</span><div class="typename">기질냥구소</div><div class="typedesc">전문 심리검사·진단·상담 서비스가 아니에요.<br>공개된 연구와 검증된 척도를 학습한, 정보 기반 리포트입니다.</div></div>
   <div class="card" style="border-color:var(--pri)">
-    <h3 style="font-size:.98rem;margin-bottom:4px">🔑 AI 대화 연결 <span class="small">(테스트 전용)</span></h3>
-    <p class="small">상담실에서 츄비·칸쵸 연구원과 실제로 대화하려면 Anthropic API 키를 <b>한 번만</b> 넣으면 돼요.
-    <b>키는 이 기기에만 저장되고 파일에는 들어가지 않아요.</b> 정식 버전에서는 서버가 대신 처리해서 손님은 몰라도 됩니다.</p>
-    <button class="btn ghost mt8" onclick="setAiKey()">키 넣기 · 바꾸기</button>
+    <h3 style="font-size:.98rem;margin-bottom:4px">🔒 상담은 우리 서버를 거칩니다</h3>
+    <p class="small">츄비·칸쵸 연구원과의 상담은 <b>기질냥구소 서버가 대신 처리</b>합니다. 손님이 따로 설정할 건 없어요.<br>
+    대화 내용은 답변을 만드는 데만 쓰이고, <b>대나무숲에 직접 올리지 않으면 공개되지 않습니다.</b><br>
+    아이 실명은 처음부터 받지 않아요 — 애칭만 씁니다.</p>
   </div>
   <div class="card"><div class="footer-note">
   <details>
@@ -2208,42 +2208,46 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (292) ===== */
+/* ===== js/chat.js (296) ===== */
 /* ══════════════ 수다방 (대화형 상담) ══════════════ */
 
-/* ── AI 연결 (테스트 단계) ──────────────────────────────
-   ⚠️ 정식 버전에서는 서버(Edge Function)를 거쳐야 한다.
-   지금은 테스트라 브라우저에서 직접 부르고, 키는 이 기기에만 저장한다.
-   키를 코드·파일에 절대 넣지 않는다 — 파일이 남에게 가도 키는 따라가지 않는다. */
-const AI_MODEL='claude-sonnet-5';
-function aiKey(){try{return localStorage.getItem('kn_ai_key')||'';}catch(e){return '';}}
-function setAiKey(){
-  const v=prompt('테스트용 Anthropic API 키를 넣어주세요.\n\n· 이 키는 이 기기에만 저장돼요. 파일에는 들어가지 않아요.\n· sk-ant- 로 시작해요.\n· 지우려면 빈칸으로 두고 확인을 누르세요.', aiKey());
-  if(v===null)return false;
-  const k=v.trim();
-  if(!k){try{localStorage.removeItem('kn_ai_key');}catch(e){}return false;}
-  try{localStorage.setItem('kn_ai_key',k);}catch(e){}
-  return true;
+/* ── AI 연결 ─────────────────────────────────────────────
+   🔴 손님은 API 키를 몰라도 된다. 서버(Edge Function)가 키를 들고 대신 부른다.
+   아래 두 값은 공개돼도 되는 값이다 (anon 키는 그러라고 있는 것).
+   프로젝트: 기질냥 (ogmxzcihesglwhfljqrh) — 맘캘린더와 완전히 별개 */
+const SB_URL='https://ogmxzcihesglwhfljqrh.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbXh6Y2loZXNnbHdoZmxqcXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDczNDgsImV4cCI6MjEwMjAyMzM0OH0.M7BWZg8I14fDlHHcMueHZ6d4kgzTjoo9TuZRfwsakxY';
+
+/* 기기 식별 (로그인 없이도 상담 이력·한도를 잇는다) */
+function deviceId(){
+  let d=null;try{d=localStorage.getItem('kn_did');}catch(e){}
+  if(!d){d='d'+Math.random().toString(36).slice(2)+Date.now().toString(36);try{localStorage.setItem('kn_did',d);}catch(e){}}
+  return d;
 }
-function aiHeaders(){
-  return {
-    'Content-Type':'application/json',
-    'x-api-key':aiKey(),
-    'anthropic-version':'2023-06-01',
-    'anthropic-dangerous-direct-browser-access':'true'
-  };
+/* 이 사람에게 지금 걸리는 축 — 서버가 관련 문헌만 뽑아 넣어준다 */
+function activeAxes(){
+  const a=[];const c=S.cScore||{},p=S.pScore||{};
+  Object.keys(c).forEach(k=>{if(c[k]>=3.6||c[k]<=2.4)a.push(k);});
+  Object.keys(p).forEach(k=>{if(p[k]>=3.4||p[k]<=2.6)a.push(k);});
+  if(S.family)a.push('care','ctrl');
+  return a.slice(0,6);
 }
 async function aiCall(system,messages,maxTokens){
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:aiHeaders(),
-    body:JSON.stringify({model:AI_MODEL,max_tokens:maxTokens||1000,system:system,messages:messages})
+  const res=await fetch(SB_URL+'/functions/v1/chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+    body:JSON.stringify({device_id:deviceId(),system:system,messages:messages,axes:activeAxes()})
   });
   const data=await res.json().catch(()=>({}));
-  if(!res.ok){
-    const m=(data&&data.error&&data.error.message)||('HTTP '+res.status);
-    throw new Error(res.status===401?'API 키가 올바르지 않아요':m);
-  }
-  return (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  if(!res.ok||data.error) throw new Error(data.error||('연결이 잠깐 끊겼어요 ('+res.status+')'));
+  return data.text||'';
+}
+/* 예전 테스트용 키 입력 — 이제 필요 없다. 남아 있던 키는 지운다. */
+function aiKey(){return 'server';}
+function setAiKey(){
+  try{localStorage.removeItem('kn_ai_key');}catch(e){}
+  alert('이제 키를 넣지 않아도 됩니다.\n서버가 대신 처리하도록 바뀌었어요 🐾');
+  return true;
 }
 
 const CAT_META={
