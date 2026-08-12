@@ -1034,7 +1034,7 @@ const P_EXTRA=[
 const PARENT_ROLES=[['엄마','🌷'],['아빠','🌲'],['할머니·할아버지','🌼'],['이모·고모','🌸'],['삼촌·외삼촌','🌿'],['예비부모','🌱'],['보호자','🍀']];
 const ROLE_EMOJI=Object.fromEntries(PARENT_ROLES);
 const AGE_OPTS=[['t','만 3세 미만 (개월수 입력)'],['3','만 3세'],['4','만 4세'],['5','만 5세'],['6','만 6세'],['7','만 7세'],['s','초등학생'],['a','중·고등학생']];
-/* ===== js/data/texts.js (367) ===== */
+/* ===== js/data/texts.js (368) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
   gain:["실패를 두려워하지 않는 도전 감각","감정을 말로 꺼내는 게 자연스러움","'집=쉬는 곳'이라는 안정감"],
@@ -1159,13 +1159,14 @@ const DIM_TEXT={
 };
 const P_LABEL={E:"외향성",A:"우호성",C:"성실성",N:"정서 민감성",O:"개방성"};
 const PTYPE={E:"활력형",A:"온기형",C:"등대형",N:"안테나형",O:"탐험형"};
+/* [배지, 설명, 조합명] — 조합명은 밈 배지(바이럴_후킹 4장). 부정어 금지·긍정중립·쉬운 말 */
 const FITMAT={
- 활력형:{햇살형:["💞 찰떡궁합","에너지와 명랑함이 만나 매일이 소풍 같은 조합이에요."],불꽃형:["🌿 무난한 합","화력 큰 둘이라 시끌벅적하지만, 놀이로 에너지를 빼주면 폭발이 웃음으로 바뀌어요."],새벽형:["🔧 연습이 필요한 합","부모의 속도가 아이에겐 빠를 수 있어요. 반 걸음 기다림이 열쇠입니다."],무지개형:["🌿 무난한 합","아이의 여러 모습을 놀이로 끌어내 주는 짝이에요."]},
- 온기형:{햇살형:["💞 찰떡궁합","따뜻함이 두 배로 도는 조합 — 정서 안정의 교과서예요."],불꽃형:["💞 찰떡궁합","큰 감정을 받아주는 최고의 품이에요. 단호함 한 스푼만 챙기면 완성."],새벽형:["💞 찰떡궁합","기다려주는 온기 곁에서 신중함이 천천히 피어나요."],무지개형:["🌿 무난한 합","어떤 모습이 나와도 안아주는 품이라 아이가 편안해요."]},
- 등대형:{햇살형:["💞 찰떡궁합","규칙적인 아이와 계획적인 부모 — 루틴 환상의 짝꿍이에요."],불꽃형:["🔧 연습이 필요한 합","규칙과 화력이 부딪히기 쉬워요. '대원칙 3개'만 남기면 균형이 잡힙니다."],새벽형:["🌿 무난한 합","예측 가능한 하루가 이 아이의 안전기지가 돼요."],무지개형:["🌿 무난한 합","부모의 구조가 아이에게 든든한 지도가 됩니다."]},
- 안테나형:{햇살형:["🌿 무난한 합","아이의 잔잔함이 부모의 마음을 쉬게 해주는 조합이에요."],불꽃형:["🔧 연습이 필요한 합","감정이 서로 증폭되기 쉬워요. 내 마음 분리 루틴부터 챙기세요."],새벽형:["🔧 연습이 필요한 합","둘 다 자극에 예민한 조합 — 자극 총량 관리가 열쇠예요."],무지개형:["🌿 무난한 합","아이의 신호를 누구보다 빨리 읽어주는 섬세한 짝이에요."]},
- 탐험형:{햇살형:["💞 찰떡궁합","새 경험을 함께 반기는 탐험 콤비예요."],불꽃형:["🌿 무난한 합","몰입 에너지가 만나면 시너지 — 방향만 함께 정하면 됩니다."],새벽형:["🔧 연습이 필요한 합","새것 사랑과 신중함 사이, '미리 예고'가 다리가 돼요."],무지개형:["💞 찰떡궁합","아이의 다양한 모습을 넓혀주는 최고의 안내자예요."]},
- 카멜레온형:{햇살형:["💞 찰떡궁합","맞춰주는 폭이 넓어 수월하게 흘러가는 조합이에요."],불꽃형:["🌿 무난한 합","아이에 맞춰 변신할 수 있어요. 지친 날의 나만 관리하면 됩니다."],새벽형:["💞 찰떡궁합","아이 속도에 맞춰주는 유연함이 큰 강점이 돼요."],무지개형:["🌿 무난한 합","둘 다 유연한 조합 — 우리 집 기준 하나만 세우면 최강이에요."]}
+ 활력형:{햇살형:["💞 찰떡궁합","에너지와 명랑함이 만나 매일이 소풍 같은 조합이에요.","소풍가족"],불꽃형:["🌿 무난한 합","화력 큰 둘이라 시끌벅적하지만, 놀이로 에너지를 빼주면 폭발이 웃음으로 바뀌어요.","불꽃놀이집"],새벽형:["🔧 연습이 필요한 합","부모의 속도가 아이에겐 빠를 수 있어요. 반 걸음 기다림이 열쇠입니다.","반걸음가족"],무지개형:["🌿 무난한 합","아이의 여러 모습을 놀이로 끌어내 주는 짝이에요.","만능놀이터"]},
+ 온기형:{햇살형:["💞 찰떡궁합","따뜻함이 두 배로 도는 조합 — 정서 안정의 교과서예요.","햇살포옹집"],불꽃형:["💞 찰떡궁합","큰 감정을 받아주는 최고의 품이에요. 단호함 한 스푼만 챙기면 완성.","포근한벽난로"],새벽형:["💞 찰떡궁합","기다려주는 온기 곁에서 신중함이 천천히 피어나요.","느긋한온실"],무지개형:["🌿 무난한 합","어떤 모습이 나와도 안아주는 품이라 아이가 편안해요.","다품는둥지"]},
+ 등대형:{햇살형:["💞 찰떡궁합","규칙적인 아이와 계획적인 부모 — 루틴 환상의 짝꿍이에요.","루틴짝꿍"],불꽃형:["🔧 연습이 필요한 합","규칙과 화력이 부딪히기 쉬워요. '대원칙 3개'만 남기면 균형이 잡힙니다.","화산길들이기"],새벽형:["🌿 무난한 합","예측 가능한 하루가 이 아이의 안전기지가 돼요.","안전기지집"],무지개형:["🌿 무난한 합","부모의 구조가 아이에게 든든한 지도가 됩니다.","든든지도집"]},
+ 안테나형:{햇살형:["🌿 무난한 합","아이의 잔잔함이 부모의 마음을 쉬게 해주는 조합이에요.","잔잔한쉼표"],불꽃형:["🔧 연습이 필요한 합","감정이 서로 증폭되기 쉬워요. 내 마음 분리 루틴부터 챙기세요.","감정메아리집"],새벽형:["🔧 연습이 필요한 합","둘 다 자극에 예민한 조합 — 자극 총량 관리가 열쇠예요.","섬세한둘"],무지개형:["🌿 무난한 합","아이의 신호를 누구보다 빨리 읽어주는 섬세한 짝이에요.","신호캐치집"]},
+ 탐험형:{햇살형:["💞 찰떡궁합","새 경험을 함께 반기는 탐험 콤비예요.","탐험콤비"],불꽃형:["🌿 무난한 합","몰입 에너지가 만나면 시너지 — 방향만 함께 정하면 됩니다.","몰입시너지"],새벽형:["🔧 연습이 필요한 합","새것 사랑과 신중함 사이, '미리 예고'가 다리가 돼요.","예고콤비"],무지개형:["💞 찰떡궁합","아이의 다양한 모습을 넓혀주는 최고의 안내자예요.","넓혀주는집"]},
+ 카멜레온형:{햇살형:["💞 찰떡궁합","맞춰주는 폭이 넓어 수월하게 흘러가는 조합이에요.","수월한흐름"],불꽃형:["🌿 무난한 합","아이에 맞춰 변신할 수 있어요. 지친 날의 나만 관리하면 됩니다.","변신부모집"],새벽형:["💞 찰떡궁합","아이 속도에 맞춰주는 유연함이 큰 강점이 돼요.","속도맞춤집"],무지개형:["🌿 무난한 합","둘 다 유연한 조합 — 우리 집 기준 하나만 세우면 최강이에요.","유연최강집"]}
 };
 const P_HIGH={E:"에너지를 밖에서 얻는 활동파",A:"아이 마음을 먼저 읽는 공감파",C:"루틴과 계획이 편안한 관리파",N:"감정 신호에 섬세한 안테나파",O:"새로운 놀이를 벌이는 탐험파"};
 const P_LOW={E:"조용한 몰입이 편한 차분파",A:"객관적으로 상황을 보는 이성파",C:"즉흥과 유연함이 강점인 자유파",N:"웬만해선 흔들리지 않는 뚝심파",O:"검증된 방식이 편안한 안정파"};
@@ -1619,7 +1620,7 @@ function needKka(n){
   n=n||1;
   if(KKA>=n)return true;
   const lack=n-KKA;
-  if(!confirm('까까가 '+lack+'개 모자라요.\n까까 '+lack+'개('+kkaWon(lack)+')를 충전할까요?\n(데모: 바로 충전됩니다)'))return false;
+  if(!confirm('앗, 까까가 '+lack+'개 모자라요.\n까까 '+lack+'개('+kkaWon(lack)+')를 채우고 올까요?\n(데모: 바로 충전됩니다)'))return false;
   KKA+=lack;renderSnack();return true;
 }
 /* ── 심층 코칭 (프리미엄 · 중재 연구 근거) ── */
@@ -2129,7 +2130,7 @@ function scoreFamily(){
   inviteReward();
 
 }
-/* ===== js/render/fit.js (139) ===== */
+/* ===== js/render/fit.js (140) ===== */
 function pairKey(){return (S.activeP||'엄마')+'×'+(S.activeK!=null&&S.kids[S.activeK]?S.kids[S.activeK].name:'아이');}
 function goFit(){
   const ps=Object.keys(S.parents).filter(n=>S.parents[n]&&S.parents[n].score);
@@ -2193,7 +2194,8 @@ function computeFit(){
   if(ftEl&&mm){
     ftEl.style.display='block';
     ftEl.innerHTML=`<p class="small">우리 조합 한눈에</p>
-     <p style="font-family:'Jua';font-size:1.22rem;margin-top:4px">${S.activeP||'나'} <span style="color:var(--pri)">${pt}</span> × ${S.kids[S.activeK]?S.kids[S.activeK].name:'아이'} <span style="color:#C97A2B">${ktShow}</span></p>
+     ${mm[2]?`<p style="font-family:'Jua';font-size:1.5rem;margin:4px 0 2px;color:var(--pri)">우리 집은 「${mm[2]}」</p>`:''}
+     <p style="font-family:'Jua';font-size:1.02rem;margin-top:2px">${S.activeP||'나'} <span style="color:var(--pri)">${pt}</span> × ${S.kids[S.activeK]?S.kids[S.activeK].name:'아이'} <span style="color:#C97A2B">${ktShow}</span></p>
      <p style="font-family:'Jua';font-size:1.05rem;margin-top:8px">${mm[0]}</p>
      <p style="font-size:.88rem;margin-top:4px">${mm[1]}</p>`;
   }else if(ftEl){ftEl.style.display='none';}
@@ -2508,7 +2510,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (224) ===== */
+/* ===== js/share.js (234) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -2553,7 +2555,12 @@ function shareCardText(kind){
   }
   if(kind==='child'&&kid.ktype)  return `🐣 ${kid.name||'우리 아이'} (${kid.label||''})\n기질 유형 · ${kid.ktype}`;
   if(kind==='parent'&&S.activeP) return `${ROLE_EMOJI[S.activeP]||'🌷'} ${S.activeP} · ${(S.parents[S.activeP]||{}).ptype||''}`;
-  if(kind==='fit')               return `${S.activeP||'나'} × ${kid.name||'아이'}\n조화적합성 리포트`;
+  if(kind==='fit'){
+    const pt=(S.parents[S.activeP]||{}).ptype||(S.pScore&&typeof calcPType==='function'?calcPType(S.pScore):'');
+    const kb=(kid.kbase||kid.ktype||'');const kk=kb.indexOf('무지개')===0?'무지개형':kb;
+    const mm=(typeof FITMAT!=='undefined'&&FITMAT[pt])?FITMAT[pt][kk]:null;
+    return `${S.activeP||'나'} × ${kid.name||'아이'}\n${(mm&&mm[2])?'우리 집은 「'+mm[2]+'」':'조화적합성 리포트'}`;
+  }
   if(kind==='family'&&S.family)  return `나를 키운 집 · ${document.getElementById('f-typename')?document.getElementById('f-typename').textContent:''}`;
   return '기질냥구소 — 우리 아이 기질검사';
 }
@@ -2565,7 +2572,12 @@ function shareHashtag(kind){
     return '#'+vk+'형아이';
   }
   if(kind==='parent'&&S.activeP){const pt=(S.parents[S.activeP]||{}).ptype||'';return pt?'#'+pt.replace('형','')+(S.activeP==='아빠'?'빠':'맘'):'#기질냥구소';}
-  if(kind==='fit')return '#부모아이궁합';
+  if(kind==='fit'){
+    const pt=(S.parents[S.activeP]||{}).ptype||(S.pScore&&typeof calcPType==='function'?calcPType(S.pScore):'');
+    const kb=(kid.kbase||kid.ktype||'');const kk=kb.indexOf('무지개')===0?'무지개형':kb;
+    const mm=(typeof FITMAT!=='undefined'&&FITMAT[pt])?FITMAT[pt][kk]:null;
+    return (mm&&mm[2])?'#'+mm[2]:'#부모아이궁합';
+  }
   return '#기질냥구소';
 }
 /* 비교 CTA — "너네 애는 뭐 나왔어?"를 유발 (바이럴_후킹 공식 6·5장) */
@@ -3430,7 +3442,7 @@ async function payReturn(){
         body:JSON.stringify({action:'confirm',member_token:(typeof ME!=='undefined'&&ME&&ME.token)||'',
           payment_key:q.get('paymentKey'),order_id:q.get('orderId'),amount:Number(q.get('amount'))})});
       const d=await res.json();
-      if(d&&d.ok){applyServerWallet(d.wallet);alert('🍪 까까 충전 완료!'+(d.granted?' (+'+d.granted+'개)':''));}
+      if(d&&d.ok){applyServerWallet(d.wallet);alert('🍪 충전 확인.'+(d.granted?' 까까 '+d.granted+'개 들어왔다냥.':'')+' 잘 골랐다냥.');}   /* 지급 확인 = 칸쵸(정확함) */
       else alert('결제 확인에 실패했어요: '+((d&&d.error)||'잠시 후 상점에서 잔액을 확인해주세요'));
     }catch(e){alert('결제 확인 중 연결이 끊겼어요. 상점에서 잔액을 확인해주세요!');}
     history.replaceState(null,'',location.pathname);
@@ -3456,7 +3468,7 @@ async function spendKkaSrv(n,kind){
   const r=await rpc('wallet_spend',{p_token:ME.token,p_n:n,p_kind:kind});
   if(r&&r.ok){KKA=r.kka;renderSnack();save();return true;}
   if(r&&r.error==='poor'){
-    if(confirm('까까가 부족해요! ('+(r.kka||0)+'개)\n상점에서 충전할까요?'))openWallet();
+    if(confirm('앗, 까까가 조금 모자라요. (지금 '+(r.kka||0)+'개)\n상점에서 채우고 올까요?'))openWallet();   /* 아쉬움 달래기 = 츄비 */
   }else if(r&&r.error==='login'){alert('로그인이 풀렸어요. 다시 로그인해주세요!');}
   else alert('잠시 후 다시 시도해주세요!');
   return false;
