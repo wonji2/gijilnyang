@@ -773,7 +773,7 @@ details.acc>*:not(summary){margin-top:10px}
       <button class="btn" id="chat-send" style="width:auto;padding:12px 18px" onclick="sendChat()">전송</button>
     </div>
     <p class="small" style="margin-top:6px">✍️ 상황을 자세히 쓸수록 상담 정확도가 높아져요 — 언제·어디서·아이가 뭘 했고·내가 어떻게 반응했는지</p>
-    <button class="back mt8" style="width:100%;text-align:center" onclick="postToTalk()">🎋 이 대화를 익명으로 대나무숲에 올리기 · 까까 적립</button>
+    <button class="back mt8" style="width:100%;text-align:center" onclick="postToTalk()">🎋 이 고민을 익명 사연으로 대나무숲에 올리기</button>
   </div>
   <div class="card" id="chat-recharge" style="display:none;text-align:center">
     <h3 style="font-size:1.05rem"><i class="ddeok-i"></i> 까까 1개로 상담 6번 더</h3>
@@ -2460,7 +2460,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (416) ===== */
+/* ===== js/chat.js (429) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -2863,21 +2863,34 @@ function autoPickCat(){
   if(tg)tg.textContent=CAT_META[want].tag;
   renderChat();
 }
-/* 이 대화를 익명으로 대나무숲에 올린다 = 상담이 곧 콘텐츠가 된다 */
-function postToTalk(){
+/* 이 대화를 익명으로 대나무숲에 = 상담이 곧 콘텐츠가 된다.
+   🔴 원문 채팅을 그대로 올리는 건 최악 (2026-08-12 사장님) —
+   AI 가 익명 요약본 + 투표 항목을 만들어 주고, 손님이 고쳐서 직접 올린다. */
+async function postToTalk(){
   const h=CHAT.hist[CHAT.cat].filter(m=>m.text&&m.text!=='…');
-  const mine=h.filter(m=>m.role==='user').map(m=>m.text).join(' ');
-  const ans=h.filter(m=>m.role==='cat').map(m=>m.text).pop()||'';
+  const mine=h.filter(m=>m.role==='user').map(m=>m.text).join('\n');
   if(!mine){alert('아직 올릴 대화가 없어요!');return;}
-  if(!confirm('이 대화를 익명으로 대나무숲에 올릴까요?\n\n· 애칭·나이는 "○○개월 아이 엄마"처럼만 나와요\n· 올리면 까까를 조금 드려요'))return;
-  const kid=S.kids[S.activeK]||{};
-  TALK.unshift({text:mine.slice(0,300),hearts:0,liked:false,ai:ans,poll:null,comments:[],
-    who:(kid.months?kid.months+'개월':'')+' 아이 '+(S.myRole||'보호자'), cat:CHAT.cat, mine:true});
-  KKA+=0.5;KKA=Math.round(KKA*10)/10;renderSnack();save();
-  alert('올렸어요! 🍪 까까 0.5개 적립 (2개 올리면 1개)');
+  if(!confirm('이 고민을 익명 사연으로 정리해서 대나무숲에 올려볼까요?\n\n· AI가 요약본을 만들어 드려요 — 올리기 전에 직접 고칠 수 있어요\n· 애칭·실명은 빠지고 "○세 아이 엄마"처럼만 나와요'))return;
+  const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='요약본 만드는 중…';}
+  let summary=mine.slice(0,500),opts=[];
+  try{
+    const res=await fetch(SB_URL+'/functions/v1/chat',{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({device_id:deviceId(),mode:'bamboo_draft',text:mine.slice(0,3000)})});
+    const d=await res.json();
+    const m=(d.text||'').match(/\{[\s\S]*\}/);const v=m?JSON.parse(m[0]):null;
+    if(v&&v.summary)summary=v.summary;
+    if(v&&Array.isArray(v.opts))opts=v.opts;
+  }catch(e){}
+  if(btn){btn.disabled=false;btn.textContent='🎋 이 고민을 익명 사연으로 대나무숲에 올리기';}
   goTalk();
+  setTimeout(()=>{
+    const t=document.getElementById('talk-input');if(t){t.value=summary;t.focus();}
+    [0,1,2].forEach(k=>{const el=document.getElementById('poll-'+(k+1));if(el)el.value=opts[k]||'';});
+    window.scrollTo(0,0);
+  },100);
 }
-/* ===== js/auth.js (97) ===== */
+/* ===== js/auth.js (104) ===== */
 /* ══════════════ 카카오 로그인 (2026-08-12) ══════════════
    흐름 (사주아이와 동일한 인가코드 방식):
      [카카오로 시작하기] → 카카오 동의화면 → ?code= 로 돌아옴
@@ -2952,11 +2965,18 @@ async function kakaoCallback(){
   return true;
 }
 
-/* 저장된 로그인 복원 */
+/* 저장된 로그인 복원 + 서버 지갑 동기화 (부팅 직후 비동기) */
 function loadMember(){
   try{const raw=localStorage.getItem('kn_member');if(raw)ME=JSON.parse(raw);}catch(e){}
   if(ME&&!ME.token)ME=null;
   paintLogin();
+  if(ME&&ME.token)setTimeout(async()=>{
+    try{
+      const w=await rpc('wallet_state',{p_token:ME.token});
+      if(w&&w.error==='login'){ME=null;try{localStorage.removeItem('kn_member');}catch(e){}paintLogin();return;} /* 세션 만료 */
+      applyServerWallet(w);
+    }catch(e){}
+  },400);
 }
 function isLoggedIn(){return !!(ME&&ME.token);}   // 판정은 반드시 이 함수 하나로 (맘캘린더 교훈)
 
@@ -2975,7 +2995,7 @@ function paintLogin(){
   const btns=document.querySelectorAll('[data-kakao-btn]');
   btns.forEach(b=>{b.style.display=isLoggedIn()?'none':'';});
 }
-/* ===== js/wallet.js (96) ===== */
+/* ===== js/wallet.js (116) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -3012,10 +3032,17 @@ function renderWallet(){
       <p class="small mt8" style="text-align:center">까까 1개 = 리포트 열기 · 상담 ${KKA_TALK}회</p>
     </div>`;
 }
-function buyKka(i){
+async function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
   if(!confirm(`${p.name} · 까까 ${p.n+p.bonus}개를 ${kkaWon(p.n)}에 충전할까요?\n(데모: 결제 없이 바로 충전됩니다)`))return;
-  KKA+=p.n+p.bonus; 
+  /* 로그인이면 서버 지갑에 충전 — ⚠️ 토스 결제 붙이면 wallet_topup_demo 는 삭제하고 결제 검증으로 교체 */
+  if(isLoggedIn()){
+    const r=await rpc('wallet_topup_demo',{p_token:ME.token,p_n:p.n+p.bonus});
+    if(!(r&&r.ok)){alert(r&&r.error==='daily'?'오늘은 충전 한도에 닿았어요!':'잠시 후 다시 시도해주세요!');return;}
+    KKA=r.kka;
+  }else{
+    KKA+=p.n+p.bonus;
+  }
   renderSnack();renderWallet();save();
   alert(`🍪 까까 ${p.n+p.bonus}개가 충전됐어요!`);
 }
@@ -3025,9 +3052,24 @@ function renderSnack(){
   const f=document.getElementById('free-left');if(f)f.textContent=meetLeft();
   const b=document.getElementById('free-badge');if(b)b.textContent=meetLeft();
 }
-function unlockCReport(){
-  if(!needKka(1))return;
-  KKA--;renderSnack();
+/* ── 까까 차감 공용 게이트 (2026-08-12 로그인 = 서버 지갑이 진실) ──
+   로그인:   wallet_spend RPC — 서버에서 원자적으로 깎고 장부에 남긴다
+   비로그인: 기존 로컬 KKA (데모 흐름 유지) */
+async function spendKkaSrv(n,kind){
+  if(!isLoggedIn()){
+    if(!needKka(n))return false;
+    KKA-=n;renderSnack();return true;
+  }
+  const r=await rpc('wallet_spend',{p_token:ME.token,p_n:n,p_kind:kind});
+  if(r&&r.ok){KKA=r.kka;renderSnack();save();return true;}
+  if(r&&r.error==='poor'){
+    if(confirm('까까가 부족해요! ('+(r.kka||0)+'개)\n상점에서 충전할까요?'))openWallet();
+  }else if(r&&r.error==='login'){alert('로그인이 풀렸어요. 다시 로그인해주세요!');}
+  else alert('잠시 후 다시 시도해주세요!');
+  return false;
+}
+async function unlockCReport(){
+  if(!(await spendKkaSrv(1,'child-deep')))return;
   const kid=S.kids[S.activeK];const ckey='아이상세×'+(kid?kid.name:'아이');
   (UNLOCKS[ckey]=UNLOCKS[ckey]||{}).c=true;
   document.getElementById('c-cover').style.display='none';
@@ -3042,9 +3084,8 @@ function unlockCReport(){
   },300);
 }
 /* 부모 심화 풀이 해제 — 아이 심화(unlockCReport)와 동일 구조 + 냥쪽처방 1회권 증정 (2026-08-12) */
-function unlockPReport(){
-  if(!needKka(1))return;
-  KKA--;renderSnack();
+async function unlockPReport(){
+  if(!(await spendKkaSrv(1,'parent-deep')))return;
   const pkey='부모심화×'+(S.activeP||'엄마');
   (UNLOCKS[pkey]=UNLOCKS[pkey]||{}).p=true;
   document.getElementById('p-cover').style.display='none';
@@ -3056,143 +3097,179 @@ function unlockPReport(){
       openChat('kancho');
   },300);
 }
-function unlockFam(){
-  if(!needKka(1))return;
-  KKA--;renderSnack();
+async function unlockFam(){
+  if(!(await spendKkaSrv(1,'family')))return;
   (UNLOCKS['원가족']=UNLOCKS['원가족']||{}).fam=true;
   document.getElementById('fam-cover').style.display='none';
   document.getElementById('fam-lock-inner').classList.remove('locked-peek');
   save();
 }
-function unlockFit(){
-  if(!needKka(1))return;
-  KKA--;FIT_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).fit=true;renderSnack();applyFitLock();save();
+async function unlockFit(){
+  if(!(await spendKkaSrv(1,'fit')))return;
+  FIT_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).fit=true;applyFitLock();save();
 }
-function unlockDeep(){
-  if(!needKka(2))return;
-  KKA-=2;DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;renderSnack();applyDeepLock();save();
+async function unlockDeep(){
+  if(!(await spendKkaSrv(2,'fit-deep')))return;
+  DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;applyDeepLock();save();
 }
-/* ===== js/talk.js (126) ===== */
-/* ══════════════ 대나무숲 (판정 없는 참여형 커뮤니티: 하트·댓글·베댓·AI답변) ══════════════ */
-const TALK=[
- {text:"등원길에 신발 색이 마음에 안 든다고 20분 실랑이… 결국 지각했어요. 다들 어떻게 하세요?",hearts:12,liked:false,ai:null,
-  poll:{voted:false,opts:[{t:"전날 밤에 같이 골라둬요",v:31},{t:"그날은 그냥 원하는 대로",v:12},{t:"선택지 2개만 줘요",v:24}]},
-  comments:[{text:"아침 선택지를 없애는 게 답이더라고요. 저흰 전날 밤 '내일의 나' 바구니 만들어요",hearts:9,liked:false},{text:"20분 버틴 것만으로 대단하세요… 저는 5분 만에 소리 질렀을 듯",hearts:4,liked:false}]},
- {text:"밥 먹다가 갑자기 '엄마는 왜 맨날 안 된대?' 하는데 말문이 막혔어요.",hearts:8,liked:false,ai:null,poll:null,
-  comments:[{text:"우리 애도 왜왜왜 시기예요. '네 생각은 어때?' 하고 되물으면 의외로 자기가 답을 내요",hearts:6,liked:false}]},
- {text:"주말 내내 독박이었는데 아이 재우고 나니까 눈물이 나네요. 다들 이러고 사는 거 맞죠?",hearts:21,liked:false,ai:null,poll:null,
-  comments:[{text:"맞아요. 그리고 그 눈물은 약해서가 아니라 하루종일 참아서 나오는 거예요",hearts:15,liked:false},{text:"오늘도 고생하셨어요. 내일은 30분이라도 본인 시간 꼭 만드세요",hearts:7,liked:false}]}
-];
-// 대나무숲 1차 방어: 금칙어 필터 (정식 버전에서는 서버 필터 + 신고 즉시 블라인드 + 운영자 점검)
+/* ===== js/talk.js (163) ===== */
+/* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
+   사장님 확정 스펙: 사연 + 투표("어떻게 했어야 할까") + 발바닥 공감 + 연구원 한마디.
+   댓글 없음(운영 부담) · 보상 없음(참여 붙으면 이벤트로) · 누적 피드.
+   글쓰기 = 로그인 필수 / 투표·공감 = 기기당 1회(deviceId).
+   데이터는 전부 서버(talk_posts·talk_votes·talk_hearts) — 폰은 사본만. */
+
+let TALK=[];            // 서버 피드 사본
+let TALK_MORE=false;    // 더 불러올 게 있나
+
+/* 공용 RPC 호출 (Supabase REST) */
+async function rpc(name,args){
+  const res=await fetch(SB_URL+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+    body:JSON.stringify(args||{})
+  });
+  return res.json().catch(()=>null);
+}
+
+/* 1차 방어: 금칙어 (서버 신고 3회 = 자동 블라인드가 2차 방어) */
 const BANNED=["시발","씨발","씨빨","병신","미친년","미친놈","개새","존나","좆","닥쳐","꺼져","죽어버려","한남","맘충"];
 function cleanCheck(t){
   const hit=BANNED.find(w=>t.includes(w));
   if(hit){alert('여긴 긍정적인 대나무숲이에요 🌿 표현을 조금만 다듬어주세요.');return false;}
   return true;
 }
+
+function goTalk(){show('s-talk');talkLoad(false);}
+
+async function talkLoad(more){
+  const box=document.getElementById('talk-list');
+  if(!more){TALK=[];box.innerHTML='<p class="small" style="text-align:center;padding:20px">🌿 숲을 불러오는 중…</p>';}
+  const before=more&&TALK.length?TALK[TALK.length-1].id:null;
+  const rows=await rpc('talk_feed',{p_voter:deviceId(),p_before:before,p_limit:20});
+  if(Array.isArray(rows)){TALK=more?TALK.concat(rows):rows;TALK_MORE=rows.length===20;}
+  renderTalk();
+}
+
+function renderTalk(){
+  const box=document.getElementById('talk-list');if(!box)return;
+  if(!TALK.length){
+    box.innerHTML='<p class="small" style="text-align:center;padding:24px">아직 사연이 없어요.<br>첫 대나무를 심어주세요 🎋</p>';
+    return;
+  }
+  box.innerHTML='';
+  const mine=(S.myTalks||[]);
+  TALK.forEach((p,i)=>{
+    let pollHtml='';
+    if(p.poll&&p.poll.opts){
+      const tot=p.poll.opts.reduce((a,o)=>a+o.v,0);
+      const voted=p.poll.my!=null;
+      pollHtml='<div style="margin-top:10px">'+p.poll.opts.map((o,j)=>{
+        if(voted){
+          const pct=tot?Math.round(o.v/tot*100):0;
+          return `<div style="position:relative;border:1.5px solid var(--line);border-radius:10px;margin-top:6px;overflow:hidden">
+            <div style="position:absolute;inset:0;width:${pct}%;background:var(--amber-soft)"></div>
+            <div style="position:relative;display:flex;justify-content:space-between;padding:9px 12px;font-size:.85rem"><span>${p.poll.my===j?'✅ ':''}${esc(o.t)}</span><b>${pct}%</b></div></div>`;
+        }
+        return `<button class="opt" style="display:block;width:100%;margin-top:6px;padding:10px 12px;font-size:.85rem" onclick="votePoll(${i},${j})">${esc(o.t)}</button>`;
+      }).join('')+`<p class="small" style="margin-top:4px">${voted?'🗳 총 '+tot+'명 참여':'🗳 여러분이라면? 눌러서 답해주세요 (익명)'}</p></div>`;
+    }
+    const aiHtml=p.ai
+      ?`<div class="bubble ${p.ai_cat==='kancho'?'moss':'amber'}" style="margin-top:10px;font-size:.86rem"><span class="who">${p.ai_cat==='kancho'?'칸쵸':'츄비'}의 한마디</span>${esc(p.ai)}</div>`
+      :'';
+    box.insertAdjacentHTML('beforeend',`<div class="talk-post">
+      <p class="small" style="margin-bottom:4px">🐣 ${esc(p.who||'익명')} · 익명${mine.indexOf(p.id)>=0?' · 내 글':''}</p>
+      <p style="font-size:.92rem">${esc(p.text)}</p>
+      ${pollHtml}
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <button class="heart-btn ${p.my_heart?'liked':''}" onclick="heartPost(${i})">🐾 공감 ${p.hearts}</button>
+        <button class="heart-btn" style="margin-left:auto;font-size:.72rem" onclick="reportPost(${i})">신고</button>
+      </div>
+      ${aiHtml}
+      <button class="btn ghost mt8" style="padding:9px;font-size:.85rem" onclick="askLikeThis(${i})">나도 물어보기 →</button>
+    </div>`);
+  });
+  if(TALK_MORE)box.insertAdjacentHTML('beforeend','<button class="btn ghost mt8" onclick="talkLoad(true)">사연 더 보기</button>');
+}
+
+async function votePoll(i,j){
+  const p=TALK[i];if(!p||!p.poll||p.poll.my!=null)return;
+  const r=await rpc('talk_vote',{p_post:p.id,p_voter:deviceId(),p_choice:j});
+  if(r&&r.ok){p.poll.my=j;p.poll.opts[j].v++;renderTalk();}
+}
+
+async function heartPost(i){
+  const p=TALK[i];if(!p)return;
+  const r=await rpc('talk_heart',{p_post:p.id,p_voter:deviceId()});
+  if(r&&r.ok){p.my_heart=r.on;p.hearts=r.hearts;renderTalk();}
+}
+
+async function reportPost(i){
+  const p=TALK[i];if(!p)return;
+  if(!confirm('이 글을 신고할까요?\n여러 기기에서 신고되면 자동으로 가려집니다.'))return;
+  await rpc('talk_report',{p_post:p.id,p_voter:deviceId()});
+  alert('접수됐어요. 살펴볼게요 🌿');
+}
+
+/* 투표 항목을 AI 가 뽑아준다 (서버 프롬프트 강제 — bamboo_draft) */
 async function aiPoll(){
   const t=document.getElementById('talk-input').value.trim();
   if(!t){alert('먼저 사연을 적어주세요!');return;}
-  if(!aiKey()&&!setAiKey())return;
   const b=event.target;b.disabled=true;b.textContent='항목 만드는 중…';
   try{
-    const txt=(await aiCall(
-      '육아 사연을 읽고, 다른 부모들이 투표로 답할 수 있는 선택지 3개를 만들어라. 각 12자 이내, 서로 다른 대응 방향, 비난 없는 따뜻한 표현. 반드시 JSON 배열로만 답하라. 예: ["전날 밤에 미리 정해요","그날은 그냥 들어줘요","선택지 2개만 줘요"]',
-      [{role:'user',content:t}],1000)).replace(/```json|```/g,'').trim();
-    const arr=JSON.parse(txt);
-    [0,1,2].forEach(i=>{if(arr[i])document.getElementById('poll-'+(i+1)).value=arr[i];});
+    const res=await fetch(SB_URL+'/functions/v1/chat',{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({device_id:deviceId(),mode:'bamboo_draft',text:t})});
+    const d=await res.json();
+    if(d.error)throw new Error(d.error);
+    const m=(d.text||'').match(/\{[\s\S]*\}/);
+    const v=m?JSON.parse(m[0]):null;
+    if(v&&Array.isArray(v.opts))[0,1,2].forEach(k=>{if(v.opts[k])document.getElementById('poll-'+(k+1)).value=v.opts[k];});
   }catch(e){alert('앗, '+((e&&e.message)||'연결이 끊겼어요')+'. 직접 적어주셔도 돼요!');}
   b.disabled=false;b.textContent='🗳 투표 받아보기';
 }
-function goTalk(){renderTalk();show('s-talk');}
-function renderTalk(){
-  const box=document.getElementById('talk-list');box.innerHTML='';
-  TALK.forEach((p,i)=>{
-    let pollHtml='';
-    if(p.poll){
-      const tot=p.poll.opts.reduce((a,o)=>a+o.v,0)||1;
-      pollHtml='<div style="margin-top:10px">'+p.poll.opts.map((o,j)=>{
-        if(p.poll.voted){
-          const pct=Math.round(o.v/tot*100);
-          return `<div style="position:relative;border:1.5px solid var(--line);border-radius:10px;margin-top:6px;overflow:hidden">
-            <div style="position:absolute;inset:0;width:${pct}%;background:var(--amber-soft)"></div>
-            <div style="position:relative;display:flex;justify-content:space-between;padding:9px 12px;font-size:.85rem"><span>${o.picked?'✅ ':''}${o.t}</span><b>${pct}%</b></div></div>`;
-        }
-        return `<button class="opt" style="display:block;width:100%;margin-top:6px;padding:10px 12px;font-size:.85rem" onclick="votePoll(${i},${j})">${o.t}</button>`;
-      }).join('')+`<p class="small" style="margin-top:4px">${p.poll.voted?'총 '+tot+'명 참여':'🗳 투표로 답해주세요 (익명)'}</p></div>`;
-    }
-    const cHtml="";
-    /* 🔴 원래 칸쵸로만 하드코딩돼 있었다. 우리 컨셉은 연구원 두 명이므로
-          손님이 공감(츄비) / 팩트(칸쵸) 중에 골라야 한다. (2026-08-12 사장님 지적) */
-    const aiCat=p.aiCat||'kancho';
-    const aiHtml=p.ai
-      ?`<div class="bubble ${aiCat==='chuvi'?'amber':'moss'}" style="margin-top:10px;font-size:.86rem"><span class="who">${aiCat==='chuvi'?'츄비':'칸쵸'}의 답변</span>${p.ai}</div>`
-      :`<div style="display:flex;gap:6px;margin-top:8px">
-          <button class="heart-btn" style="flex:1" onclick="talkAi(${i},'chuvi')">🧡 츄비에게 공감 받기</button>
-          <button class="heart-btn" style="flex:1" onclick="talkAi(${i},'kancho')">🐾 칸쵸에게 조언 받기</button>
-        </div>`;
-    const askHtml=`<button class="btn ghost mt8" style="padding:9px;font-size:.85rem" onclick="askLikeThis(${i})">나도 물어보기 →</button>`;
-    box.insertAdjacentHTML('beforeend',`<div class="talk-post">
-      ${p.who?`<p class="small" style="margin-bottom:4px">🐣 ${p.who} · 익명${p.mine?' · 내 글':''}</p>`:''}
-      <p style="font-size:.92rem">${p.text}</p>
-      ${pollHtml}
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-        <button class="heart-btn ${p.liked?'liked':''}" onclick="heartPost(${i})">♥ 공감 ${p.hearts}</button>
-        <button class="heart-btn" onclick="alert('신고가 접수되면 즉시 블라인드 처리됩니다 (데모)')" style="margin-left:auto;font-size:.72rem">신고</button>
-      </div>
-      ${aiHtml}
-      ${askHtml}
-    </div>`);
-  });
-}
-function votePoll(i,j){
-  const pl=TALK[i].poll;if(pl.voted)return;
-  pl.opts[j].v++;pl.opts[j].picked=true;pl.voted=true;renderTalk();
-}
-function addTalk(){
+
+/* 올리기 — 로그인 필수. 올린 뒤 츄비 한마디를 자동으로 단다 */
+async function addTalk(){
   const t=document.getElementById('talk-input');const v=t.value.trim();
   if(!v){alert('내용을 입력해주세요!');return;}
+  if(v.length<10){alert('조금만 더 자세히 적어주세요! (10자 이상)');return;}
   if(!cleanCheck(v))return;
+  if(!isLoggedIn()){
+    if(confirm('사연을 올리려면 카카오 로그인이 필요해요.\n(익명으로 게시되고, 닉네임은 공개되지 않아요)\n\n로그인할까요?'))kakaoLogin();
+    return;
+  }
   const ops=[1,2,3].map(n=>document.getElementById('poll-'+n).value.trim()).filter(Boolean);
   if(ops.length===1){alert('투표는 항목 2개 이상이 필요해요!');return;}
-  const poll=ops.length>=2?{voted:false,opts:ops.map(o=>({t:o,v:0}))}:null;
-  TALK.unshift({text:v,hearts:0,liked:false,ai:null,poll,comments:[]});
+  const kid=S.kids[S.activeK]||{};
+  const who=(kid.label?kid.label+' 아이 ':'')+(S.myRole||'보호자');
+  const btn=event.target;btn.disabled=true;btn.textContent='올리는 중…';
+  const r=await rpc('talk_write',{p_token:ME.token,p_who:who,p_text:v,p_poll:ops.length>=2?ops:null});
+  btn.disabled=false;btn.textContent='올리기';
+  if(!(r&&r.ok)){
+    alert(r&&r.error==='daily'?'하루에 5개까지 올릴 수 있어요!':r&&r.error==='login'?'로그인이 풀렸어요. 다시 로그인해주세요!':'잠시 후 다시 시도해주세요!');
+    return;
+  }
+  (S.myTalks=S.myTalks||[]).push(r.id);save();
   t.value='';[1,2,3].forEach(n=>document.getElementById('poll-'+n).value='');
-  renderTalk();
-}
-function heartPost(i){const p=TALK[i];p.liked=!p.liked;p.hearts+=p.liked?1:-1;renderTalk();}
-
-/* 대나무숲 글에 연구원이 답을 단다. cat: 'chuvi'(공감) | 'kancho'(팩트)
-   두 연구원의 역할이 실제로 갈리게 프롬프트를 따로 쓴다. 같은 글에 같은
-   말투가 나오면 캐릭터를 둘로 나눈 의미가 없다. */
-const TALK_SYS={
-  chuvi:`너는 '츄비', 기질냥구소의 공감 담당 연구원(흰 바탕에 회색 무늬, 호박색 눈)이다.
-짧은 육아 글에 2~3문장으로 답한다. 순서: ①감정을 먼저 그대로 받아준다 ②그 마음이 드는 게 당연한 이유를 기질·발달로 짚어준다 ③오늘 당장 해볼 수 있는 작은 것 하나.
-말투는 따뜻한 반말, 끝에 가끔 '~다냥'. 다그치거나 가르치려 들지 않는다.`,
-  kancho:`너는 '칸쵸', 기질냥구소의 팩트 담당 연구원(고등어태비에 흰색, 초록 눈)이다.
-짧은 육아 글에 2~3문장으로 답한다. 순서: ①감정 표현은 최소한으로 ②원인을 기질·발달 관점에서 객관적으로 짚는다 ③구체적인 행동 처방 1개.
-말투는 담백하고 단정적인 반말, 끝에 가끔 '~다냥'. 위로보다 정확함을 우선한다.`
-};
-const TALK_RULE=` 공통 규칙: 진단명 금지, 부모 비난 금지(원인은 기질·발달로 돌린다), 자해·폭력·학대 암시가 보이면 조언 대신 자살예방 109·가정폭력 1366 을 안내한다.`;
-
-async function talkAi(i,cat){
-  const p=TALK[i];if(p.ai)return;
-  cat=(cat==='chuvi'||cat==='kancho')?cat:'kancho';
-  if(!aiKey()&&!setAiKey())return;
-  p.aiCat=cat;p.ai='…';renderTalk();
+  talkLoad(false);
+  /* 츄비 한마디 자동 (실패해도 글은 이미 올라가 있으니 조용히 넘어간다) */
   try{
-    p.ai=(await aiCall(TALK_SYS[cat]+TALK_RULE,
-      [{role:'user',content:p.text}],1000))||'다시 한 번 물어봐 달라냥.';
-  }catch(e){p.ai=null;p.aiCat=null;alert('앗, '+((e&&e.message)||'연결이 잠깐 끊겼어요')+'. 다시 시도해주세요!');}
-  renderTalk();
+    const res=await fetch(SB_URL+'/functions/v1/chat',{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({device_id:deviceId(),mode:'bamboo',cat:'chuvi',text:v})});
+    const d=await res.json();
+    if(d.text)await rpc('talk_setai',{p_token:ME.token,p_post:r.id,p_ai:d.text,p_cat:'chuvi'});
+    talkLoad(false);
+  }catch(e){}
 }
 
-/* 남의 사연을 읽다가 → 내 상담실으로. 이게 커뮤니티가 매출로 이어지는 통로다 */
+/* 남의 사연을 읽다가 → 내 상담실으로. 커뮤니티가 매출로 이어지는 통로 */
 function askLikeThis(i){
   const p=TALK[i];if(!p)return;
   goChat();
   setTimeout(()=>{
-    openChat(p.cat||'chuvi');
+    openChat('chuvi');
     setTimeout(()=>{
       const inp=document.getElementById('chat-input');
       if(inp){inp.value='저희도 비슷해요. ';inp.focus();}
