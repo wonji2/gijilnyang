@@ -284,6 +284,22 @@ details.acc>*:not(summary){margin-top:10px}
 /* 내정보 가족 관리 버튼 (2026-08-12) */
 .mini-act{border:1px solid var(--line);background:#fff;border-radius:10px;padding:4px 8px;font-size:.72rem;font-family:'Gowun Dodum';color:var(--sub);cursor:pointer;flex:none;white-space:nowrap}
 .mini-act:active{background:var(--lav-soft)}
+/* 홈 최상단 선톡 카드 — 츄비가 말 거는 카드 (캐릭터_메인화 4장) */
+.greet{display:flex;align-items:center;gap:11px;background:var(--lav-soft);border:1.5px solid var(--pri);border-radius:16px;padding:11px 13px;margin:0 0 14px;cursor:pointer}
+.greet:active{background:#EBE0F7}
+.greet-face{width:46px;height:46px;border-radius:50%;object-fit:cover;flex:none;background:#fff;border:1.5px solid var(--pri)}
+.greet-body{flex:1;min-width:0}
+.greet-body b{font-family:'Jua';font-size:.82rem;color:var(--pri);display:block}
+.greet-body p{font-size:.87rem;line-height:1.45;margin:1px 0 0}
+.greet-arr{font-size:1.4rem;color:var(--pri);flex:none}
+/* 검사→결과 사이 분석 연출 (티저_벤치마크 1 · 검사 직후 1회) */
+#analyze-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(252,251,254,.96);align-items:center;justify-content:center}
+#analyze-ov.on{display:flex}
+.ov-inner{text-align:center;padding:24px}
+.ov-spin{width:52px;height:52px;margin:0 auto 20px;border:5px solid var(--pri-soft);border-top-color:var(--pri);border-radius:50%;animation:ovspin .9s linear infinite}
+@keyframes ovspin{to{transform:rotate(360deg)}}
+#ov-msg{font-family:'Jua';font-size:1.05rem;color:var(--pri);line-height:1.5;min-height:2.6em}
+@media (prefers-reduced-motion:reduce){.ov-spin{animation:none}}
 </style>
 </head>
 <body>
@@ -307,6 +323,7 @@ details.acc>*:not(summary){margin-top:10px}
     </button>
     <button onclick="show('s-info')" aria-label="사이트 정보" class="topbar-menu">☰</button>
   </div>
+  <div id="home-greet"></div>
   <div class="hero">
     <div class="cats">
       <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
@@ -804,6 +821,7 @@ details.acc>*:not(summary){margin-top:10px}
 </section>
 
 </div>
+<div id="analyze-ov"><div class="ov-inner"><div class="ov-spin"></div><p id="ov-msg"></p></div></div>
 <script>
 /* ===== js/data/items.js (187) ===== */
 /* ══════════════ 데이터 ══════════════ */
@@ -1621,7 +1639,20 @@ function load(){
   return true;
 }
 function resetAll(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.href=location.pathname;}
-/* ===== js/scoring.js (39) ===== */
+/* ===== js/scoring.js (57) ===== */
+/* 검사→결과 사이 분석 연출 (티저_벤치마크 1). 실제 계산은 즉시지만 일부러 몇 초 태워
+   기대를 만든다. 검사 직후 1회만 — 재열람(renderScreen·goLibrary)은 이걸 안 부른다. */
+function runAnalyzeAnim(msgs, done){
+  const ov=document.getElementById('analyze-ov'), m=document.getElementById('ov-msg');
+  if(!ov||!m||!msgs||!msgs.length){done();return;}
+  ov.classList.add('on');let i=0;m.textContent=msgs[0];
+  const t=setInterval(function(){
+    i++;
+    if(i<msgs.length){m.textContent=msgs[i];}
+    else{clearInterval(t);m.textContent='분석이 끝났어요!';
+      setTimeout(function(){ov.classList.remove('on');done();},650);}
+  },850);
+}
 function grade(v){return v>=3.6?'높은 편':v<=2.4?'차분한 편':'중간';}
 function gradeTag(v){return v>=3.6?'<b style="color:var(--pri)">높은 편</b>':v<=2.4?'<b style="color:var(--moss)">낮은 편</b>':'보통';}
 /* ══════════════ 채점 (전부 코드, LLM 없음) ══════════════ */
@@ -1631,9 +1662,11 @@ function scoreParent(){
   const avg={};for(const k in sum)avg[k]=sum[k]/4; // 1~5
   const PX={};if(S.pAns.length>P_ITEMS.length)P_EXTRA.forEach((q,i)=>{PX[q.k]=S.pAns[P_ITEMS.length+i]||3;});
   S.pScore=avg;S.parents[S.activeP||'엄마']={score:avg,px:PX};
-  renderParentReport();
-  show('s-parent-result');animateBars();updateHome();
-  if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
+  runAnalyzeAnim(['답변을 정리하고 있어요…','다섯 가지 양육 에너지를 계산하는 중…','칸쵸가 소견 쓰는 중…'],function(){
+    renderParentReport();
+    show('s-parent-result');animateBars();updateHome();
+    if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
+  });
 }
 function calcPType(avg){
   const ext=['E','A','C','N','O'].filter(k=>avg[k]>=3.4||avg[k]<=2.6);
@@ -1657,9 +1690,12 @@ function scoreChild(){
   S.cScore=avg;
   if(S.activeK==null){S.kids.push({name:'우리 아이',months:null,score:null});S.activeK=S.kids.length-1;}
   S.kids[S.activeK].score=avg;
-  renderChildReport();
-  show('s-child-result');animateBars();updateHome();
-  if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
+  const _nm=S.kids[S.activeK]&&S.kids[S.activeK].name;
+  runAnalyzeAnim([(_nm?josa(_nm,'의'):'우리 아이의')+' 답변을 정리하고 있어요…','또래 기준선과 비교하는 중…','츄비가 소견 쓰는 중… 🐾'],function(){
+    renderChildReport();
+    show('s-child-result');animateBars();updateHome();
+    if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
+  });
 }
 /* ===== js/render/onboard.js (86) ===== */
 function chooseWho(mode){
@@ -2207,7 +2243,7 @@ function applyFitLock(){
   if(FIT_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (73) ===== */
+/* ===== js/render/home.js (102) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -2218,6 +2254,35 @@ function updateHome(){
   if(S.pScore&&S.cScore)_st('st-fit','열기');
   if(S.pScore||S.cScore)_st('st-chat','열기');
   renderDaily();
+  renderHomeGreet();
+}
+
+/* ── 홈 최상단 선톡 카드 (캐릭터_메인화 4장 A) ───────────────────────
+   🔴 검사 전(신규)에는 띄우지 않는다 — hero 훅이 첫인상이고, 근거 없는 인사는
+   포춘쿠키다(실수6·사장님 지적). 검사한 사람에게만, 그 아이 이름·계열을 근거로.
+   화자 = 츄비(맞이·안부, 결정3). 상태 우선순위: 무료리셋 > 상담이력 > 검사완료. 하루 1종. */
+function renderHomeGreet(){
+  const el=document.getElementById('home-greet');if(!el)return;
+  const kid=(S.activeK!=null&&S.kids[S.activeK]&&S.kids[S.activeK].score)?S.kids[S.activeK]:(S.kids||[]).find(k=>k&&k.score);
+  if(!kid){el.innerHTML='';return;}   // 검사 0개 = hero 훅만
+  const nm=kid.name;
+  const hasChat=!!(CHAT&&CHAT.hist&&Object.keys(CHAT.hist).some(k=>(CHAT.hist[k]||[]).some(m=>m.role==='user')));
+  let msg, go;
+  if(hasChat&&(CHAT.free|0)>=FREE_TALK){   /* 무료 상담이 오늘 다시 찬 상태 */
+    msg='오늘 무료 상담이 다시 채워졌어요. 어제 그 얘기 이어서 할래요?'; go='goChat()';
+  }else if(hasChat){
+    msg='지난 상담, 그 뒤로 좀 어때요? 이어서 얘기해요.'; go='goChat()';
+  }else{
+    const base=(kid.kbase||kid.ktype||'');const vk=base.indexOf('무지개')===0?'무지개형':base;
+    const line={'햇살형':'리듬이 안정적인 아이죠','불꽃형':'감정이 크고 솔직한 아이죠','새벽형':'신중하게 데워지는 아이죠','무지개형':'여러 결을 다 가진 아이죠'}[vk];
+    const subj=nm?josa(nm,'는'):'우리 아이는';
+    msg=(line?subj+' '+line+'. ':'')+'오늘의 한마디 보러 갈래요?';
+    go='goDaily()';
+  }
+  el.innerHTML=`<div class="greet" onclick="${go}">
+    <img class="greet-face" src="assets/chuvi.png" alt="츄비" width="46" height="46">
+    <div class="greet-body"><b>츄비</b><p>${msg}</p></div>
+    <span class="greet-arr">›</span></div>`;
 }
 
 function tabOn(t){document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('on'));document.getElementById('tab-'+t).classList.add('on');}
