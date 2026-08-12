@@ -294,8 +294,6 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <p class="hero-offer"><b>우리 아이 기질</b>과 <b>내 성향</b>,<br>
       둘이 <b>부딪히는 정확한 지점</b>과<br>
       <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요.</p>
-    <p class="hero-proof">🐾 우리 아이 기반 설문조사와 검증된 기질 척도를 학습한 
-      <b>두 고양이 연구원</b>과 상담해보세요</p>
   </div>
 
   <div class="daily" id="daily-card" style="display:none">
@@ -336,34 +334,20 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     </div>
   </div>
 
-  <!-- 검사 항목 아래에 연구원 면담 (2026-08-12 사장님 지시로 순서 이동) -->
+  <!-- 판매 항목 아래 = 연구원 면담 (2026-08-12 사장님 지시)
+       · '연구원' 글자를 빼고 그 자리에 두 고양이의 특징 설명을 길게
+       · 하단바에 이미 상담실·대나무숲·내정보가 있으므로 메인의 중복 존(menu)은 제거 -->
   <p class="sec-label">🐾 연구원 면담</p>
-  <div class="pretalk" onclick="goChat()">
-    <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비 연구원" width="46" height="46">
-    <p><b>츄비 연구원 면담</b> 어떤 얘기든 공감이 필요할 때</p><span class="small">›</span>
+  <div class="pretalk" onclick="openChat('chuvi')">
+    <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비" width="46" height="46">
+    <p><b>츄비 면담</b> 마음부터 들어주는 공감분석 담당 · 왜 그런 마음이 드는지 기질의 언어로 짚고, 오늘 해볼 작은 것 하나까지</p><span class="small">›</span>
   </div>
-  <div class="pretalk" onclick="goChat()">
-    <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸 연구원" width="46" height="46">
-    <p><b>칸쵸 연구원 면담</b> 감정 빼고 객관적인 조언이 필요할 때</p><span class="small">›</span>
+  <div class="pretalk" onclick="openChat('kancho')">
+    <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸" width="46" height="46">
+    <p><b>칸쵸 면담</b> 감정 빼고 원인부터 짚는 팩트분석 담당 · 기질 데이터로 상황을 해석하고 행동 처방을 딱 하나 내립니다</p><span class="small">›</span>
   </div>
-
-  <div class="menu">
-    <div class="card" role="button" tabindex="0" onclick="goChat()">
-      <div class="icon">💬</div>
-      <div><h3>연구원 면담</h3><p>검사 결과를 놓고 연구원에게 직접 물어보세요 · 매일 무료 3회</p></div>
-      <div class="state" id="st-chat">검사 후 열림</div>
-    </div>
-    <div class="card" role="button" tabindex="0" onclick="goTalk()">
-      <div class="icon">🍀</div>
-      <div><h3>대나무숲</h3><p>오늘 이런 일이 있었어요 · 하트와 공감만</p></div>
-      <div class="state">구경하기</div>
-    </div>
-    <div class="card" role="button" tabindex="0" onclick="goLibrary()">
-      <div class="icon">📦</div>
-      <div><h3>내정보</h3><p>완료한 리포트 다시 보기</p></div>
-      <div class="state" id="st-lib">비어 있음</div>
-    </div>
-  </div>
+  <p class="hero-proof" style="margin-top:10px">🐾 우리 아이 기반 설문조사와 검증된 기질 척도를 학습한
+    <b>두 고양이 연구원</b>과 상담해보세요</p>
 
   
 </section>
@@ -781,7 +765,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 
 </div>
 <script>
-/* ===== js/data/items.js (155) ===== */
+/* ===== js/data/items.js (187) ===== */
 /* ══════════════ 데이터 ══════════════ */
 // 부모: Mini-IPIP 20문항 한국어 번안 (Donnellan et al., 2006 / IPIP 퍼블릭 도메인)
 // f: E외향 A우호 C성실 N정서 O개방  |  r: 역채점
@@ -833,6 +817,38 @@ const C_ITEMS=[
  {t:"놀이나 간식 차례를 기다릴 수 있다",d:"ec"},
  {t:"한 가지 놀이에 집중하면 주변 소리에 잘 흔들리지 않는다",d:"ec"},
  {t:"작은 목소리로 말해달라고 하면 목소리를 낮출 수 있다",d:"ec"},
+];
+/* ── 영아(0~11개월) — IBQ-R(Gartstein & Rothbart 2003, 3~12개월용 14척도) 프레임 기반 자체 문항.
+   IBQ-R 3요인(외향성 / 부정정서 / 지향·조절)의 척도를 우리 10축에 사상:
+   Activity Level→act · Approach→app · Falling Reactivity(회복)→ada ·
+   Distress to Limitations·High Intensity Pleasure→int · Perceptual Sensitivity→thr ·
+   Smiling and Laughter·Vocal Reactivity→moo · Soothability→dis ·
+   Duration of Orienting→per · Cuddliness·Low Intensity Pleasure→ec(조절의 전신).
+   rhy(규칙성)는 IBQ-R에 없어 Thomas & Chess 의 Rhythmicity 에서 가져왔다.
+   영아는 '의도적 통제'가 발달 전이라 ec 는 지향·조절(안김·달래짐) 행동으로 잰다. */
+const C_ITEMS_I=[
+ {t:"기저귀를 갈거나 옷을 입힐 때 팔다리를 쉴 새 없이 움직인다",d:"act"},
+ {t:"누워 있을 때도 몸을 계속 버둥거리거나 뒤집으려 한다",d:"act"},
+ {t:"잠드는 시간과 깨는 시간이 매일 비슷하다",d:"rhy"},
+ {t:"배고파하는(수유·이유식) 간격이 대체로 일정하다",d:"rhy"},
+ {t:"새 장난감을 보여주면 바로 손을 뻗거나 몸을 기울인다",d:"app"},
+ {t:"낯선 사람이 어르면 울기보다 가만히 쳐다보거나 웃는다",d:"app"},
+ {t:"울다가도 몇 분 안에 스스로 진정되는 편이다",d:"ada"},
+ {t:"낯선 장소(외출·남의 집)에서도 평소처럼 자고 먹는다",d:"ada"},
+ {t:"울음이 터지면 소리가 아주 크고 온몸이 뻣뻣해진다",d:"int"},
+ {t:"좋을 때는 소리 지르며 팔다리를 파닥이고 온몸으로 좋아한다",d:"int"},
+ {t:"작은 소리나 빛 변화에도 잘 깨거나 움찔한다",d:"thr"},
+ {t:"옷의 촉감이나 안는 자세가 바뀌면 바로 칭얼댄다",d:"thr"},
+ {t:"눈을 맞추면 잘 웃고 소리 내어 옹알거린다",d:"moo"},
+ {t:"하루 중 기분 좋아 보이는(방긋거리는) 시간이 많다",d:"moo"},
+ {t:"울 때 안아주거나 노래를 불러주면 금방 그친다",d:"dis"},
+ {t:"보채다가도 다른 물건을 보여주면 관심이 옮겨간다",d:"dis"},
+ {t:"모빌이나 장난감 하나를 한참 동안 바라본다",d:"per"},
+ {t:"좋아하는 놀이(까꿍 등)를 오래 반복해도 질려하지 않는다",d:"per"},
+ {t:"안아주면 몸에 폭 안기며 편안해한다",d:"ec"},
+ {t:"조용한 놀이(쓰다듬기·책장 넘기기)도 좋아한다",d:"ec"},
+ {t:"자장가나 토닥임 같은 잠 루틴에 몸이 착 가라앉는다",d:"ec"},
+ {t:"흥분해 울다가도 익숙한 목소리를 들으면 잦아든다",d:"ec"},
 ];
 const C_ITEMS_T=[
  {t:"잠시도 가만있지 않고 기어오르거나 뛰어다닌다",d:"act"},
@@ -1499,7 +1515,7 @@ function scoreChild(){
   renderChildReport();
   show('s-child-result');animateBars();updateHome();
 }
-/* ===== js/render/onboard.js (80) ===== */
+/* ===== js/render/onboard.js (81) ===== */
 function chooseWho(mode){
   const b=document.getElementById('who-body');b.innerHTML='';
   if(mode==='parent'){
@@ -1550,6 +1566,7 @@ function readAge(p){
   let months=(now.getFullYear()-y)*12+(now.getMonth()+1-mo);
   if(months<1||months>240){alert('출생 연·월을 다시 확인해주세요!');return null;}
   const ageY=Math.floor(months/12);
+  if(months<12)return{band:'i',months,ageY,label:months+'개월'};   /* IBQ-R 프레임 (0~11개월) */
   if(months<36)return{band:'t',months,ageY,label:months+'개월'};
   if(ageY<8)return{band:'p',months,ageY,label:'만 '+ageY+'세'};
   if(ageY<13)return{band:'s',months,ageY,label:'초등 · 만 '+ageY+'세'};
@@ -1580,7 +1597,7 @@ function onboardStart(){
   S.activeK=S.kids.length-1;
   beginTest('child');
 }
-/* ===== js/render/test.js (43) ===== */
+/* ===== js/render/test.js (50) ===== */
 function startTest(mode){if(mode==='family'){beginTest('family');return;}chooseWho(mode);}
 /* ── 부모 검사로 가는 단 하나의 입구 ────────────────────────────
    화면 여러 곳에 "나는 어떤 부모일까?" 버튼이 있는데 서로 다른 함수를
@@ -1597,7 +1614,7 @@ function goParentTest(){
   }
 }
 function beginTest(mode){S.mode=mode;S.idx=0;S[mode==='parent'?'pAns':mode==='family'?'fAns':'cAns']=[];show('s-test');renderQ();}
-function items(){if(S.mode==='parent')return S.activeP==='예비부모'?P_ITEMS:P_ITEMS.concat(P_EXTRA);if(S.mode==='family')return F_ITEMS;const k=S.kids[S.activeK];if(!k)return C_ITEMS;return k.band==='t'?C_ITEMS_T:k.band==='s'?C_ITEMS_S:k.band==='a'?C_ITEMS_A:C_ITEMS;}
+function items(){if(S.mode==='parent')return S.activeP==='예비부모'?P_ITEMS:P_ITEMS.concat(P_EXTRA);if(S.mode==='family')return F_ITEMS;const k=S.kids[S.activeK];if(!k)return C_ITEMS;return k.band==='i'?C_ITEMS_I:k.band==='t'?C_ITEMS_T:k.band==='s'?C_ITEMS_S:k.band==='a'?C_ITEMS_A:C_ITEMS;}
 function renderQ(){
   const it=items(),q=it[S.idx];
   document.getElementById('prog').style.width=(S.idx/it.length*100)+'%';
@@ -1622,7 +1639,14 @@ function answer(v){
   const arr=S.mode==='parent'?S.pAns:S.mode==='family'?S.fAns:S.cAns;
   arr[S.idx]=v;S.idx++;
   if(S.idx<items().length){renderQ();return;}
-  if(S.mode==='parent'){scoreParent();}else if(S.mode==='family'){scoreFamily();}else{scoreChild();}
+  if(S.mode==='parent'){scoreParent();return;}
+  if(S.mode==='family'){scoreFamily();return;}
+  /* 기질검사 끝 → 결과 전에 주관식 300자 (2026-08-12 사장님 지시)
+     사주아이가 검사 끝에 '궁금한 것'을 길게 적게 하는 것과 같은 자리.
+     여기 적은 내용은 상담(면담) 프롬프트에 그대로 들어가 답변이 개인화된다. */
+  CONCERN_NEXT=scoreChild;
+  concernIntro();
+  show('s-concern');
 }
 /* ===== js/render/parent.js (72) ===== */
 function renderParentReport(){
@@ -1856,7 +1880,7 @@ function scoreFamily(){
   inviteReward();
 
 }
-/* ===== js/render/fit.js (128) ===== */
+/* ===== js/render/fit.js (136) ===== */
 function pairKey(){return (S.activeP||'엄마')+'×'+(S.activeK!=null&&S.kids[S.activeK]?S.kids[S.activeK].name:'아이');}
 function goFit(){
   const ps=Object.keys(S.parents).filter(n=>S.parents[n]&&S.parents[n].score);
@@ -1884,8 +1908,14 @@ function pairGo(){
   requestFit();
 }
 function requestFit(){
-  if(!S.concernDone){show('s-concern');return;}
+  if(!S.concernDone){CONCERN_NEXT=computeFit;show('s-concern');return;}
   computeFit();
+}
+let CONCERN_NEXT=null;   /* s-concern 다음에 갈 곳 (기질검사→scoreChild, 궁합→computeFit) */
+function concernIntro(){
+  const kid=S.kids[S.activeK];const nm=kid&&kid.name?kid.name:'아이';
+  const bub=document.querySelector('#s-concern .bubble');
+  if(bub)bub.innerHTML='<span class="who">츄비</span>'+josa(nm,'의')+' 결과를 정리하는 중이에요! 그 전에 요즘 상황을 조금만 알려줄래요? <b>자세히 적을수록</b> 리포트와 면담 답변이 우리 집 얘기처럼 정확해져요. 화이팅이에요 🐾';
 }
 function concernGo(skipInput){
   S.concernDone=true;
@@ -1894,7 +1924,9 @@ function concernGo(skipInput){
     const tx=document.getElementById('concern-text').value.trim();
     S.concern={events:ev,text:tx};
   }
-  computeFit();
+  save();
+  const next=CONCERN_NEXT||computeFit;CONCERN_NEXT=null;
+  next();
 }
 function computeFit(){
   const uk=pairKey();const u=UNLOCKS[uk]||{};FIT_UNLOCKED=!!u.fit;DEEP_UNLOCKED=!!u.deep;
