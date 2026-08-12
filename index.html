@@ -25,13 +25,16 @@
   --radius:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+/* 당겨서 새로고침(pull-to-refresh) 차단 — 결과를 보다 맨 끝에서 한 번 더 당기면
+   새로고침돼 검사가 날아가던 사고 (2026-08-12 사장님 지적). overscroll 을 가둔다. */
+html{-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
 body{
   font-family:'Gowun Dodum',sans-serif;
   background:var(--bg);
   color:var(--ink);
   line-height:1.65;
   min-height:100vh;
+  overscroll-behavior-y:contain;
 }
 .wrap{max-width:520px;margin:0 auto;padding:20px 18px 60px}
 h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em}
@@ -516,6 +519,7 @@ details.acc>*:not(summary){margin-top:10px}
 <section class="screen" id="s-library">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="result-hero"><span class="tag">내정보</span><div class="typename">내 리포트</div></div>
+  <div data-member-card></div>
   <div id="lib-body"></div>
 </section>
 
@@ -618,6 +622,7 @@ details.acc>*:not(summary){margin-top:10px}
 <section class="screen" id="s-info">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="result-hero"><span class="tag">사이트 정보</span><div class="typename">기질냥구소</div><div class="typedesc">전문 심리검사·진단·상담 서비스가 아니에요.<br>공개된 연구와 검증된 척도를 학습한, 정보 기반 리포트입니다.</div></div>
+  <div data-member-card></div>
   <div class="card" style="border-color:var(--pri)">
     <h3 style="font-size:.98rem;margin-bottom:4px">🔒 상담은 우리 서버를 거칩니다</h3>
     <p class="small">츄비·칸쵸 연구원과의 상담은 <b>기질냥구소 서버가 대신 처리</b>합니다. 손님이 따로 설정할 건 없어요.<br>
@@ -1403,10 +1408,60 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (118) ===== */
+/* ===== js/state.js (172) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);try{if(window.__booted)save();}catch(e){}}
+/* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
+   설문·온보딩 같은 '진행 중' 화면은 여기 없음(중간 복원은 깨지니 홈으로). (2026-08-12) */
+const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-family-result':1,'s-career':1};
+let _navLock=false;   // popstate 로 화면을 되돌릴 땐 다시 pushState 하지 않게
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);
+  if(window.__booted&&RESTORABLE[id]){try{localStorage.setItem('kn_view',id);}catch(e){}}
+  /* 브라우저 뒤로가기가 앱을 홈으로 튕기지 않게 — 화면마다 히스토리를 쌓는다 (2026-08-12 사장님 지적) */
+  if(window.__booted&&!_navLock){try{history.pushState({screen:id},'');}catch(e){}}
+  try{if(window.__booted)save();}catch(e){}
+  try{if(typeof paintMemberCards==='function')paintMemberCards();}catch(e){}/* 회원 카드 최신화 (2026-08-12) */}
+/* 저장된 데이터로 특정 화면을 다시 그려 보여준다. 못 그리면 홈. (restoreView·popstate 공용) */
+function renderScreen(id){
+  try{
+    if(id==='s-child-result'){if(!(S.activeK!=null&&S.kids[S.activeK]&&S.kids[S.activeK].score))return false;renderChildReport();show('s-child-result');animateBars();}
+    else if(id==='s-parent-result'){if(!(S.activeP&&S.parents[S.activeP]&&S.parents[S.activeP].score))return false;renderParentReport();show('s-parent-result');animateBars();}
+    else if(id==='s-fit'){if(!(S.pScore&&S.cScore))return false;computeFit();show('s-fit');animateBars();}
+    else if(id==='s-library'){goLibrary();}   /* goX 는 자체적으로 show 를 부른다 */
+    else if(id==='s-daily'){goDaily();}
+    else if(id==='s-talk'){goTalk();}
+    else if(id==='s-home'){updateHome();show('s-home');}
+    else return false;
+    return true;
+  }catch(e){return false;}
+}
+function restoreView(){
+  let v=null;try{v=localStorage.getItem('kn_view');}catch(e){}
+  if(!v||!RESTORABLE[v]||v==='s-home')return false;
+  return renderScreen(v);
+}
+window.addEventListener('popstate',function(e){
+  if(!window.__booted)return;
+  const id=(e.state&&e.state.screen)||'s-home';
+  _navLock=true;
+  if(!renderScreen(id)){updateHome();show('s-home');}
+  _navLock=false;
+});
+/* 부팅 때 마지막 화면 복원 — 결과 보다 새로고침돼도 그 자리로 (2026-08-12 사장님 지적) */
+function restoreView(){
+  let v=null;try{v=localStorage.getItem('kn_view');}catch(e){}
+  if(!v||!RESTORABLE[v]||v==='s-home')return false;
+  try{
+    if(v==='s-child-result'){if(!(S.activeK!=null&&S.kids[S.activeK]&&S.kids[S.activeK].score))return false;renderChildReport();}
+    else if(v==='s-parent-result'){if(!(S.activeP&&S.parents[S.activeP]&&S.parents[S.activeP].score))return false;renderParentReport();}
+    else if(v==='s-fit'){if(!(S.pScore&&S.cScore))return false;computeFit();}
+    else if(v==='s-library'){goLibrary();}
+    else if(v==='s-daily'){goDaily();}
+    else if(v==='s-talk'){goTalk();}
+    else return false;
+    return true;
+  }catch(e){return false;}
+}
 S.myRole=null;
 const UNLOCKS={};let PAIR_SEL={p:null,k:null};
 const CHAT={cat:"chuvi",free:2,paid:0,presc:0,prescMode:false,hist:{chuvi:[],kancho:[]},intakeDone:false,intake:{},busy:false,upsold:false,
@@ -1465,9 +1520,13 @@ function hasJong(w){
   return (c-0xAC00)%28!==0;
 }
 const JOSA_PAIR={'은':'는','는':'는','이':'가','가':'가','을':'를','를':'를','와':'와','과':'와','으로':'로','로':'로'};
+/* 소유격 '의'·서술 '이다' 등은 이름에 '이'를 끼우지 않는다 — "안아준의"(O) "안아준이의"(X).
+   구어체 '이' 삽입은 은/는/이/가/을/를/랑/와 같은 격조사에서만 자연스럽다. (2026-08-12 사장님 지적) */
+const JOSA_NO_I={'의':1};
 function josa(name,j){
   name=(name||'').trim();
   if(!name)return '';
+  if(JOSA_NO_I[j])return name+j;           // '의' 등은 그대로 이름+조사
   const base=JOSA_PAIR[j]||j;              // 받침 없는 쪽 형태로 통일
   return hasJong(name) ? name+'이'+base : name+base;
 }
@@ -1522,7 +1581,7 @@ function load(){
   return true;
 }
 function resetAll(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.href=location.pathname;}
-/* ===== js/scoring.js (37) ===== */
+/* ===== js/scoring.js (39) ===== */
 function grade(v){return v>=3.6?'높은 편':v<=2.4?'차분한 편':'중간';}
 function gradeTag(v){return v>=3.6?'<b style="color:var(--pri)">높은 편</b>':v<=2.4?'<b style="color:var(--moss)">낮은 편</b>':'보통';}
 /* ══════════════ 채점 (전부 코드, LLM 없음) ══════════════ */
@@ -1534,6 +1593,7 @@ function scoreParent(){
   S.pScore=avg;S.parents[S.activeP||'엄마']={score:avg,px:PX};
   renderParentReport();
   show('s-parent-result');animateBars();updateHome();
+  if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
 }
 function calcPType(avg){
   const ext=['E','A','C','N','O'].filter(k=>avg[k]>=3.4||avg[k]<=2.6);
@@ -1559,6 +1619,7 @@ function scoreChild(){
   S.kids[S.activeK].score=avg;
   renderChildReport();
   show('s-child-result');animateBars();updateHome();
+  if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
 }
 /* ===== js/render/onboard.js (86) ===== */
 function chooseWho(mode){
@@ -2890,7 +2951,7 @@ async function postToTalk(){
     window.scrollTo(0,0);
   },100);
 }
-/* ===== js/auth.js (104) ===== */
+/* ===== js/auth.js (159) ===== */
 /* ══════════════ 카카오 로그인 (2026-08-12) ══════════════
    흐름 (사주아이와 동일한 인가코드 방식):
      [카카오로 시작하기] → 카카오 동의화면 → ?code= 로 돌아옴
@@ -2989,11 +3050,66 @@ function applyServerWallet(w){
   renderSnack();save();
 }
 
+/* 로그아웃 (2026-08-12 사장님 지적 — 사주아이엔 있는데 우리엔 없었다).
+   서버 세션은 만료로 두고(재로그인하면 새 세션), 이 폰의 로그인 흔적만 지운다.
+   지갑은 서버가 진실이라, 로그아웃하면 이 폰 화면값은 비로그인 기본으로 되돌린다
+   (다른 사람이 이 폰을 쓸 수도 있으니 남의 잔액이 보이면 안 된다). */
+function kakaoLogout(){
+  if(!confirm('로그아웃할까요?\n검사 결과는 이 기기에 남지만, 까까·회원 정보는 다시 로그인해야 보여요.'))return;
+  ME=null;
+  try{localStorage.removeItem('kn_member');}catch(e){}
+  KKA=0;CHAT.paid=0;                 // 화면 지갑값 초기화 (서버엔 그대로 남아 재로그인 시 복원)
+  if(typeof Kakao!=='undefined'&&Kakao.Auth&&Kakao.Auth.getAccessToken&&Kakao.Auth.getAccessToken()){
+    try{Kakao.Auth.logout(function(){});}catch(e){}   // 카카오 SDK 토큰도 정리 (있으면)
+  }
+  renderSnack();save();paintLogin();
+  if(typeof updateHome==='function')updateHome();
+  alert('로그아웃됐어요. 다음에 또 만나요 🐾');
+  show('s-home');
+}
+
 function paintLogin(){
   const el=document.getElementById('login-state');
   if(el)el.textContent=isLoggedIn()?('💜 '+(ME.nickname||'회원')+'님으로 저장되는 중'):'지금은 로그인 없이도 계속 볼 수 있어요';
   const btns=document.querySelectorAll('[data-kakao-btn]');
   btns.forEach(b=>{b.style.display=isLoggedIn()?'none':'';});
+  /* 내정보·사이드 등 여러 곳의 회원 카드를 한 번에 갱신 */
+  if(typeof paintMemberCards==='function')paintMemberCards();
+}
+
+/* 회원 상태 카드 — 내정보 화면 최상단 + 사이드(정보) 화면. 로그인이면 닉네임+로그아웃, 아니면 로그인 버튼 */
+function memberCardHTML(){
+  if(isLoggedIn()){
+    return `<div class="card" style="display:flex;align-items:center;gap:12px">
+      <div style="width:42px;height:42px;border-radius:50%;background:var(--lav-soft);display:flex;align-items:center;justify-content:center;font-size:1.3rem">🐱</div>
+      <div style="flex:1;min-width:0">
+        <p style="font-family:'Jua';font-size:1rem">${esc(ME.nickname||'회원')}님</p>
+        <p class="small">까까 ${KKA}개 · 결과가 이 계정에 저장돼요</p>
+      </div>
+      <button class="mini-act" onclick="kakaoLogout()">로그아웃</button>
+    </div>`;
+  }
+  return `<div class="card" style="text-align:center;border-color:var(--pri)">
+    <p style="font-size:.92rem"><b>로그인하면 결과·까까가 안전하게 저장돼요</b></p>
+    <p class="small mt8">기기를 바꿔도 이어서 볼 수 있어요.</p>
+    <button class="btn mt8" style="background:#FEE500;color:#191919" onclick="kakaoLogin()">💬 카카오로 3초 만에 로그인</button>
+  </div>`;
+}
+function paintMemberCards(){
+  document.querySelectorAll('[data-member-card]').forEach(el=>{el.innerHTML=memberCardHTML();});
+}
+
+/* 검사 하나만 끝나면 로그인 권유 (2026-08-12 사장님 지적 — 지금은 둘 다 끝나도 안 물어봤다).
+   한 기기에 1회만. 이미 로그인이거나 예전에 물어봤으면 조용히. 결과를 잠깐 본 뒤 뜨게 살짝 지연. */
+function maybeAskLogin(){
+  if(isLoggedIn())return;
+  let asked=false;try{asked=localStorage.getItem('kn_login_asked');}catch(e){}
+  if(asked)return;
+  try{localStorage.setItem('kn_login_asked','1');}catch(e){}
+  setTimeout(function(){
+    if(isLoggedIn())return;
+    if(confirm('검사 결과가 나왔어요! 🎉\n\n카카오로 로그인하면 이 결과와 까까가 저장돼서\n기기를 바꿔도, 나중에 다시 와도 이어서 볼 수 있어요.\n\n지금 로그인할까요?'))kakaoLogin();
+  },1100);
 }
 /* ===== js/wallet.js (163) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
@@ -3500,7 +3616,7 @@ function startCountdown(){
   };
   tick();CD_TIMER=setInterval(tick,1000);
 }
-/* ===== js/main.js (32) ===== */
+/* ===== js/main.js (36) ===== */
 /* ══════════════ 부팅 ══════════════ */
 const _restored=load();          // 새로고침해도 결과가 남아 있게
 /* 온보딩 화면 제거로 불필요 (2026-08-12) */
@@ -3523,8 +3639,12 @@ S.kids.forEach(k=>{
 kakaoCallback();       /* 카카오에서 ?code= 로 돌아온 경우 로그인 마무리 (비동기) */
 payReturn();           /* 토스 결제창에서 ?pay= 로 돌아온 경우 승인·지급 (비동기) */
 updateHome();renderDaily();
+/* 홈은 히스토리 바닥. 그 위에 마지막 화면을 얹으면 뒤로가기 한 번에 홈으로 온다 */
 show('s-home');
+try{history.replaceState({screen:'s-home'},'');}catch(e){}
 window.__booted=true;            // 이 시점부터 화면 전환마다 자동 저장
+/* 새로고침 전에 결과를 보고 있었으면 그 화면으로 되돌린다 (pull-to-refresh 사고 보완) */
+try{if(_restored)restoreView();}catch(e){}
 
 /* 점검용 창구 — const 로 선언된 전역은 개발자도구에서 바로 안 잡힌다.
    배포본에도 남겨둔다(읽기 전용 조회라 위험 없음). */
