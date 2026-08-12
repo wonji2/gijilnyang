@@ -270,6 +270,14 @@ details.acc .acc-arrow{color:var(--sub);transition:transform .2s}
 details.acc[open] .acc-arrow{transform:rotate(180deg)}
 details.acc:not([open]) summary h3{color:var(--ink)}
 details.acc>*:not(summary){margin-top:10px}
+
+/* 까까상점 — 사주아이식 간단 줄 (2026-08-12) */
+.shop-row{display:flex;align-items:center;gap:8px;padding:13px 6px;border-bottom:1px solid var(--line);cursor:pointer}
+.shop-row:last-of-type{border-bottom:none}
+.shop-row:active{background:var(--pri-soft)}
+.shop-n{font-family:'Jua';font-size:.98rem;flex:1;min-width:0}
+.shop-n b{color:var(--pri)}
+.shop-won{font-family:'Jua';white-space:nowrap;flex:none}
 </style>
 </head>
 <body>
@@ -2897,7 +2905,7 @@ function paintLogin(){
   const btns=document.querySelectorAll('[data-kakao-btn]');
   btns.forEach(b=>{b.style.display=isLoggedIn()?'none':'';});
 }
-/* ===== js/wallet.js (95) ===== */
+/* ===== js/wallet.js (87) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -2919,33 +2927,25 @@ function buyMeet(i){
   alert('💬 상담이 충전됐어요! '+meetLeftStr());
 }
 function openWallet(){show('s-wallet');renderWallet();}
+/* 상점은 사주아이처럼 — 개수·가격만, 부가 설명 없이 (2026-08-12 사장님 지시).
+   쓰임새는 맨 아래 한 줄로만. "각 1개" 같은 오해 소지 문구 금지. */
 function renderWallet(){
   const el=document.getElementById('wallet-body');if(!el)return;
   el.innerHTML=`
     <div class="card" style="text-align:center">
       <p class="small">내 까까</p>
       <p style="font-family:'Jua';font-size:2.4rem;line-height:1.1"><i class="ddeok-i"></i> ${KKA}</p>
-      <p class="small">오늘 무료 상담 ${CHAT.free}회 · 자정에 다시 2회</p>
+      <p class="small">오늘 무료 상담 ${CHAT.free}회</p>
     </div>
     <div class="card">
-      <h3 style="font-size:1rem;margin-bottom:8px">까까상점</h3>
-      <p class="small" style="margin-bottom:8px">리포트를 열 때 쓰는 화폐예요 · 까까 1개로 상담도 ${KKA_TALK}회</p>
+      <h3 style="font-size:1rem;margin-bottom:10px">까까 충전</h3>
       ${KKA_PACKS.map((p,i)=>`
-        <div class="book" style="align-items:center;cursor:pointer" onclick="buyKka(${i})">
-          <div class="bicon"><i class="ddeok-i"></i></div>
-          <div style="flex:1">
-            <b style="font-family:'Jua'">${p.name}</b>${p.best?' <span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
-            <p class="small">까까 ${p.n}개${p.bonus?` <b style="color:var(--pri)">+${p.bonus}개 덤</b>`:''}${p.talk?` · 수다 ${p.talk}회 덤`:''}</p>
-          </div>
-          <b style="font-family:'Jua';white-space:nowrap">${kkaWon(p.n)}</b>
+        <div class="shop-row" onclick="buyKka(${i})">
+          <span class="shop-n"><i class="ddeok-i"></i> ${p.n}개${p.bonus?` <b>+${p.bonus}</b>`:''}</span>
+          ${p.best?'<span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
+          <b class="shop-won">${kkaWon(p.n)}</b>
         </div>`).join('')}
-      <p class="small mt8">※ 지금은 데모라 누르면 바로 충전돼요. 정식 버전에서 결제가 연결됩니다.</p>
-    </div>
-    <div class="card">
-      <h3 style="font-size:1rem;margin-bottom:6px">까까로 할 수 있는 것</h3>
-      <div class="book"><div class="bicon"><i class="ddeok-i"></i></div><div><b>리포트 심화 열기</b><p class="small">아이 · 부모 · 궁합 · 원가족 각 1개</p></div></div>
-      <div class="book"><div class="bicon"><i class="ddeok-i"></i><i class="ddeok-i"></i></div><div><b>심층 코칭</b><p class="small">상황 해석 → 행동 교정 → 변화 예언</p></div></div>
-      <div class="book"><div class="bicon">💬</div><div><b>상담 6회</b><p class="small">까까 1개를 깨면 연구원과 6번</p></div></div>
+      <p class="small mt8" style="text-align:center">까까 1개 = 리포트 열기 · 상담 ${KKA_TALK}회</p>
     </div>`;
 }
 function buyKka(i){
