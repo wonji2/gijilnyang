@@ -2870,7 +2870,7 @@ async function kakaoCallback(){
       body:JSON.stringify({code:code,redirect_uri:_redirectUri(),device_id:deviceId()})
     });
     const d=await res.json().catch(()=>({}));
-    if(!res.ok||d.error)throw new Error(d.error||('HTTP '+res.status));
+    if(!res.ok||d.error)throw new Error((d.error||('HTTP '+res.status))+(d.kakao?' ['+d.kakao+']':''));
     ME={token:d.token,nickname:d.nickname||''};
     try{localStorage.setItem('kn_member',JSON.stringify(ME));}catch(e){}
     if(d.wallet)applyServerWallet(d.wallet);
