@@ -164,7 +164,8 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 .ava-wrap{position:relative;flex:0 0 auto}
 .ava-wrap .badge{position:absolute;right:-4px;bottom:-4px;font-size:.85rem}
 .pretalk{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:9px 12px;margin-bottom:8px;cursor:pointer}
-.pretalk p{font-size:.83rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.pretalk p{font-size:.83rem;color:var(--ink);flex:1;line-height:1.55}  /* 잘리지 않게 여러 줄 허용 (2026-08-12) */
+.pretalk b{display:block;margin-bottom:2px}
 .pretalk b{font-family:'Jua';font-weight:400;font-size:.85rem;margin-right:6px}
 .talk-post{border-bottom:1px dashed var(--line);padding:12px 0}
 .talk-post:last-child{border-bottom:none}
@@ -256,6 +257,10 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
    쪼개졌다. 폭이 모자라면 줄을 바꾸지 말고 폰트를 줄이거나 넘치게 둔다. */
 .snack-pill,.kka-pill{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .snack-pill>*,.kka-pill>*{white-space:nowrap}
+
+/* 섹션 소개문 (제목 바로 아래 한 줄 설명) */
+.sec-sub{font-size:.8rem;color:var(--sub);line-height:1.6;margin:-2px 0 10px 2px}
+.sec-sub b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -334,20 +339,20 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     </div>
   </div>
 
-  <!-- 판매 항목 아래 = 연구원 면담 (2026-08-12 사장님 지시)
-       · '연구원' 글자를 빼고 그 자리에 두 고양이의 특징 설명을 길게
-       · 하단바에 이미 상담실·대나무숲·내정보가 있으므로 메인의 중복 존(menu)은 제거 -->
-  <p class="sec-label">🐾 연구원 면담</p>
+  <!-- 판매 항목 아래 = 냥쪽상담실 (2026-08-12 사장님 지시)
+       · 발바닥 이모지가 제목·소개문에 겹쳐 제목은 💬 로
+       · 항목명은 '츄비' '칸쵸' 만 (면담 글자 제거), 소개문은 제목 바로 밑에
+       · 특징 설명이 한 줄로 잘리던 것 → .pretalk p 를 여러 줄 허용으로 -->
+  <p class="sec-label">💬 냥구원 냥쪽상담실</p>
+  <p class="sec-sub">우리 아이 기반 설문조사와 검증된 기질 척도를 학습한 <b>두 고양이 연구원</b>과 상담해보세요</p>
   <div class="pretalk" onclick="openChat('chuvi')">
     <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비" width="46" height="46">
-    <p><b>츄비 면담</b> 마음부터 들어주는 공감분석 담당 · 왜 그런 마음이 드는지 기질의 언어로 짚고, 오늘 해볼 작은 것 하나까지</p><span class="small">›</span>
+    <p><b>츄비</b> 마음부터 들어주는 공감분석 담당. 왜 그런 마음이 드는지 기질의 언어로 짚어주고, 오늘 해볼 수 있는 작은 것 하나까지 챙겨줘요.</p><span class="small">›</span>
   </div>
   <div class="pretalk" onclick="openChat('kancho')">
     <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸" width="46" height="46">
-    <p><b>칸쵸 면담</b> 감정 빼고 원인부터 짚는 팩트분석 담당 · 기질 데이터로 상황을 해석하고 행동 처방을 딱 하나 내립니다</p><span class="small">›</span>
+    <p><b>칸쵸</b> 감정 빼고 원인부터 짚는 팩트분석 담당. 기질 데이터로 상황을 해석하고 오늘 실행할 행동 처방을 딱 하나 내려줘요.</p><span class="small">›</span>
   </div>
-  <p class="hero-proof" style="margin-top:10px">🐾 우리 아이 기반 설문조사와 검증된 기질 척도를 학습한
-    <b>두 고양이 연구원</b>과 상담해보세요</p>
 
   
 </section>
@@ -2668,7 +2673,7 @@ function sysPrompt(){
   if(S.concern&&(S.concern.text||(S.concern.events&&S.concern.events.length)))ctx.push('보호자가 직접 적은 현재 상황: '+[(S.concern.events||[]).join(','),S.concern.text].filter(Boolean).join(' / '));
   if(S.family)ctx.push('보호자의 원가족(회고): 따뜻함 '+S.family.care.toFixed(1)+', 통제 '+S.family.ctrl.toFixed(1)+' — 대물림은 경향일 뿐 운명이 아니라는 톤 유지');
   return `${persona}
-[검사 결과 맥락] ${ctx.join(' / ')||'아직 없음'}
+[검사 결과 맥락] ${ctx.join(' / ')||'아직 없음 — 검사가 없어도 결론 없이 끝내지 마라. 상황 묘사 자체에서 기질 가설을 세우고(예: 반응 강도가 크고 지속성이 강한 아이로 보인다), 그 가설을 근거로 원인 해석과 처방까지 반드시 완결하라. 끝에 기질검사를 하면 더 정확해진다고 한 문장만 덧붙인다.'}
 [반드시 지킬 규칙]
 1. 근거는 Thomas & Chess 기질 이론, Rothbart 의도적 통제, 조화적합성, 차등 민감성(Belsky & Pluess) 범위 안에서만. 지어내지 않는다. 처방을 줄 때는 검증된 개입 연구(INSIGHTS의 기질 맞춤 전략, van den Boom 1994의 민감 반응, Tominey & McClelland의 멈춤 놀이, Mindell의 취침 루틴)에 기반한 행동만 제안한다.
 2. 진단 금지: ADHD, 자폐, 발달지연, 우울증 등 진단명 언급·암시 절대 금지. 발달 걱정 질문엔 "검사로는 알 수 없고 소아청소년과나 육아종합지원센터 상담을 권해요"라고만.
