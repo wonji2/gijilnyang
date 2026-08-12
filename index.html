@@ -1370,7 +1370,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (120) ===== */
+/* ===== js/state.js (117) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);try{if(window.__booted)save();}catch(e){}}
@@ -1383,43 +1383,40 @@ const CHAT={cat:'chuvi',free:2,paid:0,hist:{chuvi:[],kancho:[]},intakeDone:false
    회차제(사주아이식)를 안 쓰는 이유: 한 번이 아까우면 손님이 질문을 아낀다.
    우리 답변은 다섯 문단씩 나가는데 한 번 쓰고 끝내면 값어치를 못 느낀다.
    상담소는 원래 시간으로 판다. 컨셉(연구원 면담)과도 맞다. */
-const FREE_MEET_SEC=180;                       // 매일 무료 3분
-const MEET_PACKS=[
-  {min:10,  won:500,  name:'짧은 면담'},
-  {min:30,  won:1200, name:'정식 면담', best:true},
-  {min:60,  won:2000, name:'긴 면담'},
-  {min:'day',won:3900,name:'온종일 면담'}
-];
-/* 남은 면담 시간(초). 0이면 끝났다. */
-function meetLeft(){const d=CHAT.until-Date.now();return d>0?Math.ceil(d/1000):0;}
-function meetLeftStr(){
-  const s=meetLeft();if(s<=0)return '면담 종료';
-  const m=Math.floor(s/60), ss=s%60;
-  return m>=60 ? Math.floor(m/60)+'시간 '+(m%60)+'분 남음' : m+':'+String(ss).padStart(2,'0')+' 남음';
+const FREE_TALK=3;                 // 매일 무료 상담 3회 (사주아이는 1회)
+/* ⚠️ 시간제 폐기 (2026-08-12).
+   원가가 '턴당'인데 시간으로 팔면 빨리 치는 손님에게 역마진이 난다.
+   사장님 기준 10분에 20턴 → 원가 460원인데 500원에 팔고 있었다.
+   게다가 선충전 화폐(까까 1개=1,000원)와 안 맞아 900원짜리를 팔면 100원이 갇힌다.
+   → 전부 까까 정수 단위로. 까까 1개 = 리포트 1개 OR 상담 6회. */
+const MEET_PACKS=[];   /* 시간권 없음. 구독제로 갈 때 되살릴 자리. */
+
+/* 자정이 지났으면 무료분을 다시 채운다 */
+function rollFree(){
+  if(CHAT.freeDay!==todayStr()){CHAT.freeDay=todayStr();CHAT.free=FREE_TALK;save();}
 }
-/* 보낼 수 있나? 오늘 무료를 안 썼으면 그 자리에서 3분을 열어준다. */
+/* 남은 상담 횟수 (무료 + 충전분) */
+function meetLeft(){rollFree();return (CHAT.free||0)+(CHAT.paid||0);}
+function meetLeftStr(){
+  const n=meetLeft();
+  if(n<=0)return '상담 소진';
+  return CHAT.paid>0 ? '남은 상담 '+n+'회' : '오늘 무료 '+CHAT.free+'회';
+}
+/* 한 턴 보낼 수 있나? 보낼 수 있으면 그 자리에서 1회 차감한다. */
 function ensureMeet(){
-  if(meetLeft()>0)return true;
-  if(CHAT.freeDay!==todayStr()){
-    CHAT.freeDay=todayStr();
-    CHAT.until=Date.now()+FREE_MEET_SEC*1000;
-    save();return true;
-  }
+  rollFree();
+  if(CHAT.free>0){CHAT.free--;save();return true;}
+  if(CHAT.paid>0){CHAT.paid--;save();return true;}
   return false;
 }
-/* 면담권 구매 — 남은 시간이 있으면 이어붙인다. */
-function grantMeet(p){
-  const base=Math.max(Date.now(),CHAT.until);
-  if(p.min==='day'){const e=new Date();e.setHours(23,59,59,999);CHAT.until=Math.max(base,e.getTime());}
-  else CHAT.until=base+p.min*60*1000;
-  save();
-}
+/* 상담 횟수 지급 (까까를 깰 때 · 덤) */
+function grantMeet(n){CHAT.paid+=(typeof n==='number'?n:KKA_TALK);save();}
 /* ── 화폐: 까까 하나로 통일 (방울 폐지, 2026-08-11) ──
    까까 1개 = 1,000원 (2026-08-12 사장님 결정. 사주아이 990원과 같은 급으로 맞춤).
    상담은 매일 무료 2회 + 까까 1개당 8회.
    ⚠️ 이 두 값은 서버(supabase/sql/02_wallet.sql 의 free_cap·kka_talk)와 반드시 같아야 한다. */
 const KKA_PRICE=1000;
-const KKA_TALK=8;                  // 까까 1개로 늘어나는 상담 횟수
+const KKA_TALK=6;                  // 까까 1개 = 상담 6회 (원가 138원 / 판매 1,000원 = 마진 7.2배)
 let KKA=2, FIT_UNLOCKED=false;     // 첫 방문 웰컴 까까 2개
 function kkaWon(n){return (KKA_PRICE*n).toLocaleString('ko-KR')+'원';}
 
@@ -1486,7 +1483,7 @@ function load(){
     CHAT.paid=d.chat.paid||0;CHAT.intake=d.chat.intake||{};CHAT.intakeDone=!!d.chat.intakeDone;
     CHAT.hist=d.chat.hist||CHAT.hist;CHAT.until=d.chat.until||0;CHAT.freeDay=d.chat.freeDay||null;
     /* 무료 수다는 매일 자정에 다시 3회 */
-    CHAT.free=(d.day===todayStr())?(d.chat.free||0):2;
+    CHAT.free=(d.chat.freeDay===todayStr())?(d.chat.free||0):FREE_TALK;
   }
   return true;
 }
@@ -2636,7 +2633,7 @@ async function sendChat(){
   }catch(e){
     CHAT.hist[CHAT.cat].pop();        // '…' 제거
     CHAT.hist[CHAT.cat].pop();        // 방금 사용자 메시지 제거 (재전송 시 다시 표시)
-    CHAT.until+=60000;   /* 실패했으면 면담 시간 1분 돌려준다 */
+    CHAT.paid++;   /* 실패했으면 1회 돌려준다 */
     inp.value=text;                    // 입력창 복원
     const why=(e&&e.message)?e.message:'연결이 잠깐 끊겼어요';
     const keyBtn=/키/.test(why)?`<button class="btn ghost mt8" style="padding:9px 16px;width:auto;font-size:.85rem" onclick="setAiKey()">🔑 키 다시 넣기</button> `:'';
@@ -2648,7 +2645,7 @@ function showRecharge(){document.getElementById('chat-recharge').style.display='
 function hideRecharge(){document.getElementById('chat-recharge').style.display='none';document.getElementById('chat-input-card').style.display='block';}
 function rechargeChat(){
   if(!needKka(1))return;
-  KKA--;grantMeet({min:30});hideRecharge();renderChat();renderSnack();save();
+  KKA--;grantMeet(KKA_TALK);hideRecharge();renderChat();renderSnack();save();
   addMsg('cat',CHAT.cat==='chuvi'?'충전됐어요! 이어서 얘기해요.':'충전 확인. 계속하자냥.');
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('s-chat').classList.contains('on'))sendChat();});
@@ -2680,15 +2677,14 @@ function postToTalk(){
   alert('올렸어요! 🍪 까까 0.5개 적립 (2개 올리면 1개)');
   goTalk();
 }
-/* ===== js/wallet.js (102) ===== */
+/* ===== js/wallet.js (88) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 보관함 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
 const KKA_PACKS=[
-  {n:1, bonus:0, talk:0, name:'맛보기'},
-  {n:3, bonus:0, talk:3, name:'새내기'},
-  {n:5, bonus:0, talk:6, name:'육아 3년차'},
-  {n:10,bonus:1, talk:9, name:'까까 한 봉지', best:true}
+  {n:1, bonus:0, name:"까까 1개"},
+  {n:5, bonus:1, name:"까까 5개"},
+  {n:10,bonus:3, name:"까까 10개", best:true}
 ];
 /* ── 상담만 소액으로 충전 (2026-08-12) ──────────────────────────────
    사주아이는 채팅 충전을 330원/3회(회당 110원)로 따로 판다. 우리 까까는
@@ -2709,20 +2705,7 @@ function renderWallet(){
     <div class="card" style="text-align:center">
       <p class="small">내 까까</p>
       <p style="font-family:'Jua';font-size:2.4rem;line-height:1.1"><i class="ddeok-i"></i> ${KKA}</p>
-      <p class="small">매일 무료 면담 3분 · 자정에 다시 열려요</p>
-    </div>
-    <div class="card">
-      <h3 style="font-size:1rem;margin-bottom:2px">⏱ 연구원 면담권</h3>
-      <p class="small" style="margin-bottom:8px">${meetLeft()>0?'지금 면담 중 · <b>'+meetLeftStr()+'</b>':'매일 무료 3분 · 시간 안에는 <b>몇 번이든</b> 물어보세요'}</p>
-      ${MEET_PACKS.map((p,i)=>`
-        <div class="book" style="align-items:center;cursor:pointer" onclick="buyMeet(${i})">
-          <div class="bicon">⏱</div>
-          <div style="flex:1">
-            <b style="font-family:'Jua'">${p.name}</b>${p.best?' <span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
-            <p class="small">${p.min==='day'?'오늘 자정까지 · 횟수 제한 없이':p.min+'분 동안 · 몇 번이든 · 분당 '+Math.round(p.won/p.min)+'원'}</p>
-          </div>
-          <b style="font-family:'Jua';white-space:nowrap">${wonStr(p.won)}</b>
-        </div>`).join('')}
+      <p class="small">오늘 무료 상담 ${CHAT.free}회 · 자정에 다시 3회</p>
     </div>
     <div class="card">
       <h3 style="font-size:1rem;margin-bottom:8px">까까상점</h3>
@@ -2742,13 +2725,13 @@ function renderWallet(){
       <h3 style="font-size:1rem;margin-bottom:6px">까까로 할 수 있는 것</h3>
       <div class="book"><div class="bicon"><i class="ddeok-i"></i></div><div><b>리포트 심화 열기</b><p class="small">아이 · 부모 · 궁합 · 원가족 각 1개</p></div></div>
       <div class="book"><div class="bicon"><i class="ddeok-i"></i><i class="ddeok-i"></i></div><div><b>심층 코칭</b><p class="small">상황 해석 → 행동 교정 → 변화 예언</p></div></div>
-      <div class="book"><div class="bicon">💬</div><div><b>면담 30분 열기</b><p class="small">까까 1개로 연구원과 30분</p></div></div>
+      <div class="book"><div class="bicon">💬</div><div><b>상담 6회</b><p class="small">까까 1개를 깨면 연구원과 6번</p></div></div>
     </div>`;
 }
 function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
   if(!confirm(`${p.name} · 까까 ${p.n+p.bonus}개를 ${kkaWon(p.n)}에 충전할까요?\n(데모: 결제 없이 바로 충전됩니다)`))return;
-  KKA+=p.n+p.bonus; if(p.talk)grantMeet({min:p.talk*4});
+  KKA+=p.n+p.bonus; 
   renderSnack();renderWallet();save();
   alert(`🍪 까까 ${p.n+p.bonus}개가 충전됐어요!`);
 }
