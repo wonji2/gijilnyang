@@ -575,41 +575,6 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <button class="btn" id="pair-go" onclick="pairGo()">이 조합의 궁합 보기</button>
 </section>
 
-<!-- ═══════════ 온보딩 (첫 방문) ═══════════ -->
-<section class="screen" id="s-onboard">
-  <div class="hero">
-    <!-- 🔴 2026-08-12: 홈만 실사 사진으로 바꾸고 이 화면은 옛 만화 고양이가 남아
-         있었다. 손님이 제일 먼저 보는 화면인데 홈과 캐릭터가 달랐다. -->
-    <div class="cats">
-      <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
-      <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
-    </div>
-    <h1>어서 오세요!</h1>
-    <p class="hero-proof" style="margin-top:8px">🐾 우리 아이 기반 설문조사와 검증된 기질 척도를 학습한
-      <b>두 고양이 연구원</b>이 봐드려요</p>
-  </div>
-  <div class="card" id="ob-step1">
-    <h3 style="font-size:.98rem;margin-bottom:4px">누구의 검사를 시작할까요?</h3>
-    <div class="grid2" style="margin:10px 0 0">
-      <div class="tile" style="background:var(--amber-soft);min-height:96px" onclick="obPick()"><div class="big">우리 아이</div><div class="sub">기질검사 · 4분</div></div>
-      <div class="tile" style="background:var(--moss-soft);min-height:96px" onclick="show('s-me')"><div class="big">나</div><div class="sub">성향 · 원가족</div></div>
-    </div>
-    <button class="btn ghost mt8" onclick="show('s-home');tabOn('home')">먼저 둘러볼게요</button>
-  </div>
-  <div class="card" id="ob-step2" style="display:none">
-    <h3 style="font-size:.98rem;margin-bottom:8px">👤 나는 이 아이의</h3>
-    <div id="ob-roles" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-    <h3 style="font-size:.98rem;margin:14px 0 8px">🐣 우리 아이</h3>
-    <input id="ob-name" placeholder="애칭 (실명 대신)" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum'">
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <select id="ob-age" onchange="ageToggle('ob')" style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';background:#fff"></select>
-      <select id="ob-months" style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';background:#fff"></select>
-    </div>
-    <p class="small mt8">출생 연·월만 받아요(일은 안 받아요). 개월수와 연령대는 자동으로 계산됩니다!</p>
-    <button class="btn amber mt8" onclick="onboardStart()">등록하고 검사 시작 →</button>
-    <button class="btn ghost mt8" onclick="document.getElementById('ob-step2').style.display='none';document.getElementById('ob-step1').style.display='block'">← 뒤로</button>
-  </div>
-</section>
 
 <!-- ═══════════ 대나무숲 ═══════════ -->
 <section class="screen" id="s-talk">
@@ -1602,8 +1567,8 @@ function addKid(){
 }
 /* ══════════════ 온보딩 (정보 먼저 → 검사 → 로그인 유도) ══════════════ */
 function obPick(){
-  document.getElementById('ob-step1').style.display='none';
-  document.getElementById('ob-step2').style.display='block';
+  var s1=document.getElementById('ob-step1');if(s1)s1.style.display='none';
+  var s2=document.getElementById('ob-step2');if(s2)s2.style.display='block';
   if(typeof fillRoles==='function')fillRoles('ob');
   if(typeof fillAge==='function')fillAge('ob');
 }
@@ -3040,17 +3005,18 @@ function startCountdown(){
   };
   tick();CD_TIMER=setInterval(tick,1000);
 }
-/* ===== js/main.js (19) ===== */
+/* ===== js/main.js (20) ===== */
 /* ══════════════ 부팅 ══════════════ */
 const _restored=load();          // 새로고침해도 결과가 남아 있게
-fillRoles('ob');fillAge('ob');
+/* 온보딩 화면 제거로 불필요 (2026-08-12) */
 renderSnack();
-if(_restored&&S.kids.length){
-  updateHome();renderDaily();
-  show('s-home');
-}else if(!S.kids.length){
-  show('s-onboard');
-}
+/* 🔴 2026-08-12: 첫 방문자에게만 따로 보여주던 온보딩 화면(s-onboard)을 없앴다.
+   사장님 지시 — "온보딩이랑 메인화면이 걍 똑같이 나와야지 사주아이처럼".
+   사주아이도 첫 방문에 별도 안내 화면이 없다. 바로 상품이 보이고,
+   아무거나 누르면 그때부터 검사 → 로그인으로 이어진다.
+   화면이 둘이면 문구·사진을 두 번 고쳐야 하고, 실제로 한쪽만 고쳐서 사고가 났다. */
+updateHome();renderDaily();
+show('s-home');
 window.__booted=true;            // 이 시점부터 화면 전환마다 자동 저장
 
 /* 점검용 창구 — const 로 선언된 전역은 개발자도구에서 바로 안 잡힌다.
