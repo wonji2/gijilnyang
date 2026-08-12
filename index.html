@@ -145,8 +145,8 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 .fit-item h4{font-family:'Jua';font-size:.98rem;margin-bottom:4px}
 .fit-item p{font-size:.87rem}
 .fit-item .say{display:flex;gap:8px;margin-top:8px;font-size:.85rem}
-.fit-item .say .mini{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);flex:0 0 auto;position:relative;background:#fff}
-.fit-item .say .mini.k{background:linear-gradient(140deg,var(--brown) 30%,#fff 65%)}
+.fit-item .say .mini{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--pri);flex:0 0 auto;position:relative;background:#fff url(assets/chuvi.png) center/cover}
+.fit-item .say .mini.k{border-color:var(--moss);background:#fff url(assets/kancho.png) center/cover}
 .footer-note{font-size:.75rem;color:var(--sub);margin-top:28px;padding-top:16px;border-top:1.5px solid var(--line)}
 .footer-note h4{font-family:'Jua';font-size:.85rem;color:var(--ink);margin-bottom:6px}
 .footer-note ol{padding-left:16px;display:grid;gap:4px}
@@ -828,7 +828,7 @@ details.acc>*:not(summary){margin-top:10px}
       <button class="btn" id="chat-send" style="width:auto;padding:12px 18px" onclick="sendChat()">전송</button>
     </div>
     <p class="small" style="margin-top:6px">✍️ 상황을 자세히 쓸수록 상담 정확도가 높아져요 — 언제·어디서·아이가 뭘 했고·내가 어떻게 반응했는지</p>
-    <button class="back mt8" style="width:100%;text-align:center" onclick="postToTalk()">🎋 이 고민을 익명 사연으로 대나무숲에 올리기</button>
+    <button class="back mt8" style="width:100%;text-align:center" onclick="postToTalk()">🌳 이 고민을 익명 사연으로 대나무숲에 올리기</button>
   </div>
   <div class="card" id="chat-recharge" style="display:none;text-align:center">
     <h3 style="font-size:1.05rem"><i class="ddeok-i"></i> 까까 1개로 상담 6번 더</h3>
@@ -2745,7 +2745,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (443) ===== */
+/* ===== js/chat.js (459) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -3087,6 +3087,8 @@ function sysPrompt(){
    · 목표 수준: 일반 AI 챗봇의 무난한 답이 아니라, 돈이 아깝지 않은 육아전문 심리상담사의 답. 공감은 하되 반드시 원인 분석과 실행 가능한 처방까지 완결한다.
    · 츄비는 ①을 길게 ④를 짧게, 칸쵸는 ①을 한 문장으로 줄이고 ②④를 길게 쓴다.
    · 한국어. 문단을 절대 한 덩어리로 붙여 쓰지 않는다.
+   · 🔴 줄표(—)·대시(–)·하이픈으로 문장을 잇지 마라. 어색하다. 문장은 마침표로 끊고, 이어붙일 땐 쉼표나 새 문장으로 쓴다.
+   · 말투는 사주·운세 톤이 아니라 육아 논문·아동심리 전문가 강의의 말투. '결이 진하다/옅다' 같은 표현을 쓰지 않는다.
 6. 다른 부모들의 경험이 도움이 될 만한 고민(훈육 방식 선택, 습관 잡기 등)이면 가끔 "이건 대나무숲에 투표로 물어봐도 재밌겠어요"라고 한 문장 제안한다. 매번 하지는 않는다.
 7. 답변의 맨 끝에 '|||'를 쓰고, 방금 나눈 대화 흐름에서 이 사용자가 다음에 물어볼 법한 짧은 질문 2개를 '|'로 구분해 붙여라. 사용자의 말투를 닮은 1인칭 질문으로. (예: |||내일 아침 등원 때 뭐라고 말해줘?|나만 이렇게 힘든 거 맞아?) '|||' 앞부분만 사용자에게 보인다.`;
 }
@@ -3104,11 +3106,24 @@ async function sendChat(){
   inp.value='';CHAT.busy=true;
   if(isPresc)inp.placeholder='어떤 점이 고민이세요?';
   document.getElementById('chat-chips').innerHTML='';
-  addMsg('user',text);addMsg('cat','…');
+  addMsg('user',text);
+  /* msgs 는 로딩 메시지가 섞이기 전(user 까지)에 계산한다 */
+  const msgs=CHAT.hist[CHAT.cat].filter(m=>m.text&&m.text!=='…'&&!m.loading).map(m=>({role:m.role==='user'?'user':'assistant',content:m.text}));
+  /* 대답 준비 중 멘트 — 돌아가며 표시해서 '멈춘 것 같은' 느낌을 없앤다 (사장님 지적) */
+  const loadMsgs=CHAT.cat==='kancho'
+    ?['칸쵸가 논문을 뒤적이는 중이다냥…','검증된 육아 연구를 확인하는 중…','상황에 맞는 처방을 고르는 중이다냥…']
+    :['츄비가 마음을 먼저 헤아리는 중이에요…','비슷한 사례와 연구를 찾아보는 중이에요…','어떻게 답할지 고르는 중이에요…'];
+  let _li=0;
+  addMsg('cat',loadMsgs[0]);
+  CHAT.hist[CHAT.cat][CHAT.hist[CHAT.cat].length-1].loading=true;
+  const _loadTimer=setInterval(function(){
+    _li=(_li+1)%loadMsgs.length;const a=CHAT.hist[CHAT.cat];
+    if(a.length&&a[a.length-1].loading){a[a.length-1].text=loadMsgs[_li];renderChat();}
+  },1600);
   try{
     if(window.FAIL_TEST)throw new Error('연결 테스트');
-    const msgs=CHAT.hist[CHAT.cat].filter(m=>m.text&&m.text!=='…').map(m=>({role:m.role==='user'?'user':'assistant',content:m.text}));
     let reply=(await aiCall(isPresc?prescPrompt():sysPrompt(),msgs,1000))||'잠깐 딴청 피웠어요. 다시 말해줄래요?';
+    clearInterval(_loadTimer);
     let chips=null;
     if(reply.includes('|||')){
       const seg=reply.split('|||');reply=seg[0].trim();
@@ -3120,7 +3135,8 @@ async function sendChat(){
     if(catN===3)addTalkBridge();
     renderChips(chips);
   }catch(e){
-    CHAT.hist[CHAT.cat].pop();        // '…' 제거
+    clearInterval(_loadTimer);
+    CHAT.hist[CHAT.cat].pop();        // 로딩 메시지 제거
     CHAT.hist[CHAT.cat].pop();        // 방금 사용자 메시지 제거 (재전송 시 다시 표시)
     if(isPresc){CHAT.presc++;CHAT.prescMode=true;}   /* 처방권도 실패하면 돌려준다 */
     else if(spent==='free')CHAT.free++;else if(spent==='paid')CHAT.paid++;   /* 깎인 쪽에 정확히 환불 */
@@ -3181,7 +3197,7 @@ async function postToTalk(){
     if(v&&v.summary)summary=v.summary;
     if(v&&Array.isArray(v.opts))opts=v.opts;
   }catch(e){}
-  if(btn){btn.disabled=false;btn.textContent='🎋 이 고민을 익명 사연으로 대나무숲에 올리기';}
+  if(btn){btn.disabled=false;btn.textContent='🌳 이 고민을 익명 사연으로 대나무숲에 올리기';}
   goTalk();
   setTimeout(()=>{
     const t=document.getElementById('talk-input');if(t){t.value=summary;t.focus();}
@@ -3352,7 +3368,7 @@ function maybeAskLogin(){
     if(confirm('검사 결과가 나왔어요! 🎉\n\n카카오로 로그인하면 이 결과와 까까가 저장돼서\n기기를 바꿔도, 나중에 다시 와도 이어서 볼 수 있어요.\n\n지금 로그인할까요?'))kakaoLogin();
   },1100);
 }
-/* ===== js/wallet.js (196) ===== */
+/* ===== js/wallet.js (209) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -3360,9 +3376,9 @@ function maybeAskLogin(){
    talk = 상담 덤(회). 지급은 서버 grant_kka(p_talk). */
 const KKA_PACKS=[
   {n:1, bonus:0, talk:0, name:"까까 1개"},
-  {n:3, bonus:0, talk:3, name:"까까 3개"},
-  {n:5, bonus:1, talk:0, name:"까까 5개"},
-  {n:10,bonus:3, talk:6, name:"까까 10개", best:true}
+  {n:3, bonus:0, talk:0, name:"까까 3개"},
+  {n:5, bonus:0, talk:6, name:"까까 5개"},
+  {n:10,bonus:2, talk:0, name:"까까 10개", best:true}
 ];
 /* ── 상담만 소액으로 충전 (2026-08-12) ──────────────────────────────
    사주아이는 채팅 충전을 330원/3회(회당 110원)로 따로 판다. 우리 까까는
@@ -3442,14 +3458,27 @@ async function _tossPay(createBody){
     alert('결제가 진행되지 않았어요'+((e&&e.message)?': '+e.message:''));
   }
 }
+/* ⚠️ 데모 충전 모드 — 토스 라이브 키를 넣기 전까지 결제 없이 바로 충전(사장님 지시).
+   토스 실결제로 전환하려면 아래 _demoTopup 호출을 _tossPay({pack:i})/_tossPay({kka:n}) 로 되돌리고
+   서버 wallet_topup_demo 를 다시 revoke 한다. */
+async function _demoTopup(n, talk, label){
+  const r=await rpc('wallet_topup_demo',{p_token:ME.token,p_n:n,p_talk:talk||0});
+  if(r&&r.ok){
+    KKA=r.kka;if(typeof r.talk==='number')CHAT.paid=r.talk;renderSnack();renderWallet();save();
+    alert('🍪 충전 확인. '+label+' 들어왔다냥.\n(지금은 결제 없이 바로 충전되는 데모예요)');
+    return true;
+  }
+  alert(r&&r.error==='daily'?'오늘 데모 충전 한도에 닿았어요! 내일 다시 해주세요.':'잠시 후 다시 시도해주세요!');
+  return false;
+}
 async function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
   if(!isLoggedIn()){
     if(confirm('까까 충전에는 카카오 로그인이 필요해요.\n(결제·잔액이 계정에 안전하게 저장돼요)\n\n로그인할까요?'))kakaoLogin();
     return;
   }
-  if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''}${p.talk?` +상담 ${p.talk}회`:''} · ${kkaWon(p.n)} 결제를 진행할까요?`))return;
-  await _tossPay({pack:i});
+  if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''}${p.talk?` +상담 ${p.talk}회`:''} · ${kkaWon(p.n)}\n충전할까요?`))return;
+  await _demoTopup(p.n+p.bonus, p.talk, `까까 ${p.n+p.bonus}개${p.talk?` + 상담 ${p.talk}회`:''}`);
 }
 /* 부족분 원클릭 충전 — 잔액 제로 3-① (딱 N개만 사서 잔액이 안 남게) */
 async function buyKkaExact(n){
@@ -3459,7 +3488,7 @@ async function buyKkaExact(n){
     return;
   }
   if(!confirm(`부족한 까까 ${n}개만 충전할까요? · ${kkaWon(n)}\n(딱 필요한 만큼만 — 잔돈이 안 남아요)`))return;
-  await _tossPay({kka:n});
+  await _demoTopup(n, 0, `까까 ${n}개`);
 }
 
 /* 결제창에서 돌아온 뒤 서버 승인 → 까까 지급 (부팅 때 main.js 가 부른다) */
