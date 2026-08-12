@@ -307,34 +307,31 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <button class="btn pri mt8" id="daily-cta" style="padding:11px" onclick="startTest('child')">검사하러 가기 →</button>
   </div>
 
+  <!-- 상품 이름은 사주아이처럼 2~5글자 명사로 통일 (2026-08-12 사장님 지시)
+       "아이가 없어도 나의 리포트"는 부모성향+원가족으로 가는 중복 입구라 제거.
+       예비부모 문구는 '부모 성향' sub 로 흡수. -->
   <div class="grid2">
     <div class="tile" style="background:var(--amber-soft)" role="button" tabindex="0" onclick="startTest('child')">
-      
-      <div class="big">아이<br>기질검사</div>
-      <div class="sub">0세부터 중·고등까지<br>연령 맞춤 문항 <span id="st-child"></span></div>
+      <div class="big">아이 기질</div>
+      <div class="sub">0세~중·고등<br>연령 맞춤 검사 <span id="st-child"></span></div>
     </div>
     <div class="tile" style="background:var(--moss-soft)" role="button" tabindex="0" onclick="startTest('parent')">
-      
-      <div class="big">부모<br>성향검사</div>
-      <div class="sub">엄마·아빠·조부모 누구나<br>3분이면 끝 <span id="st-parent"></span></div>
+      <div class="big">부모 성향</div>
+      <div class="sub">예비부모도 · 3분<br>나의 양육 에너지 <span id="st-parent"></span></div>
     </div>
     <div class="tile" style="background:var(--pink-soft)" role="button" tabindex="0" onclick="goFit()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
-      <div class="big">부모×아이<br>궁합</div>
-      <div class="sub">마찰 지점과 처방까지<br><span id="st-fit">두 검사 완료 후</span></div>
+      <div class="big">궁합</div>
+      <div class="sub">부모×아이 마찰 지점<br><span id="st-fit">두 검사 완료 후</span></div>
     </div>
     <div class="tile" style="background:var(--lav-soft)" role="button" tabindex="0" onclick="startTest('family')">
       <span class="price">NEW</span>
-      <div class="big">원가족<br>리포트</div>
-      <div class="sub">나를 키운 방식이 내 육아에?<br>조부모×손주 궁합까지 <span id="st-fam"></span></div>
+      <div class="big">원가족</div>
+      <div class="sub">나를 키운 방식이 내 육아에?<br>대물림 지도 <span id="st-fam"></span></div>
     </div>
     <div class="tile" style="background:#FDF0F6;grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="startCareer()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 우리 아이 미래 직업</div><div class="sub">지금 기질에 잘 맞는 일 3가지 · 친구들이랑 비교해보세요</div></div>
-      <span class="small">›</span>
-    </div>
-    <div class="tile" style="background:var(--pri-soft);grid-column:1/-1;min-height:88px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="show('s-me')">
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">아이가 없어도, 나의 리포트</div><div class="sub">예비부모 · 어른이 된 아이 — 원가족이 만든 지금의 나</div></div>
+      <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 미래 직업</div><div class="sub">지금 기질에 잘 맞는 일 3가지 · 친구들이랑 비교해보세요</div></div>
       <span class="small">›</span>
     </div>
   </div>
@@ -583,25 +580,6 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 </section>
 
 <!-- ═══════════ 나의 리포트 (부모가 아니어도) ═══════════ -->
-<section class="screen" id="s-me">
-  <button class="back" onclick="show('s-home')">← 홈으로</button>
-  <div class="result-hero">
-    <span class="tag pri">나의 리포트</span>
-    <div class="typename">나도 누군가의 아이였으니까</div>
-    <div class="typedesc">예비부모도, 아이가 없어도. 검증된 척도로 나를 분석해요.</div>
-  </div>
-  <div class="card">
-    <p style="font-size:.92rem;line-height:1.8">우리는 타고난 기질 위에, 자란 집의 공기가 스며들어 만들어져요. 왜 나는 위로가 어색한지, 왜 계획이 틀어지면 유난히 불안한지 — 그 답의 절반은 <b>내가 어떤 아이였고 어떤 집에서 자랐는지</b>에 있어요. 두 검사를 이으면 그 지도가 나옵니다.</p>
-  </div>
-  <div class="grid2">
-    <div class="tile" style="background:var(--moss-soft)" onclick="S.myRole=S.myRole||'보호자';S.activeP=S.myRole;beginTest('parent')"><div class="big">지금의 나<br>성향검사</div><div class="sub">5가지 축 · 3분</div></div>
-    <div class="tile" style="background:var(--lav-soft)" onclick="startTest('family')"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big">나를 만든 집<br>원가족검사</div><div class="sub">따뜻함×통제 · 대물림 지도</div></div>
-  </div>
-  <div class="card">
-    <p style="font-size:.88rem"><b>🌱 예비부모라면</b> — 내 성향검사 결과가 곧 '앞으로의 양육 에너지 예보'예요. 아이를 만나기 전에 내 무기와 살펴볼 지점을 미리 알아두는 것, 그게 가장 빠른 육아 준비입니다.</p>
-    <p class="small mt8">두 검사를 모두 마치면 원가족 리포트가 내 성향과 자동으로 연결 해석돼요.</p>
-  </div>
-</section>
 
 <!-- ═══════════ 사이트 정보 (숨김 메뉴) ═══════════ -->
 <section class="screen" id="s-info">
