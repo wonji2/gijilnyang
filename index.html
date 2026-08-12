@@ -278,6 +278,9 @@ details.acc>*:not(summary){margin-top:10px}
 .shop-n{font-family:'Jua';font-size:.98rem;flex:1;min-width:0}
 .shop-n b{color:var(--pri)}
 .shop-won{font-family:'Jua';white-space:nowrap;flex:none}
+/* 내정보 가족 관리 버튼 (2026-08-12) */
+.mini-act{border:1px solid var(--line);background:#fff;border-radius:10px;padding:4px 8px;font-size:.72rem;font-family:'Gowun Dodum';color:var(--sub);cursor:pointer;flex:none;white-space:nowrap}
+.mini-act:active{background:var(--lav-soft)}
 </style>
 </head>
 <body>
@@ -1557,7 +1560,7 @@ function scoreChild(){
   renderChildReport();
   show('s-child-result');animateBars();updateHome();
 }
-/* ===== js/render/onboard.js (85) ===== */
+/* ===== js/render/onboard.js (86) ===== */
 function chooseWho(mode){
   const b=document.getElementById('who-body');b.innerHTML='';
   if(mode==='parent'){
@@ -1616,7 +1619,8 @@ function readAge(p){
   const now=new Date();
   let months=(now.getFullYear()-y)*12+(now.getMonth()+1-mo);
   if(months<1||months>240){alert('출생 연·월을 다시 확인해주세요!');return null;}
-  return bandOf(months);
+  /* by/bm(출생 연·월)도 저장 — months 는 시간이 지나면 낡는다. 부팅 때 by/bm 으로 재계산 (2026-08-12) */
+  return {...bandOf(months), by:y, bm:mo};
 }
 function fillRoles(p){const box=document.getElementById(p+'-roles');if(!box||box.children.length)return;
   PARENT_ROLES.forEach(([r,e])=>{const b=document.createElement('button');b.className='opt'+(r===S.myRole?' sel':'');b.style.cssText='padding:8px 12px;font-size:.85rem';b.textContent=e+' '+r;
@@ -3195,7 +3199,7 @@ function askLikeThis(i){
     },250);
   },60);
 }
-/* ===== js/render/library2.js (107) ===== */
+/* ===== js/render/library2.js (175) ===== */
 /* ══════════════ 내정보(격자) · 오늘의 한마디 화면 · 카운트다운 ══════════════
    내정보은 기록장이 아니라 "안 산 것 진열대"다 (사주아이 /library 실측).
    빈칸이 곧 광고이고, 미구매 항목을 지우지 않는다.
@@ -3204,7 +3208,7 @@ function askLikeThis(i){
 function libRows(){
   const rows=[];
   S.kids.forEach((k,i)=>{
-    rows.push({who:k.name,sub:k.label||'',items:[
+    rows.push({who:k.name,sub:k.label||'',kidIdx:i,items:[
       {t:'기질검사', ok:!!k.score, price:'무료', go:`S.activeK=${i};startTest('child')`, open:`S.activeK=${i};S.cScore=S.kids[${i}].score;renderChildReport()`},
       {t:'미래 직업', ok:!!k.career, price:'까까 1', go:`S.activeK=${i};startCareer()`, open:`S.activeK=${i};renderCareer()`},
       {t:'궁합', ok:!!Object.keys(UNLOCKS).some(x=>x.indexOf('×'+k.name)>0), price:'까까 1', go:`S.activeK=${i};goFit()`, open:`S.activeK=${i};goFit()`}
@@ -3212,7 +3216,7 @@ function libRows(){
   });
   Object.keys(S.parents).forEach(n=>{
     const p=S.parents[n]||{};
-    rows.push({who:n,sub:p.ptype||'',items:[
+    rows.push({who:n,sub:p.ptype||'',parentName:n,items:[
       {t:'성향검사', ok:!!p.score, price:'무료', go:`S.activeP='${n}';startTest('parent')`, open:`S.activeP='${n}';S.pScore=S.parents['${n}'].score;renderParentReport()`}
     ]});
   });
@@ -3235,8 +3239,11 @@ function goLibrary(){
     : rows.map(r=>`
       <div class="card">
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
-          <h3 style="font-size:1.02rem">${esc(r.who)}</h3><span class="small">${esc(r.sub)}</span>
+          <h3 style="font-size:1.02rem">${esc(r.who)}</h3><span class="small" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.sub)}</span>
+          ${r.kidIdx!=null?`<button class="mini-act" onclick="libEditKid(${r.kidIdx})">✏️ 수정</button><button class="mini-act" onclick="libDelKid(${r.kidIdx})">🗑</button>`:''}
+          ${r.parentName?`<button class="mini-act" onclick="libDelParent('${r.parentName}')">🗑</button>`:''}
         </div>
+        ${r.kidIdx!=null?`<div id="lib-edit-${r.kidIdx}" style="display:none"></div>`:''}
         ${r.items.map(i=>`
           <div class="book" style="align-items:center;cursor:pointer" onclick="${i.ok?i.open:i.go}">
             <div class="bicon">${i.ok?'📄':'＋'}</div>
@@ -3244,8 +3251,72 @@ function goLibrary(){
               <p class="small">${i.ok?'완료 · 다시 보기':'아직 안 했어요'}</p></div>
             <span class="small" style="white-space:nowrap;color:${i.ok?'var(--moss)':'var(--pri)'}">${i.ok?'완료 ✓':i.price+' ›'}</span>
           </div>`).join('')}
-      </div>`).join('') + `<div class="card">${nextRoutes('lib')}</div>`;
+      </div>`).join('')
+      + `<div class="card" style="text-align:center;padding:14px">
+           <button class="btn ghost" style="margin:0" onclick="chooseWho('child')">＋ 아이 추가 · 검사하기</button>
+           <button class="btn ghost mt8" style="margin-top:8px" onclick="chooseWho('parent')">＋ 다른 양육자 검사하기</button>
+         </div>`
+      + `<div class="card">${nextRoutes('lib')}</div>`;
   show('s-library');
+}
+
+/* ── 가족 구성원 수정·삭제 (2026-08-12 사장님 지시 — 사주아이 사주정보 관리 참고) ── */
+function libEditKid(i){
+  const k=S.kids[i];if(!k)return;
+  const box=document.getElementById('lib-edit-'+i);if(!box)return;
+  if(box.style.display!=='none'){box.style.display='none';box.innerHTML='';return;}
+  /* 출생 연·월 기본값: 저장된 by/bm 이 있으면 그대로, 없으면 개월수에서 역산 */
+  let by=k.by,bm=k.bm;
+  if(!by){const d=new Date();d.setMonth(d.getMonth()-(k.months||0));by=d.getFullYear();bm=d.getMonth()+1;}
+  const nowY=new Date().getFullYear();
+  let yOpts='';for(let y=nowY;y>=nowY-19;y--)yOpts+=`<option value="${y}"${y===by?' selected':''}>${y}년</option>`;
+  let mOpts='';for(let m=1;m<=12;m++)mOpts+=`<option value="${m}"${m===bm?' selected':''}>${m}월</option>`;
+  box.innerHTML=`
+    <div style="background:var(--lav-soft);border-radius:12px;padding:12px;margin-bottom:10px">
+      <input id="le-name-${i}" value="${esc(k.name)}" placeholder="애칭" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-family:'Gowun Dodum'">
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <select id="le-y-${i}" style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-family:'Gowun Dodum';background:#fff">${yOpts}</select>
+        <select id="le-m-${i}" style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-family:'Gowun Dodum';background:#fff">${mOpts}</select>
+      </div>
+      <button class="btn moss mt8" onclick="libSaveKid(${i})">저장</button>
+    </div>`;
+  box.style.display='block';
+}
+function libSaveKid(i){
+  const k=S.kids[i];if(!k)return;
+  const nm=document.getElementById('le-name-'+i).value.trim();
+  if(!nm){alert('애칭을 입력해주세요!');return;}
+  const y=parseInt(document.getElementById('le-y-'+i).value),mo=parseInt(document.getElementById('le-m-'+i).value);
+  const now=new Date();const months=(now.getFullYear()-y)*12+(now.getMonth()+1-mo);
+  if(months<1||months>240){alert('출생 연·월을 다시 확인해주세요!');return;}
+  const oldName=k.name,oldBand=k.band;
+  const b=bandOf(months);
+  /* 이름이 바뀌면 잠금·결과 키(아이상세×이름, 엄마×이름)도 같이 옮긴다 — 안 옮기면 산 게 사라진다 */
+  if(nm!==oldName){
+    Object.keys(UNLOCKS).forEach(key=>{
+      if(key.endsWith('×'+oldName)){UNLOCKS[key.slice(0,key.length-oldName.length)+nm]=UNLOCKS[key];delete UNLOCKS[key];}
+    });
+  }
+  k.name=nm;k.months=months;k.band=b.band;k.ageY=b.ageY;k.label=b.label;k.by=y;k.bm=mo;
+  save();
+  if(k.score&&b.band!==oldBand)alert('연령대가 바뀌어 문항 세트가 달라졌어요.\n기존 결과는 남겨두지만, 다시 검사하면 더 정확해져요!');
+  goLibrary();
+}
+function libDelKid(i){
+  const k=S.kids[i];if(!k)return;
+  if(!confirm(k.name+' 정보를 삭제할까요?\n검사 결과·리포트·궁합 기록이 함께 사라지고 되돌릴 수 없어요.'))return;
+  Object.keys(UNLOCKS).forEach(key=>{if(key.endsWith('×'+k.name))delete UNLOCKS[key];});
+  S.kids.splice(i,1);
+  if(S.activeK>=S.kids.length)S.activeK=Math.max(0,S.kids.length-1);
+  save();goLibrary();
+}
+function libDelParent(n){
+  if(!S.parents[n])return;
+  if(!confirm(n+' 성향 검사 결과를 삭제할까요?\n관련 궁합·심화 기록이 함께 사라지고 되돌릴 수 없어요.'))return;
+  Object.keys(UNLOCKS).forEach(key=>{if(key.indexOf(n+'×')===0||key==='부모심화×'+n)delete UNLOCKS[key];});
+  delete S.parents[n];
+  if(S.activeP===n)S.activeP=Object.keys(S.parents)[0]||'엄마';
+  save();goLibrary();
 }
 
 /* ── 오늘의 한마디: 중앙 FAB 목적지 (매일 바뀌는 무료 콘텐츠 = 매일 올 이유) ── */
@@ -3286,7 +3357,8 @@ function todayTip(kid){
     '새벽형':'오늘 뭔가 시킬 일이 있다면 <b>미리 한 번 예고</b>해 주세요. 이 아이는 마음의 준비 시간만 주면 다 해냅니다.',
     '무지개형 (혼합)':'오늘은 아이 컨디션을 먼저 보세요. 여러 결이 섞인 아이라 <b>날마다 다른 게 정상</b>이에요.'
   };
-  return T[kid.ktype]||T['무지개형 (혼합)'];
+  /* ktype 은 세부 이름(불꽃 천둥형)이 됐으므로 계열 키는 kbase 로 (2026-08-12) */
+  return T[kid.kbase||kid.ktype]||T['무지개형 (혼합)'];
 }
 let CD_TIMER=null;
 function startCountdown(){
@@ -3303,7 +3375,7 @@ function startCountdown(){
   };
   tick();CD_TIMER=setInterval(tick,1000);
 }
-/* ===== js/main.js (28) ===== */
+/* ===== js/main.js (31) ===== */
 /* ══════════════ 부팅 ══════════════ */
 const _restored=load();          // 새로고침해도 결과가 남아 있게
 /* 온보딩 화면 제거로 불필요 (2026-08-12) */
@@ -3317,7 +3389,10 @@ loadMember();          /* 저장된 카카오 로그인 복원 */
 /* 🔴 예전에 저장된 아이는 연령 밴드가 옛 체계다(초등·영아 밴드 신설 전).
    2016년생이 유아 질문을 받는 사고 — 부팅 때 개월수로 전부 재계산한다. (2026-08-12) */
 S.kids.forEach(k=>{
-  if(k&&k.months!=null){const b=bandOf(k.months);
+  if(!k)return;
+  /* 출생 연·월이 있으면 개월수부터 오늘 기준으로 재계산 (months 는 저장 시점 값이라 낡는다) */
+  if(k.by&&k.bm){const now=new Date();const m=(now.getFullYear()-k.by)*12+(now.getMonth()+1-k.bm);if(m>=1&&m<=240)k.months=m;}
+  if(k.months!=null){const b=bandOf(k.months);
     if(k.band!==b.band||k.label!==b.label){k.band=b.band;k.ageY=b.ageY;k.label=b.label;}}
 });save();
 kakaoCallback();       /* 카카오에서 ?code= 로 돌아온 경우 로그인 마무리 (비동기) */
