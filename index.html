@@ -824,8 +824,8 @@ details.acc>*:not(summary){margin-top:10px}
   <div id="chat-chips" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"></div>
   <div class="card" id="chat-input-card" style="padding:12px">
     <div style="display:flex;gap:8px">
-      <input id="chat-input" placeholder="어떤 점이 고민이세요? 자세히 쓸수록 정확해져요" style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.95rem" />
-      <button class="btn" id="chat-send" style="width:auto;padding:12px 18px" onclick="sendChat()">전송</button>
+      <input id="chat-input" placeholder="어떤 점이 고민이세요? 자세히 쓸수록 정확해져요" style="flex:1;min-width:0;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.95rem" />
+      <button class="btn" id="chat-send" style="width:auto;flex:none;padding:12px 18px" onclick="sendChat()">전송</button>
     </div>
     <p class="small" style="margin-top:6px">✍️ 상황을 자세히 쓸수록 상담 정확도가 높아져요 — 언제·어디서·아이가 뭘 했고·내가 어떻게 반응했는지</p>
     <button class="back mt8" style="width:100%;text-align:center" onclick="postToTalk()">🌳 이 고민을 익명 사연으로 대나무숲에 올리기</button>
@@ -1901,7 +1901,7 @@ function renderParentReport(){
   else S4.push(['🌩 훈육의 순간','크게 끓지도 크게 무르지도 않은 안정형이에요. 한 번에 한 가지 지시, 눈 맞추고 짧게 — 이 기본기만 지키면 충분합니다.']);
   if((PX.night||3)>=4)S4.push(['🌙 잠자리','재우다 같이 방전되는 타입이군요. 취침 루틴 연구의 결론은 "길게"가 아니라 "같은 순서로 짧게" — 목욕→책 한 권→불끄기 3단계면 충분하고, 효과는 3일 안에 나타나요.']);
   else if(avg.C<=2.6)S4.push(['🌙 잠자리','매일 같은 루틴이 갑갑한 자유형이에요. 시간은 유연하게, 순서만 고정 — 그 절충이 연구가 말하는 최소 유효량입니다.']);
-  else S4.push(['🌙 잠자리','잠자리 루틴을 지킬 힘이 있는 프로필이에요. 아이가 즉흥형이라면 "오늘은 책 한 권만, 순서는 똑같아"로 유연성을 얹어 주세요.']);
+  else S4.push(['🌙 잠자리','밤에는 재우다 같이 지치기보다, 루틴을 꾸준히 지키는 편이에요. 그 힘을 이렇게 써보세요. 잠들기 30분 전부터 불을 한 단계 낮추고 "목욕 → 책 한 권 → 불 끄기" 순서를 매일 똑같이 반복하면, 아이 몸이 "다음은 잠"을 예측해 스스로 준비합니다. 아이가 그날그날 기분이 다른 즉흥형이면 "순서는 똑같이, 오늘은 책만 한 권"으로 유연성만 살짝 얹어 주세요. 시간은 유연해도 순서만 지키면 취침 전쟁의 온도가 3일 안에 내려갑니다.']);
   /* 🗓 4장면은 무료(아코디언) — 아이 리포트와 동일한 구조 (2026-08-12 사장님 지시:
      "부모는 왜 심화 더보기 결과가 없어?") */
   const sc=document.getElementById('p-scenes');
@@ -2013,7 +2013,7 @@ function renderChildReport(){
    `<p style="font-family:'Jua';font-size:1.05rem;line-height:1.5">${hook}</p>
     <p class="mt8">${tale}</p>
     <p class="mt8"><b>일상에서는 이렇게 보여요.</b> ${dailyTxt}</p>
-    <p class="mt8">지금까지 ${josa(nm,'를')} 키우며 느꼈던 '왜 이럴까'의 절반은, 사실 타고난 기질이었을 거예요. 고쳐야 할 목록이 아니라 함께 살아갈 지도 — 그 지도를 손에 쥐었다는 것만으로 오늘부터의 육아는 조금 달라집니다.</p>`;
+    <p class="mt8">지금까지 ${josa(nm,'를')} 키우며 느꼈던 '왜 이럴까'의 절반은, 사실 타고난 기질이었어요. 기질은 부모를 쏙 닮기도 하고, 정반대이기도 합니다. 닮은 쪽은 말하지 않아도 통하지만, 반대인 쪽은 같은 상황에서도 서로를 이해하기가 유독 어렵죠. 그래서 아이 기질만큼 중요한 게 '나는 어떤 부모인가'예요. 둘이 어디서 부딪히고 어디서 통하는지까지 알면, 매일의 육아가 한결 수월해집니다.</p>`;
   // Rothbart 3상위요인 (한국판 CBQ 3요인 구조 근거): 외향성 / 부정적 정서 / 의도적 통제
   const sup={
     "세상에 다가가는 힘":(avg.act+avg.app)/2,
