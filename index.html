@@ -667,6 +667,12 @@ details.acc>*:not(summary){margin-top:10px}
     <p class="mt8">※ 결과 그래프의 회색 기준선(3.0)은 5점 응답 척도의 중간값이며, 표준화 규준 평균이 아닙니다. 색깔 비율 그래프의 세로선(33%)은 세 기질이 균등할 때의 값입니다. 정식 버전에서는 국내 타당화 연구의 규준 자료를 단계적으로 반영할 예정입니다.</p>
   </details>
   </div></div>
+  <div class="card" style="text-align:center;font-size:.85rem">
+    <a href="/privacy.html" style="color:var(--pri)">개인정보처리방침</a>
+    &nbsp;·&nbsp;
+    <a href="/terms.html" style="color:var(--pri)">이용약관</a>
+    <p class="small mt8">원츠비 · 대표 원지선 · 사업자등록 390-58-00826<br>통신판매업 제2024-용인수지-2336호 · momcal@kakao.com</p>
+  </div>
 </section>
 
 <!-- ═══════════ 하단 탭바 ═══════════ -->
@@ -2954,7 +2960,7 @@ async function postToTalk(){
     window.scrollTo(0,0);
   },100);
 }
-/* ===== js/auth.js (161) ===== */
+/* ===== js/auth.js (162) ===== */
 /* ══════════════ 카카오 로그인 (2026-08-12) ══════════════
    흐름 (사주아이와 동일한 인가코드 방식):
      [카카오로 시작하기] → 카카오 동의화면 → ?code= 로 돌아옴
@@ -3098,6 +3104,7 @@ function memberCardHTML(){
     <p style="font-size:.92rem"><b>로그인하면 결과·까까가 안전하게 저장돼요</b></p>
     <p class="small mt8">기기를 바꿔도 이어서 볼 수 있어요.</p>
     <button class="btn mt8" style="background:#FEE500;color:#191919" onclick="kakaoLogin()">💬 카카오로 3초 만에 로그인</button>
+    <p class="small mt8" style="font-size:.72rem;color:var(--sub)">로그인 시 <a href="/privacy.html" style="color:var(--pri)">개인정보처리방침</a>·<a href="/terms.html" style="color:var(--pri)">이용약관</a>에 동의하게 됩니다</p>
   </div>`;
 }
 function paintMemberCards(){
