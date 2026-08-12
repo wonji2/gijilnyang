@@ -3111,7 +3111,7 @@ function maybeAskLogin(){
     if(confirm('검사 결과가 나왔어요! 🎉\n\n카카오로 로그인하면 이 결과와 까까가 저장돼서\n기기를 바꿔도, 나중에 다시 와도 이어서 볼 수 있어요.\n\n지금 로그인할까요?'))kakaoLogin();
   },1100);
 }
-/* ===== js/wallet.js (164) ===== */
+/* ===== js/wallet.js (146) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -3149,64 +3149,46 @@ function renderWallet(){
       <p class="small mt8" style="text-align:center">까까 1개 = 리포트 열기 · 상담 ${KKA_TALK}회</p>
     </div>`;
 }
-/* ══ 토스페이먼츠 결제 (2026-08-12 — 사주아이와 같은 PG) ══
-   ⚠️ 아래는 토스 문서의 공개 테스트 키다. 사장님이 토스페이먼츠 가입을 마치면
-   ① 이 클라이언트 키를 라이브 키로 ② Supabase 시크릿 TOSS_SECRET_KEY 를 라이브 시크릿으로 교체.
-   금액·지급은 전부 서버(toss-pay Edge Function)가 정하고 검증한다. */
-const TOSS_CLIENT_KEY='test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
-(function(){var s=document.createElement('script');s.src='https://js.tosspayments.com/v2/standard';document.head.appendChild(s);})();
-
+/* ══ Stripe 결제 (2026-08-12 — 사주아이와 같은 PG, 가입비 0원) ══
+   Checkout(리다이렉트) 방식이라 프론트에 Stripe.js·공개키가 필요 없다.
+   서버(stripe-pay)가 세션을 만들어 url 을 주면 그리로 이동, 결제 후 ?pay=ok&session_id=… 로 돌아온다.
+   금액·지급은 전부 서버가 정하고 Stripe 에 되물어 확인한다.
+   ⚠️ 사장님이 Stripe 가입 후 대시보드에서 STRIPE_SECRET_KEY(sk_test_… → 나중에 sk_live_…)만 Supabase 에 넣으면 끝. */
 async function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
   if(!isLoggedIn()){
     if(confirm('까까 충전에는 카카오 로그인이 필요해요.\n(결제·잔액이 계정에 안전하게 저장돼요)\n\n로그인할까요?'))kakaoLogin();
     return;
   }
-  if(typeof TossPayments==='undefined'){alert('결제 모듈을 불러오는 중이에요. 잠시 후 다시 눌러주세요!');return;}
   if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''} · ${kkaWon(p.n)} 결제를 진행할까요?`))return;
-  /* 1) 서버에 주문 생성 — 금액은 서버가 정한다 */
+  /* 서버에 주문 생성 → Stripe 결제창 url 을 받아 그리로 이동 (금액은 서버가 정함) */
   let d;
   try{
-    const res=await fetch(SB_URL+'/functions/v1/toss-pay',{
+    const res=await fetch(SB_URL+'/functions/v1/stripe-pay',{
       method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-      body:JSON.stringify({action:'create',member_token:ME.token,pack:i})});
+      body:JSON.stringify({action:'create',member_token:ME.token,pack:i,origin:location.origin+location.pathname})});
     d=await res.json();
   }catch(e){alert('연결이 잠깐 끊겼어요. 다시 시도해주세요!');return;}
-  if(!d||d.error){alert(d&&d.error||'주문 생성에 실패했어요');return;}
-  /* 2) 토스 결제창 → 성공하면 ?pay=ok 로 돌아온다 (payReturn 이 마무리) */
-  try{
-    const toss=TossPayments(TOSS_CLIENT_KEY);
-    const payment=toss.payment({customerKey:TossPayments.ANONYMOUS});
-    await payment.requestPayment({
-      method:'CARD',
-      amount:{currency:'KRW',value:d.amount},
-      orderId:d.order_id, orderName:d.order_name,
-      successUrl:location.origin+location.pathname+'?pay=ok',
-      failUrl:location.origin+location.pathname+'?pay=fail',
-      card:{useEscrow:false,flowMode:'DEFAULT',useCardPoint:false,useAppCardOnly:false}
-    });
-  }catch(e){
-    if(e&&(e.code==='USER_CANCEL'||e.code==='PAY_PROCESS_CANCELED'))return;
-    alert('결제가 진행되지 않았어요'+((e&&e.message)?': '+e.message:''));
-  }
+  if(!d||!d.url){alert(d&&d.error||'결제창을 여는 데 실패했어요');return;}
+  location.href=d.url;   /* Stripe 결제 페이지로 이동. 성공하면 ?pay=ok&session_id=… 로 복귀 */
 }
 
 /* 결제창에서 돌아온 뒤 서버 승인 → 까까 지급 (부팅 때 main.js 가 부른다) */
 async function payReturn(){
   const q=new URLSearchParams(location.search);
-  if(q.get('pay')==='ok'&&q.get('paymentKey')){
+  if(q.get('pay')==='ok'&&q.get('session_id')){
     try{
-      const res=await fetch(SB_URL+'/functions/v1/toss-pay',{
+      const res=await fetch(SB_URL+'/functions/v1/stripe-pay',{
         method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
         body:JSON.stringify({action:'confirm',member_token:(typeof ME!=='undefined'&&ME&&ME.token)||'',
-          payment_key:q.get('paymentKey'),order_id:q.get('orderId'),amount:Number(q.get('amount'))})});
+          session_id:q.get('session_id')})});
       const d=await res.json();
       if(d&&d.ok){applyServerWallet(d.wallet);alert('🍪 까까 충전 완료!'+(d.granted?' (+'+d.granted+'개)':''));}
       else alert('결제 확인에 실패했어요: '+((d&&d.error)||'잠시 후 상점에서 잔액을 확인해주세요'));
     }catch(e){alert('결제 확인 중 연결이 끊겼어요. 상점에서 잔액을 확인해주세요!');}
     history.replaceState(null,'',location.pathname);
   }else if(q.get('pay')==='fail'){
-    alert('결제가 취소되거나 실패했어요'+(q.get('message')?'\n'+q.get('message'):''));
+    alert('결제가 취소됐어요. 언제든 다시 충전할 수 있어요 🐾');
     history.replaceState(null,'',location.pathname);
   }
 }
