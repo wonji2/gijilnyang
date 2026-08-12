@@ -2995,7 +2995,7 @@ function paintLogin(){
   const btns=document.querySelectorAll('[data-kakao-btn]');
   btns.forEach(b=>{b.style.display=isLoggedIn()?'none':'';});
 }
-/* ===== js/wallet.js (116) ===== */
+/* ===== js/wallet.js (163) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -3032,19 +3032,66 @@ function renderWallet(){
       <p class="small mt8" style="text-align:center">까까 1개 = 리포트 열기 · 상담 ${KKA_TALK}회</p>
     </div>`;
 }
+/* ══ 토스페이먼츠 결제 (2026-08-12 — 사주아이와 같은 PG) ══
+   ⚠️ 아래는 토스 문서의 공개 테스트 키다. 사장님이 토스페이먼츠 가입을 마치면
+   ① 이 클라이언트 키를 라이브 키로 ② Supabase 시크릿 TOSS_SECRET_KEY 를 라이브 시크릿으로 교체.
+   금액·지급은 전부 서버(toss-pay Edge Function)가 정하고 검증한다. */
+const TOSS_CLIENT_KEY='test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+(function(){var s=document.createElement('script');s.src='https://js.tosspayments.com/v2/standard';document.head.appendChild(s);})();
+
 async function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
-  if(!confirm(`${p.name} · 까까 ${p.n+p.bonus}개를 ${kkaWon(p.n)}에 충전할까요?\n(데모: 결제 없이 바로 충전됩니다)`))return;
-  /* 로그인이면 서버 지갑에 충전 — ⚠️ 토스 결제 붙이면 wallet_topup_demo 는 삭제하고 결제 검증으로 교체 */
-  if(isLoggedIn()){
-    const r=await rpc('wallet_topup_demo',{p_token:ME.token,p_n:p.n+p.bonus});
-    if(!(r&&r.ok)){alert(r&&r.error==='daily'?'오늘은 충전 한도에 닿았어요!':'잠시 후 다시 시도해주세요!');return;}
-    KKA=r.kka;
-  }else{
-    KKA+=p.n+p.bonus;
+  if(!isLoggedIn()){
+    if(confirm('까까 충전에는 카카오 로그인이 필요해요.\n(결제·잔액이 계정에 안전하게 저장돼요)\n\n로그인할까요?'))kakaoLogin();
+    return;
   }
-  renderSnack();renderWallet();save();
-  alert(`🍪 까까 ${p.n+p.bonus}개가 충전됐어요!`);
+  if(typeof TossPayments==='undefined'){alert('결제 모듈을 불러오는 중이에요. 잠시 후 다시 눌러주세요!');return;}
+  if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''} · ${kkaWon(p.n)} 결제를 진행할까요?`))return;
+  /* 1) 서버에 주문 생성 — 금액은 서버가 정한다 */
+  let d;
+  try{
+    const res=await fetch(SB_URL+'/functions/v1/toss-pay',{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({action:'create',member_token:ME.token,pack:i})});
+    d=await res.json();
+  }catch(e){alert('연결이 잠깐 끊겼어요. 다시 시도해주세요!');return;}
+  if(!d||d.error){alert(d&&d.error||'주문 생성에 실패했어요');return;}
+  /* 2) 토스 결제창 → 성공하면 ?pay=ok 로 돌아온다 (payReturn 이 마무리) */
+  try{
+    const toss=TossPayments(TOSS_CLIENT_KEY);
+    const payment=toss.payment({customerKey:TossPayments.ANONYMOUS});
+    await payment.requestPayment({
+      method:'CARD',
+      amount:{currency:'KRW',value:d.amount},
+      orderId:d.order_id, orderName:d.order_name,
+      successUrl:location.origin+location.pathname+'?pay=ok',
+      failUrl:location.origin+location.pathname+'?pay=fail',
+      card:{useEscrow:false,flowMode:'DEFAULT',useCardPoint:false,useAppCardOnly:false}
+    });
+  }catch(e){
+    if(e&&(e.code==='USER_CANCEL'||e.code==='PAY_PROCESS_CANCELED'))return;
+    alert('결제가 진행되지 않았어요'+((e&&e.message)?': '+e.message:''));
+  }
+}
+
+/* 결제창에서 돌아온 뒤 서버 승인 → 까까 지급 (부팅 때 main.js 가 부른다) */
+async function payReturn(){
+  const q=new URLSearchParams(location.search);
+  if(q.get('pay')==='ok'&&q.get('paymentKey')){
+    try{
+      const res=await fetch(SB_URL+'/functions/v1/toss-pay',{
+        method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+        body:JSON.stringify({action:'confirm',member_token:(typeof ME!=='undefined'&&ME&&ME.token)||'',
+          payment_key:q.get('paymentKey'),order_id:q.get('orderId'),amount:Number(q.get('amount'))})});
+      const d=await res.json();
+      if(d&&d.ok){applyServerWallet(d.wallet);alert('🍪 까까 충전 완료!'+(d.granted?' (+'+d.granted+'개)':''));}
+      else alert('결제 확인에 실패했어요: '+((d&&d.error)||'잠시 후 상점에서 잔액을 확인해주세요'));
+    }catch(e){alert('결제 확인 중 연결이 끊겼어요. 상점에서 잔액을 확인해주세요!');}
+    history.replaceState(null,'',location.pathname);
+  }else if(q.get('pay')==='fail'){
+    alert('결제가 취소되거나 실패했어요'+(q.get('message')?'\n'+q.get('message'):''));
+    history.replaceState(null,'',location.pathname);
+  }
 }
 function renderSnack(){
   const s=document.getElementById('snack-n');if(s)s.textContent=KKA;
@@ -3453,7 +3500,7 @@ function startCountdown(){
   };
   tick();CD_TIMER=setInterval(tick,1000);
 }
-/* ===== js/main.js (31) ===== */
+/* ===== js/main.js (32) ===== */
 /* ══════════════ 부팅 ══════════════ */
 const _restored=load();          // 새로고침해도 결과가 남아 있게
 /* 온보딩 화면 제거로 불필요 (2026-08-12) */
@@ -3474,6 +3521,7 @@ S.kids.forEach(k=>{
     if(k.band!==b.band||k.label!==b.label){k.band=b.band;k.ageY=b.ageY;k.label=b.label;}}
 });save();
 kakaoCallback();       /* 카카오에서 ?code= 로 돌아온 경우 로그인 마무리 (비동기) */
+payReturn();           /* 토스 결제창에서 ?pay= 로 돌아온 경우 승인·지급 (비동기) */
 updateHome();renderDaily();
 show('s-home');
 window.__booted=true;            // 이 시점부터 화면 전환마다 자동 저장
