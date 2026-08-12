@@ -517,7 +517,7 @@ details.acc>*:not(summary){margin-top:10px}
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="duo"><div class="bubble amber"><span class="who">츄비</span>리포트를 만들기 전에, 요즘 상황을 조금만 알려줄래요? <b>자세히 적을수록</b> 리포트와 상담실 답변이 우리 집 얘기처럼 정확해져요.</div></div>
   <div class="card">
-    <p class="small" style="margin-bottom:6px">최근에 이런 변화가 있었나요? (선택)</p>
+    <p class="small" style="margin-bottom:6px">겪고 있는 변화가 있다면 눌러주세요 (선택)</p>
     <div id="concern-chips" style="display:flex;gap:7px;flex-wrap:wrap">
       <button class="opt" style="padding:9px 13px;font-size:.85rem" onclick="this.classList.toggle('sel')">동생 출생</button>
       <button class="opt" style="padding:9px 13px;font-size:.85rem" onclick="this.classList.toggle('sel')">이사</button>
@@ -525,7 +525,7 @@ details.acc>*:not(summary){margin-top:10px}
       <button class="opt" style="padding:9px 13px;font-size:.85rem" onclick="this.classList.toggle('sel')">기관·학교 변경</button>
       <button class="opt" style="padding:9px 13px;font-size:.85rem" onclick="this.classList.toggle('sel')">부모 사이 갈등</button>
     </div>
-    <textarea id="concern-text" maxlength="300" placeholder="요즘 제일 고민인 순간을 편하게 적어주세요 (예: 아침마다 등원 거부가 심해서 매일 전쟁이에요…)" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:none;margin-top:10px"></textarea>
+    <textarea id="concern-text" maxlength="300" placeholder="최근 고민이나 변화, 하고 싶은 말을 편하게 적어주세요. 자세할수록 리포트와 상담이 정확해져요 (예: 아침마다 등원 거부가 심해서 매일 전쟁이에요…)" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:none;margin-top:10px"></textarea>
     <button class="btn mt8" onclick="concernGo(false)">리포트 보기</button>
     <button class="btn ghost mt8" onclick="concernGo(true)">입력 없이 바로 보기</button>
   </div>
@@ -2468,9 +2468,9 @@ function openChat(cat){
    구체적으로 물을수록 답변 만족도가 올라간다 — 이게 우리가 챗GPT와 다른 지점. */
 const WHEN_BY_BAND={
   i:["밤중에 자주 깰 때","잠들기까지 안고 버틸 때","눕히면 바로 깰 때(등센서)","수유·이유식 거부할 때","울음 이유를 모르겠을 때","하루 종일 안아달라 할 때","낯가림·엄마 껌딱지","카시트·유모차 거부","목욕·로션 바를 때","비밀이에요"],
-  t:["떼쓰고 드러누울 때","밥 안 먹고 돌아다닐 때","낮잠·밤잠 재울 때","기저귀·배변 연습","뭐든 '내가 할래' 할 때","깨물고 던지고 때릴 때","영상 그만 볼 때","어린이집 등원·분리","마트·식당 등 밖에서","비밀이에요"],
-  p:["아침 등원 전쟁","밥 먹일 때","재울 때","영상 그만 볼 때","형제·자매 싸울 때","마트·식당 등 밖에서","씻기고 옷 입힐 때","말대답·고집부릴 때","한글·학습 시키기","친구 관계 걱정","비밀이에요"],
-  s:["아침 등교 준비","숙제·공부 안 할 때","스마트폰·게임 시간","형제·자매 싸울 때","말대답·태도","학교 친구 문제","학원·일정 조율","거짓말했을 때","용돈·물건 조르기","비밀이에요"],
+  t:["떼쓰고 드러누울 때","밥 안 먹고 돌아다닐 때","낮잠·밤잠 재울 때","기저귀·배변 연습","뭐든 '내가 할래' 할 때","깨물고 던지고 때릴 때","영상 끄자고 하면 떼쓸 때","어린이집 등원·분리","마트·식당 등 밖에서","비밀이에요"],
+  p:["아침 등원 전쟁","밥 먹일 때","재울 때","영상 끄자고 하면 떼쓸 때","형제·자매 싸울 때","마트·식당 등 밖에서","씻기고 옷 입힐 때","말대답·고집부릴 때","한글·학습 시키기","친구 관계 걱정","비밀이에요"],
+  s:["아침 등교 준비","숙제·공부 안 할 때","폰·게임 그만하라 할 때","형제·자매 싸울 때","말대답·태도","학교 친구 문제","학원·일정 조율","거짓말했을 때","용돈·물건 조르기","비밀이에요"],
   a:["방문 닫고 말 안 할 때","스마트폰·게임 과몰입","성적·공부 갈등","말투·반항적인 태도","아침에 못 일어날 때","친구·이성 관계","진로·장래 고민","외모·다이어트 집착","돈 쓰는 문제","비밀이에요"]
 };
 /* 아이 검사가 없으면 유치원(제일 흔한 손님) 기준 */
