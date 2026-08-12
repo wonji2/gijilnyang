@@ -394,8 +394,8 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <div class="card" id="p-routes"></div>
   <div class="card"><h3 style="font-size:1rem;margin-bottom:8px">그럼 우리 식구들은 어떤 유형일까요?</h3>
     <div class="grid2" style="margin-bottom:0">
-      <div class="tile" style="background:var(--amber-soft);min-height:92px" onclick="startTest('child')"><span class="price free">무료</span><div class="big" style="font-size:1.05rem">우리 아이는<br>어떤 기질일까</div><div class="sub">4분 · 연령 맞춤 검사</div></div>
-      <div class="tile" style="background:var(--moss-soft);min-height:92px" onclick="startTest('parent')"><span class="price free">무료</span><div class="big" style="font-size:1.05rem">배우자는 어떤<br>양육자일까</div><div class="sub">남편·아내도 3분 검사</div></div>
+      <div class="tile" style="background:var(--amber-soft);min-height:92px" onclick="startTest('child')"><div class="big" style="font-size:1.05rem">우리 아이는<br>어떤 기질일까</div><div class="sub">4분 · 연령 맞춤 검사</div></div>
+      <div class="tile" style="background:var(--moss-soft);min-height:92px" onclick="startTest('parent')"><div class="big" style="font-size:1.05rem">배우자는 어떤<br>양육자일까</div><div class="sub">남편·아내도 3분 검사</div></div>
       <div class="tile" style="background:var(--pink-soft);min-height:92px" onclick="goFit()"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big" style="font-size:1.05rem">나 × 아이<br>궁합</div><div class="sub">유형 매치 + 마찰 처방</div></div>
       <div class="tile" style="background:var(--lav-soft);min-height:92px" onclick="startTest('family')"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big" style="font-size:1.05rem">이 성향은<br>어디서 왔을까</div><div class="sub">원가족 리포트</div></div>
     </div>
@@ -556,10 +556,10 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <div class="card">
     <h3 style="font-size:1rem;margin-bottom:8px">다음으로 가볼 만한 곳</h3>
     <div class="grid2" style="margin-bottom:0">
-      <div class="tile" style="background:var(--moss-soft);min-height:96px" onclick="startTest('parent')"><span class="price free">무료</span><div class="big" style="font-size:1.1rem">내 성향과<br>연결하기</div><div class="sub">원가족 × 지금의 나</div></div>
+      <div class="tile" style="background:var(--moss-soft);min-height:96px" onclick="startTest('parent')"><div class="big" style="font-size:1.1rem">내 성향과<br>연결하기</div><div class="sub">원가족 × 지금의 나</div></div>
       <div class="tile" style="background:var(--pink-soft);min-height:96px" onclick="goFit()"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big" style="font-size:1.1rem">아이와의<br>궁합 보기</div><div class="sub">대물림 대신 새 조합</div></div>
-      <div class="tile" style="background:var(--amber-soft);min-height:96px" onclick="goChat()"><span class="price free">오늘 무료</span><div class="big" style="font-size:1.1rem">츄비에게<br>털어놓기</div><div class="sub">이 결과로 수다 시작</div></div>
-      <div class="tile" style="background:var(--lav-soft);min-height:96px" onclick="goTalk()"><span class="price free">무료</span><div class="big" style="font-size:1.1rem">대나무숲에<br>물어보기</div><div class="sub">투표로 다른 집 구경</div></div>
+      <div class="tile" style="background:var(--amber-soft);min-height:96px" onclick="goChat()"><div class="big" style="font-size:1.1rem">츄비에게<br>털어놓기</div><div class="sub">이 결과로 상담 시작</div></div>
+      <div class="tile" style="background:var(--lav-soft);min-height:96px" onclick="goTalk()"><div class="big" style="font-size:1.1rem">대나무숲에<br>물어보기</div><div class="sub">투표로 다른 집 구경</div></div>
     </div>
   </div>
   <button class="btn ghost mt8" onclick="openShare('family')">🔗 결과 카드 만들기 · 공유</button>
@@ -640,7 +640,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
     <p style="font-size:.92rem;line-height:1.8">우리는 타고난 기질 위에, 자란 집의 공기가 스며들어 만들어져요. 왜 나는 위로가 어색한지, 왜 계획이 틀어지면 유난히 불안한지 — 그 답의 절반은 <b>내가 어떤 아이였고 어떤 집에서 자랐는지</b>에 있어요. 두 검사를 이으면 그 지도가 나옵니다.</p>
   </div>
   <div class="grid2">
-    <div class="tile" style="background:var(--moss-soft)" onclick="S.myRole=S.myRole||'보호자';S.activeP=S.myRole;beginTest('parent')"><span class="price free">무료</span><div class="big">지금의 나<br>성향검사</div><div class="sub">5가지 축 · 3분</div></div>
+    <div class="tile" style="background:var(--moss-soft)" onclick="S.myRole=S.myRole||'보호자';S.activeP=S.myRole;beginTest('parent')"><div class="big">지금의 나<br>성향검사</div><div class="sub">5가지 축 · 3분</div></div>
     <div class="tile" style="background:var(--lav-soft)" onclick="startTest('family')"><span class="price"><i class="ddeok-i"></i> 1</span><div class="big">나를 만든 집<br>원가족검사</div><div class="sub">따뜻함×통제 · 대물림 지도</div></div>
   </div>
   <div class="card">
