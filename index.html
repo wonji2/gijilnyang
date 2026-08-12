@@ -1370,13 +1370,50 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (83) ===== */
+/* ===== js/state.js (120) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);try{if(window.__booted)save();}catch(e){}}
 S.myRole=null;
 const UNLOCKS={};let PAIR_SEL={p:null,k:null};
-const CHAT={cat:'chuvi',free:2,paid:0,hist:{chuvi:[],kancho:[]},intakeDone:false,intake:{},busy:false,upsold:false};
+const CHAT={cat:'chuvi',free:2,paid:0,hist:{chuvi:[],kancho:[]},intakeDone:false,intake:{},busy:false,upsold:false,
+            until:0, freeDay:null};   /* until: 면담 종료 시각(ms) · freeDay: 무료 3분을 쓴 날 */
+
+/* ══════════ 면담 시간제 (2026-08-12 사장님 결정) ══════════
+   회차제(사주아이식)를 안 쓰는 이유: 한 번이 아까우면 손님이 질문을 아낀다.
+   우리 답변은 다섯 문단씩 나가는데 한 번 쓰고 끝내면 값어치를 못 느낀다.
+   상담소는 원래 시간으로 판다. 컨셉(연구원 면담)과도 맞다. */
+const FREE_MEET_SEC=180;                       // 매일 무료 3분
+const MEET_PACKS=[
+  {min:10,  won:500,  name:'짧은 면담'},
+  {min:30,  won:1200, name:'정식 면담', best:true},
+  {min:60,  won:2000, name:'긴 면담'},
+  {min:'day',won:3900,name:'온종일 면담'}
+];
+/* 남은 면담 시간(초). 0이면 끝났다. */
+function meetLeft(){const d=CHAT.until-Date.now();return d>0?Math.ceil(d/1000):0;}
+function meetLeftStr(){
+  const s=meetLeft();if(s<=0)return '면담 종료';
+  const m=Math.floor(s/60), ss=s%60;
+  return m>=60 ? Math.floor(m/60)+'시간 '+(m%60)+'분 남음' : m+':'+String(ss).padStart(2,'0')+' 남음';
+}
+/* 보낼 수 있나? 오늘 무료를 안 썼으면 그 자리에서 3분을 열어준다. */
+function ensureMeet(){
+  if(meetLeft()>0)return true;
+  if(CHAT.freeDay!==todayStr()){
+    CHAT.freeDay=todayStr();
+    CHAT.until=Date.now()+FREE_MEET_SEC*1000;
+    save();return true;
+  }
+  return false;
+}
+/* 면담권 구매 — 남은 시간이 있으면 이어붙인다. */
+function grantMeet(p){
+  const base=Math.max(Date.now(),CHAT.until);
+  if(p.min==='day'){const e=new Date();e.setHours(23,59,59,999);CHAT.until=Math.max(base,e.getTime());}
+  else CHAT.until=base+p.min*60*1000;
+  save();
+}
 /* ── 화폐: 까까 하나로 통일 (방울 폐지, 2026-08-11) ──
    까까 1개 = 1,000원 (2026-08-12 사장님 결정. 사주아이 990원과 같은 급으로 맞춤).
    상담은 매일 무료 2회 + 까까 1개당 8회.
@@ -1425,7 +1462,7 @@ function save(){
       myRole:S.myRole, activeP:S.activeP, activeK:S.activeK,
       concern:S.concern, concernDone:S.concernDone,
       kka:KKA, unlocks:UNLOCKS,
-      chat:{free:CHAT.free,paid:CHAT.paid,intake:CHAT.intake,intakeDone:CHAT.intakeDone,hist:CHAT.hist},
+      chat:{free:CHAT.free,paid:CHAT.paid,intake:CHAT.intake,intakeDone:CHAT.intakeDone,hist:CHAT.hist,until:CHAT.until,freeDay:CHAT.freeDay},
       day:todayStr()
     }));
   }catch(e){}
@@ -1447,7 +1484,7 @@ function load(){
   Object.assign(UNLOCKS,d.unlocks||{});
   if(d.chat){
     CHAT.paid=d.chat.paid||0;CHAT.intake=d.chat.intake||{};CHAT.intakeDone=!!d.chat.intakeDone;
-    CHAT.hist=d.chat.hist||CHAT.hist;
+    CHAT.hist=d.chat.hist||CHAT.hist;CHAT.until=d.chat.until||0;CHAT.freeDay=d.chat.freeDay||null;
     /* 무료 수다는 매일 자정에 다시 3회 */
     CHAT.free=(d.day===todayStr())?(d.chat.free||0):2;
   }
@@ -2300,7 +2337,7 @@ function nextRoutes(from){
   if(from!=='parent')       R.push(['🌷','다른 양육자도 검사','아빠·조부모·이모삼촌 누구나','startTest(\'parent\')','무료']);
   if(from!=='fit'&&hasP&&hasC) R.push(['💞','우리 둘 궁합','마찰 지점과 처방까지','goFit()','까까 1']);
   if(from!=='family')       R.push(['🏡','원가족 리포트','나를 키운 방식이 내 육아에','startTest(\'family\')','까까 1']);
-  R.push(['💬','츄비·칸쵸와 이 결과로 얘기하기','오늘 무료 수다 '+(CHAT.free+CHAT.paid)+'회','goChat()','무료']);
+  R.push(['💬','츄비·칸쵸와 이 결과로 얘기하기','매일 무료 3분','goChat()','무료']);
   return `<h3 style="font-size:1rem;margin-bottom:8px">이건 어때요?</h3>`+
     R.slice(0,4).map(r=>`<div class="book" style="align-items:center;cursor:pointer" onclick="${r[3]}">
       <div class="bicon">${r[0]}</div>
@@ -2354,7 +2391,7 @@ const CAT_META={
   kancho:{name:'칸쵸 연구원',tag:'팩트분석 담당 · 원인부터 짚습니다',cls:'moss'}
 };
 function goChat(){
-  const fb=document.getElementById('free-badge');if(fb)fb.textContent=CHAT.free;
+  const fb=document.getElementById('free-badge');if(fb)fb.textContent=meetLeftStr();
   renderSnack();
   show('s-chat-list');
   const tip=document.getElementById('chat-tip');
@@ -2454,9 +2491,9 @@ function renderChips(list){
 function renderChat(){
   const log=document.getElementById('chat-log');log.innerHTML='';
   CHAT.hist[CHAT.cat].forEach(m=>{log.insertAdjacentHTML('beforeend',m.html||msgHTML(m.role,m.text));});
-  document.getElementById('free-left').textContent=CHAT.free;
+  document.getElementById('free-left').textContent=meetLeftStr();
   renderSnack();
-  const badge=document.getElementById('free-badge');if(badge)badge.textContent=CHAT.free;
+  const badge=document.getElementById('free-badge');if(badge)badge.textContent=meetLeftStr();
 }
 function msgHTML(role,text){
   if(role==='user')return `<div style="align-self:flex-end;max-width:85%;background:var(--ink);color:#fff;padding:11px 14px;border-radius:16px 16px 4px 16px;font-size:.93rem">${text}</div>`;
@@ -2576,9 +2613,9 @@ async function sendChat(){
   const inp=document.getElementById('chat-input');
   const text=inp.value.trim();
   if(!text||CHAT.busy)return;
-  if(CHAT.free<=0&&CHAT.paid<=0){showRecharge();return;}
+  if(!ensureMeet()){showRecharge();return;}   /* 면담 시간제 (2026-08-12) */
   if(!aiKey()&&!setAiKey())return;          // 키가 없으면 먼저 받는다 (수다권 차감 전)
-  if(CHAT.free>0)CHAT.free--;else CHAT.paid--;
+  /* 시간제라 턴마다 차감하지 않는다. 남은 시간이 곧 잔액. */
   inp.value='';CHAT.busy=true;
   document.getElementById('chat-chips').innerHTML='';
   addMsg('user',text);addMsg('cat','…');
@@ -2599,7 +2636,7 @@ async function sendChat(){
   }catch(e){
     CHAT.hist[CHAT.cat].pop();        // '…' 제거
     CHAT.hist[CHAT.cat].pop();        // 방금 사용자 메시지 제거 (재전송 시 다시 표시)
-    if(CHAT.paid>0)CHAT.paid++;else CHAT.free++;   // 수다권 환불
+    CHAT.until+=60000;   /* 실패했으면 면담 시간 1분 돌려준다 */
     inp.value=text;                    // 입력창 복원
     const why=(e&&e.message)?e.message:'연결이 잠깐 끊겼어요';
     const keyBtn=/키/.test(why)?`<button class="btn ghost mt8" style="padding:9px 16px;width:auto;font-size:.85rem" onclick="setAiKey()">🔑 키 다시 넣기</button> `:'';
@@ -2611,7 +2648,7 @@ function showRecharge(){document.getElementById('chat-recharge').style.display='
 function hideRecharge(){document.getElementById('chat-recharge').style.display='none';document.getElementById('chat-input-card').style.display='block';}
 function rechargeChat(){
   if(!needKka(1))return;
-  KKA--;CHAT.paid+=KKA_TALK;hideRecharge();renderChat();renderSnack();save();
+  KKA--;grantMeet({min:30});hideRecharge();renderChat();renderSnack();save();
   addMsg('cat',CHAT.cat==='chuvi'?'충전됐어요! 이어서 얘기해요.':'충전 확인. 계속하자냥.');
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('s-chat').classList.contains('on'))sendChat();});
@@ -2643,7 +2680,7 @@ function postToTalk(){
   alert('올렸어요! 🍪 까까 0.5개 적립 (2개 올리면 1개)');
   goTalk();
 }
-/* ===== js/wallet.js (106) ===== */
+/* ===== js/wallet.js (102) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 보관함 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -2657,17 +2694,13 @@ const KKA_PACKS=[
    사주아이는 채팅 충전을 330원/3회(회당 110원)로 따로 판다. 우리 까까는
    1,000원부터라 "조금만 더 얘기하고 싶은" 사람이 못 들어온다. 사다리의 첫 칸.
    원가는 1회 약 22원이라 회당 100원이어도 마진 4배 이상. */
-const TALK_PACKS=[
-  {talk:3,  won:300,  name:'조금만 더'},
-  {talk:8,  won:700,  name:'오늘 밤엔 길게', best:true},
-  {talk:20, won:1500, name:'푹 털어놓기'}
-];
 function wonStr(w){return w.toLocaleString('ko-KR')+'원';}
-function buyTalk(i){
-  const p=TALK_PACKS[i];if(!p)return;
-  if(!confirm(p.name+' · 상담 '+p.talk+'회를 '+wonStr(p.won)+'에 충전할까요?\n(데모: 결제 없이 바로 충전됩니다)'))return;
-  CHAT.paid+=p.talk;renderSnack();renderWallet();save();
-  alert('💬 상담 '+p.talk+'회가 충전됐어요!');
+function buyMeet(i){
+  const p=MEET_PACKS[i];if(!p)return;
+  const dur=p.min==='day'?'오늘 자정까지':p.min+'분';
+  if(!confirm(p.name+' · '+dur+' 면담을 '+wonStr(p.won)+'에 여실까요?\n(데모: 결제 없이 바로 열립니다)'))return;
+  grantMeet(p);renderSnack();renderWallet();
+  alert('⏱ 면담이 열렸어요! '+meetLeftStr());
 }
 function openWallet(){show('s-wallet');renderWallet();}
 function renderWallet(){
@@ -2676,17 +2709,17 @@ function renderWallet(){
     <div class="card" style="text-align:center">
       <p class="small">내 까까</p>
       <p style="font-family:'Jua';font-size:2.4rem;line-height:1.1"><i class="ddeok-i"></i> ${KKA}</p>
-      <p class="small">오늘 무료 수다 ${CHAT.free}회 · 매일 자정에 다시 채워져요</p>
+      <p class="small">매일 무료 면담 3분 · 자정에 다시 열려요</p>
     </div>
     <div class="card">
-      <h3 style="font-size:1rem;margin-bottom:2px">💬 상담만 조금 더</h3>
-      <p class="small" style="margin-bottom:8px">무료 2회를 다 썼는데 얘기가 안 끝났을 때</p>
-      ${TALK_PACKS.map((p,i)=>`
-        <div class="book" style="align-items:center;cursor:pointer" onclick="buyTalk(${i})">
-          <div class="bicon">💬</div>
+      <h3 style="font-size:1rem;margin-bottom:2px">⏱ 연구원 면담권</h3>
+      <p class="small" style="margin-bottom:8px">${meetLeft()>0?'지금 면담 중 · <b>'+meetLeftStr()+'</b>':'매일 무료 3분 · 시간 안에는 <b>몇 번이든</b> 물어보세요'}</p>
+      ${MEET_PACKS.map((p,i)=>`
+        <div class="book" style="align-items:center;cursor:pointer" onclick="buyMeet(${i})">
+          <div class="bicon">⏱</div>
           <div style="flex:1">
             <b style="font-family:'Jua'">${p.name}</b>${p.best?' <span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
-            <p class="small">상담 ${p.talk}회 · 회당 ${Math.round(p.won/p.talk)}원</p>
+            <p class="small">${p.min==='day'?'오늘 자정까지 · 횟수 제한 없이':p.min+'분 동안 · 몇 번이든 · 분당 '+Math.round(p.won/p.min)+'원'}</p>
           </div>
           <b style="font-family:'Jua';white-space:nowrap">${wonStr(p.won)}</b>
         </div>`).join('')}
@@ -2709,21 +2742,21 @@ function renderWallet(){
       <h3 style="font-size:1rem;margin-bottom:6px">까까로 할 수 있는 것</h3>
       <div class="book"><div class="bicon"><i class="ddeok-i"></i></div><div><b>리포트 심화 열기</b><p class="small">아이 · 부모 · 궁합 · 원가족 각 1개</p></div></div>
       <div class="book"><div class="bicon"><i class="ddeok-i"></i><i class="ddeok-i"></i></div><div><b>심층 코칭</b><p class="small">상황 해석 → 행동 교정 → 변화 예언</p></div></div>
-      <div class="book"><div class="bicon">💬</div><div><b>상담 ${KKA_TALK}회 충전</b><p class="small">매일 주는 무료 2회를 다 쓴 뒤에</p></div></div>
+      <div class="book"><div class="bicon">💬</div><div><b>면담 30분 열기</b><p class="small">까까 1개로 연구원과 30분</p></div></div>
     </div>`;
 }
 function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
   if(!confirm(`${p.name} · 까까 ${p.n+p.bonus}개를 ${kkaWon(p.n)}에 충전할까요?\n(데모: 결제 없이 바로 충전됩니다)`))return;
-  KKA+=p.n+p.bonus; if(p.talk)CHAT.paid+=p.talk;
+  KKA+=p.n+p.bonus; if(p.talk)grantMeet({min:p.talk*4});
   renderSnack();renderWallet();save();
   alert(`🍪 까까 ${p.n+p.bonus}개가 충전됐어요!`);
 }
 function renderSnack(){
   const s=document.getElementById('snack-n');if(s)s.textContent=KKA;
   const w=document.getElementById('kka-chat');if(w)w.textContent=KKA;
-  const f=document.getElementById('free-left');if(f)f.textContent=CHAT.free+CHAT.paid;
-  const b=document.getElementById('free-badge');if(b)b.textContent=CHAT.free+CHAT.paid;
+  const f=document.getElementById('free-left');if(f)f.textContent=meetLeftStr();
+  const b=document.getElementById('free-badge');if(b)b.textContent=meetLeftStr();
 }
 function unlockCReport(){
   if(!needKka(1))return;
@@ -2948,7 +2981,7 @@ function goDaily(){
       <button class="btn pri mt8" onclick="startTest('child')">기질검사 하러 가기 →</button></div>`}
     <div class="card">
       <h3 style="font-size:1rem;margin-bottom:6px">💬 무료 수다</h3>
-      <p style="font-size:.92rem">오늘 남은 무료 수다 <b>${CHAT.free}회</b></p>
+      <p style="font-size:.92rem">남은 면담 <b>${meetLeftStr()}</b></p>
       <p class="small mt8">다음 충전까지 <b id="cd-clock">--:--:--</b></p>
       <button class="btn ghost mt8" onclick="goChat()">수다방 가기</button>
     </div>
