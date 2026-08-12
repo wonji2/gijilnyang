@@ -701,10 +701,12 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 <!-- ═══════════ 상담실: 캐릭터 목록 ═══════════ -->
 <section class="screen" id="s-chat-list">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
-  <div class="daily" style="display:flex;align-items:center;gap:12px">
-    <div style="flex:1"><span class="d-label">🎟 오늘의 무료 상담권이 도착했어요</span><div class="d-text" style="margin-top:2px;font-size:.85rem">매일 밤 11시에 자동 충전돼요</div></div>
-    <div class="snack-pill" style="background:var(--amber-soft)">🎟 오늘 남은 상담 <b id="free-badge">2</b>회</div>
-  <p class="small" id="chat-tip" style="display:none;margin-top:6px">검사를 하나 마치면 우리 집 데이터로 맞춤 상담이 돼요</p>
+  <!-- 🔴 가로 flex + 줄바꿈금지 알약 조합은 좁은 폰에서 왼쪽 글자를 세로로 짜부라뜨린다
+       (2026-08-12 사장님 스크린샷 2회). 세로 스택 + 숫자를 제목에 흡수로 교체. -->
+  <div class="daily">
+    <span class="d-label">🎟 오늘 남은 상담 <b id="free-badge">2</b>회</span>
+    <div class="d-text" style="margin-top:2px;font-size:.85rem">매일 밤 12시에 무료 상담권이 다시 충전돼요</div>
+    <p class="small" id="chat-tip" style="display:none;margin-top:6px">검사를 하나 마치면 우리 집 데이터로 맞춤 상담이 돼요</p>
   </div>
   <div class="card" role="button" tabindex="0" onclick="openChat('chuvi')" style="display:flex;gap:12px;align-items:center;cursor:pointer">
     <img class="pho lg chuvi" src="assets/chuvi.png" alt="츄비 연구원" width="60" height="60">
@@ -723,9 +725,11 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 <!-- ═══════════ 상담실: 대화 ═══════════ -->
 <section class="screen" id="s-chat">
   <button class="back" onclick="show('s-chat-list')">← 상담실</button>
+  <!-- 같은 가로 flex + 알약 패턴. 좁은 폰에서 왼쪽이 짜부라지지 않게
+       왼쪽에 min-width:0, 태그는 잘리게 두고 알약은 flex:none. -->
   <div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:10px">
-    <div style="flex:1"><b class="jua" id="chat-cat-name">츄비</b> <span class="small" id="chat-cat-tag"></span></div>
-    <span class="snack-pill" role="button" onclick="openWallet()" style="font-size:.75rem;cursor:pointer">💬 <b id="free-left">2</b>회 · <i class="ddeok-i"></i> <b id="kka-chat">2</b></span>
+    <div style="flex:1;min-width:0"><b class="jua" id="chat-cat-name">츄비</b> <span class="small" id="chat-cat-tag" style="display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom"></span></div>
+    <span class="snack-pill" role="button" onclick="openWallet()" style="font-size:.75rem;cursor:pointer;flex:none">💬 <b id="free-left">2</b>회 · <i class="ddeok-i"></i> <b id="kka-chat">2</b></span>
   </div>
   <div id="presc-banner" style="display:none"></div>
   <div id="chat-log" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
