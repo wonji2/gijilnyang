@@ -6,6 +6,17 @@
 <!-- 🔴 테스트 단계라 검색엔진에 안 잡히게 막아둠. 정식 오픈할 때 이 두 줄을 지운다. -->
 <meta name="robots" content="noindex,nofollow">
 <title>기질냥구소 - 우리 아이 기질검사 · 부모 성향 · 궁합</title>
+<!-- 앱의 얼굴 (캐릭터_메인화 5장 B) — 파비콘·PWA·카톡 미리보기 -->
+<link rel="icon" type="image/png" sizes="32x32" href="assets/appicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/appicon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7B3FB5">
+<meta property="og:type" content="website">
+<meta property="og:title" content="기질냥구소 — 우리 아이는 어떤 기질일까">
+<meta property="og:description" content="옆집 애는 안 그러는데 왜 우리 애만? 우리 아이 기질과 내 성향, 둘의 궁합까지 3분 검사로.">
+<meta property="og:image" content="https://gijilnyang.com/assets/appicon-512.png">
+<meta property="og:url" content="https://gijilnyang.com/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
 <style>
@@ -300,6 +311,11 @@ details.acc>*:not(summary){margin-top:10px}
 @keyframes ovspin{to{transform:rotate(360deg)}}
 #ov-msg{font-family:'Jua';font-size:1.05rem;color:var(--pri);line-height:1.5;min-height:2.6em}
 @media (prefers-reduced-motion:reduce){.ov-spin{animation:none}}
+/* 공유 플로팅 버튼 — 결과·리포트·대나무숲 우측 하단 상시 (바이럴_후킹 3-b) */
+#share-fab{position:fixed;right:16px;bottom:80px;z-index:60;width:52px;height:52px;border-radius:50%;border:none;background:var(--amber);color:#fff;box-shadow:0 4px 14px rgba(224,162,60,.45);cursor:pointer;display:none;align-items:center;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+#share-fab.on{display:flex}
+#share-fab svg{width:24px;height:24px}
+#share-fab:active{transform:scale(.94)}
 </style>
 </head>
 <body>
@@ -822,6 +838,9 @@ details.acc>*:not(summary){margin-top:10px}
 
 </div>
 <div id="analyze-ov"><div class="ov-inner"><div class="ov-spin"></div><p id="ov-msg"></p></div></div>
+<button id="share-fab" onclick="openShare(this.dataset.kind||'app')" aria-label="공유하기">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+</button>
 <script>
 /* ===== js/data/items.js (187) ===== */
 /* ══════════════ 데이터 ══════════════ */
@@ -1477,7 +1496,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (161) ===== */
+/* ===== js/state.js (164) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -1492,7 +1511,10 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
   /* 뒤로가기가 홈으로 튕기지 않게 히스토리를 쌓되, 복원 가능한 화면만(전이화면은 제외해 붕괴 방지). (2026-08-12) */
   if(window.__booted&&!_navLock&&RESTORABLE[id]){try{history.pushState({screen:id},'');}catch(e){}}
   try{if(window.__booted)save();}catch(e){}
-  try{if(typeof paintMemberCards==='function')paintMemberCards();}catch(e){}/* 회원 카드 최신화 (2026-08-12) */}
+  try{if(typeof paintMemberCards==='function')paintMemberCards();}catch(e){}/* 회원 카드 최신화 (2026-08-12) */
+  /* 공유 플로팅 — 공유 가치 있는 화면에서만 (바이럴_후킹 3-b) */
+  try{const sf=document.getElementById('share-fab');if(sf){if(SHARE_SCREENS[id]){sf.classList.add('on');sf.dataset.kind=SHARE_SCREENS[id];}else sf.classList.remove('on');}}catch(e){}}
+const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app'};
 /* 저장된 데이터로 특정 화면을 다시 그려 보여준다. 못 그리면 false → 부르는 쪽이 홈. (restoreView·popstate 공용) */
 function renderScreen(id){
   try{
@@ -2477,7 +2499,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (172) ===== */
+/* ===== js/share.js (224) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -2526,27 +2548,79 @@ function shareCardText(kind){
   if(kind==='family'&&S.family)  return `나를 키운 집 · ${document.getElementById('f-typename')?document.getElementById('f-typename').textContent:''}`;
   return '기질냥구소 — 우리 아이 기질검사';
 }
+/* 해시태그 — 유형을 자기소개 라벨로 (바이럴_후킹 4장 #○○형아이) */
+function shareHashtag(kind){
+  const kid=S.kids[S.activeK]||{};
+  if((kind==='child'||kind==='career')&&(kid.kbase||kid.ktype)){
+    const base=kid.kbase||kid.ktype||'';const vk=base.indexOf('무지개')===0?'무지개':base.replace('형','');
+    return '#'+vk+'형아이';
+  }
+  if(kind==='parent'&&S.activeP){const pt=(S.parents[S.activeP]||{}).ptype||'';return pt?'#'+pt.replace('형','')+(S.activeP==='아빠'?'빠':'맘'):'#기질냥구소';}
+  if(kind==='fit')return '#부모아이궁합';
+  return '#기질냥구소';
+}
+/* 비교 CTA — "너네 애는 뭐 나왔어?"를 유발 (바이럴_후킹 공식 6·5장) */
+function shareCompareCTA(kind){
+  if(kind==='child')return '아빠·엄마는 어떤 부모일까요? 👉 부모 성향도 재보세요';
+  if(kind==='parent')return '우리 아이는 어떤 기질일까요? 👉 아이도 재보세요';
+  if(kind==='fit')return '둘째도, 배우자도 궁금하죠? 👉 다른 조합도 보기';
+  if(kind==='career')return '너네 애는 뭐 나왔어? 👉 미래직업 뽑기';
+  if(kind==='family')return '내 육아는 어디서 왔을까? 👉 원가족 리포트';
+  return '우리 애는 어떤 기질일까? 👉 3분 검사';
+}
 function openShare(kind){
   SHARE_KIND=kind||'app';
   const body=document.getElementById('share-body');
   const txt=shareCardText(SHARE_KIND);
+  const tag=shareHashtag(SHARE_KIND);
+  const cta=shareCompareCTA(SHARE_KIND);
   body.innerHTML=`
-    <div id="share-card" style="background:linear-gradient(160deg,var(--pri-soft),#FFF6FA);border-radius:18px;padding:22px 18px;text-align:center">
-      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:8px">
-        <img class="pho lg chuvi" src="assets/chuvi.png" alt="" width="60" height="60">
-        <img class="pho lg kancho" src="assets/kancho.png" alt="" width="60" height="60">
+    <div id="share-card" style="position:relative;background:linear-gradient(160deg,var(--pri-soft),#FFF6FA);border-radius:18px;padding:24px 18px 20px;text-align:center;overflow:hidden">
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:10px">
+        <img class="pho lg chuvi" src="assets/chuvi.png" alt="" width="58" height="58" crossorigin="anonymous">
+        <img class="pho lg kancho" src="assets/kancho.png" alt="" width="58" height="58" crossorigin="anonymous">
       </div>
-      <p style="font-family:'Jua';font-size:1.05rem;white-space:pre-line;line-height:1.5">${esc(txt)}</p>
-      <p class="small mt8">기질냥구소에서 뽑음</p>
+      <p style="font-family:'Jua';font-size:1.1rem;white-space:pre-line;line-height:1.5">${esc(txt)}</p>
+      <p style="font-family:'Jua';color:var(--pri);font-size:.92rem;margin-top:8px">${esc(tag)}</p>
+      <div style="margin-top:12px;padding-top:12px;border-top:1.5px dashed var(--line)">
+        <p style="font-size:.85rem;color:var(--ink)">${esc(cta)}</p>
+      </div>
+      <p class="small" style="margin-top:10px;opacity:.7">기질냥구소 · gijilnyang.com</p>
     </div>
-    <button class="btn pri mt16" onclick="doShare()">📤 공유하기</button>
-    <button class="btn ghost mt8" onclick="copyLink()">🔗 링크 복사</button>
+    <button class="btn pri mt16" onclick="saveShareCard()">🖼 예쁜 카드로 저장</button>
+    <button class="btn ghost mt8" onclick="doShare()">🔗 링크로 공유</button>
     <div class="card mt16" style="background:var(--pri-soft);border:none">
       <h3 style="font-size:.95rem">친구 초대하면 둘 다 까까 1개</h3>
       <p class="small mt8">이 링크로 들어온 친구가 <b>검사 하나를 끝내면</b> 친구도 나도 까까를 1개씩 받아요.
       내 초대코드 <b>${myCode()}</b> · 최대 10명까지</p>
     </div>`;
   show('s-share');
+}
+/* 카드 이미지 저장 — html2canvas 동적 로드 (케이테스트식 예쁜 카드).
+   인앱(카톡·인스타)은 a.download 가 막히니 새 창으로 띄워 길게 눌러 저장하게 한다(맘캘린더 노하우). */
+function _loadH2C(){
+  return new Promise(function(res,rej){
+    if(window.html2canvas)return res(window.html2canvas);
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload=function(){res(window.html2canvas);};s.onerror=rej;document.head.appendChild(s);
+  });
+}
+function _isInApp(){return /KAKAOTALK|Instagram|FBAN|FBAV|Line|NAVER/i.test(navigator.userAgent);}
+async function saveShareCard(){
+  const card=document.getElementById('share-card');if(!card)return;
+  let h2c;try{h2c=await _loadH2C();}catch(e){alert('이미지 저장 도구를 못 불러왔어요. 링크 공유를 이용해주세요!');return;}
+  try{
+    const canvas=await h2c(card,{scale:3,backgroundColor:null,useCORS:true});
+    const url=canvas.toDataURL('image/png');
+    if(_isInApp()){
+      const w=window.open('');
+      if(w){w.document.write('<img src="'+url+'" style="width:100%"><p style="font-family:sans-serif;text-align:center;color:#555">이미지를 길게 눌러 저장하세요</p>');}
+      else alert('새 창이 막혔어요. 브라우저(사파리·크롬)로 열면 저장돼요!');
+    }else{
+      const a=document.createElement('a');a.href=url;a.download='기질냥구소_'+(SHARE_TITLES[SHARE_KIND]||'결과')+'.png';a.click();
+    }
+  }catch(e){alert('카드를 만드는 중 문제가 생겼어요. 다시 시도해주세요!');}
 }
 let SHARE_KIND='app';
 async function doShare(){

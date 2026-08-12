@@ -1,0 +1,14 @@
+{
+  "name": "기질냥구소",
+  "short_name": "기질냥구소",
+  "description": "우리 아이 기질과 내 성향, 둘의 궁합까지 3분 검사로.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FCFBFE",
+  "theme_color": "#7B3FB5",
+  "icons": [
+    { "src": "assets/appicon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/appicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
