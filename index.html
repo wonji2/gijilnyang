@@ -316,6 +316,10 @@ details.acc>*:not(summary){margin-top:10px}
 #share-fab.on{display:flex}
 #share-fab svg{width:24px;height:24px}
 #share-fab:active{transform:scale(.94)}
+/* 홈 상태 배너 — 무료 상담 잔여 (UIUX 2장) */
+.status-banner{background:var(--amber-soft);border:1.5px solid var(--amber);border-radius:14px;padding:10px 14px;margin:0 0 14px;font-size:.86rem;cursor:pointer;color:#8A5A16;text-align:center}
+.status-banner b{font-family:'Jua'}
+.status-banner.muted{background:var(--line);border-color:var(--line);color:var(--sub);cursor:default}
 </style>
 </head>
 <body>
@@ -2265,7 +2269,7 @@ function applyFitLock(){
   if(FIT_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (102) ===== */
+/* ===== js/render/home.js (107) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -2301,10 +2305,15 @@ function renderHomeGreet(){
     msg=(line?subj+' '+line+'. ':'')+'오늘의 한마디 보러 갈래요?';
     go='goDaily()';
   }
+  /* 상태 배너 — 무료 상담 잔여 (UIUX 2장, 사주아이 리텐션 장치) */
+  const fl=(typeof meetLeft==='function')?meetLeft():0;
+  const banner=fl>0
+    ?`<div class="status-banner" onclick="goChat()">🎟 오늘 남은 상담 <b>${fl}회</b> · 상담실 가기 ›</div>`
+    :`<div class="status-banner muted">오늘 무료 상담을 다 썼어요 · 매일 밤 12시에 다시 채워져요</div>`;
   el.innerHTML=`<div class="greet" onclick="${go}">
     <img class="greet-face" src="assets/chuvi.png" alt="츄비" width="46" height="46">
     <div class="greet-body"><b>츄비</b><p>${msg}</p></div>
-    <span class="greet-arr">›</span></div>`;
+    <span class="greet-arr">›</span></div>`+banner;
 }
 
 function tabOn(t){document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('on'));document.getElementById('tab-'+t).classList.add('on');}
