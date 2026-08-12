@@ -3352,15 +3352,17 @@ function maybeAskLogin(){
     if(confirm('검사 결과가 나왔어요! 🎉\n\n카카오로 로그인하면 이 결과와 까까가 저장돼서\n기기를 바꿔도, 나중에 다시 와도 이어서 볼 수 있어요.\n\n지금 로그인할까요?'))kakaoLogin();
   },1100);
 }
-/* ===== js/wallet.js (164) ===== */
+/* ===== js/wallet.js (196) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
+/* 충전 패키지 — 수익구조_가격.md 2장 확정 (정가 유지 + 덤).
+   talk = 상담 덤(회). 지급은 서버 grant_kka(p_talk). */
 const KKA_PACKS=[
-  {n:1, bonus:0, name:"까까 1개"},
-  {n:3, bonus:0, name:"까까 3개"},
-  {n:5, bonus:1, name:"까까 5개"},
-  {n:10,bonus:2, name:"까까 10개", best:true}
+  {n:1, bonus:0, talk:0, name:"까까 1개"},
+  {n:3, bonus:0, talk:3, name:"까까 3개"},
+  {n:5, bonus:1, talk:0, name:"까까 5개"},
+  {n:10,bonus:3, talk:6, name:"까까 10개", best:true}
 ];
 /* ── 상담만 소액으로 충전 (2026-08-12) ──────────────────────────────
    사주아이는 채팅 충전을 330원/3회(회당 110원)로 따로 판다. 우리 까까는
@@ -3379,16 +3381,32 @@ function renderWallet(){
       <p style="font-family:'Jua';font-size:2.4rem;line-height:1.1"><i class="ddeok-i"></i> ${KKA}</p>
       <p class="small">오늘 무료 상담 ${CHAT.free}회</p>
     </div>
+    ${walletRemindHTML()}
     <div class="card">
       <h3 style="font-size:1rem;margin-bottom:10px">까까 충전</h3>
       ${KKA_PACKS.map((p,i)=>`
         <div class="shop-row" onclick="buyKka(${i})">
-          <span class="shop-n"><i class="ddeok-i"></i> ${p.n}개${p.bonus?` <b>+${p.bonus}</b>`:''}</span>
+          <span class="shop-n"><i class="ddeok-i"></i> ${p.n}개${p.bonus?` <b>+${p.bonus}</b>`:''}${p.talk?` <span class="small">+상담 ${p.talk}회</span>`:''}</span>
           ${p.best?'<span class="tag" style="margin:0;padding:1px 7px;font-size:.62rem">BEST</span>':''}
           <b class="shop-won">${kkaWon(p.n)}</b>
         </div>`).join('')}
       <p class="small mt8" style="text-align:center">까까 1개 = 리포트 열기 · 상담 ${KKA_TALK}회</p>
+    </div>
+    <div class="card" style="background:var(--pri-soft);border:none;font-size:.83rem;line-height:1.7">
+      <p>💜 <b>까까는 유효기간이 없어요.</b> 급하게 안 써도 돼요.</p>
+      <p>🎁 <b>남은 까까는 선물할 수 있어요.</b> 친구·가족에게 보내보세요.</p>
     </div>`;
+}
+/* 잔액 리마인드 — "남은 까까로 열 수 있는 것" (수익구조_가격 3-③) */
+function walletRemindHTML(){
+  if(!(KKA>0))return '';
+  const tip = KKA>=5 ? '온가족 종합 리포트를 열 수 있어요'
+    : KKA>=3 ? '우리 가족 궁합 지도를 열 수 있어요'
+    : KKA>=2 ? '심층 코칭 하나를 딱 열 수 있어요'
+    : '아이 미래직업이나 심화 풀이를 열 수 있어요';
+  return `<div class="card" style="text-align:center;background:var(--amber-soft);border-color:var(--amber)">
+    <p style="font-size:.9rem">까까 <b style="font-family:'Jua'">${KKA}개</b> 남았어요 — ${tip}</p>
+  </div>`;
 }
 /* ══ 토스페이먼츠 결제 (사장님 결정 2026-08-12 — 한국 정식 PG. Stripe 는 한국 사업자 가입 불가라 철회) ══
    금액·지급은 전부 서버(toss-pay Edge Function)가 정하고 토스에 되물어 확인한다.
@@ -3397,24 +3415,17 @@ function renderWallet(){
 const TOSS_CLIENT_KEY='test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
 (function(){var s=document.createElement('script');s.src='https://js.tosspayments.com/v2/standard';document.head.appendChild(s);})();
 
-async function buyKka(i){
-  const p=KKA_PACKS[i];if(!p)return;
-  if(!isLoggedIn()){
-    if(confirm('까까 충전에는 카카오 로그인이 필요해요.\n(결제·잔액이 계정에 안전하게 저장돼요)\n\n로그인할까요?'))kakaoLogin();
-    return;
-  }
+/* 결제 공용 — createBody(pack 번호 또는 kka 커스텀 개수)로 주문 생성 → 토스 결제창 */
+async function _tossPay(createBody){
   if(typeof TossPayments==='undefined'){alert('결제 모듈을 불러오는 중이에요. 잠시 후 다시 눌러주세요!');return;}
-  if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''} · ${kkaWon(p.n)} 결제를 진행할까요?`))return;
-  /* 1) 서버에 주문 생성 — 금액은 서버가 정한다 */
   let d;
   try{
     const res=await fetch(SB_URL+'/functions/v1/toss-pay',{
       method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-      body:JSON.stringify({action:'create',member_token:ME.token,pack:i})});
+      body:JSON.stringify(Object.assign({action:'create',member_token:ME.token},createBody))});
     d=await res.json();
   }catch(e){alert('연결이 잠깐 끊겼어요. 다시 시도해주세요!');return;}
   if(!d||d.error){alert(d&&d.error||'주문 생성에 실패했어요');return;}
-  /* 2) 토스 결제창 → 성공하면 ?pay=ok 로 돌아온다 (payReturn 이 마무리) */
   try{
     const toss=TossPayments(TOSS_CLIENT_KEY);
     const payment=toss.payment({customerKey:TossPayments.ANONYMOUS});
@@ -3431,6 +3442,25 @@ async function buyKka(i){
     alert('결제가 진행되지 않았어요'+((e&&e.message)?': '+e.message:''));
   }
 }
+async function buyKka(i){
+  const p=KKA_PACKS[i];if(!p)return;
+  if(!isLoggedIn()){
+    if(confirm('까까 충전에는 카카오 로그인이 필요해요.\n(결제·잔액이 계정에 안전하게 저장돼요)\n\n로그인할까요?'))kakaoLogin();
+    return;
+  }
+  if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''}${p.talk?` +상담 ${p.talk}회`:''} · ${kkaWon(p.n)} 결제를 진행할까요?`))return;
+  await _tossPay({pack:i});
+}
+/* 부족분 원클릭 충전 — 잔액 제로 3-① (딱 N개만 사서 잔액이 안 남게) */
+async function buyKkaExact(n){
+  if(n<1)return;
+  if(!isLoggedIn()){
+    if(confirm('충전에는 카카오 로그인이 필요해요.\n로그인할까요?'))kakaoLogin();
+    return;
+  }
+  if(!confirm(`부족한 까까 ${n}개만 충전할까요? · ${kkaWon(n)}\n(딱 필요한 만큼만 — 잔돈이 안 남아요)`))return;
+  await _tossPay({kka:n});
+}
 
 /* 결제창에서 돌아온 뒤 서버 승인 → 까까 지급 (부팅 때 main.js 가 부른다) */
 async function payReturn(){
@@ -3442,7 +3472,7 @@ async function payReturn(){
         body:JSON.stringify({action:'confirm',member_token:(typeof ME!=='undefined'&&ME&&ME.token)||'',
           payment_key:q.get('paymentKey'),order_id:q.get('orderId'),amount:Number(q.get('amount'))})});
       const d=await res.json();
-      if(d&&d.ok){applyServerWallet(d.wallet);alert('🍪 충전 확인.'+(d.granted?' 까까 '+d.granted+'개 들어왔다냥.':'')+' 잘 골랐다냥.');}   /* 지급 확인 = 칸쵸(정확함) */
+      if(d&&d.ok){applyServerWallet(d.wallet);alert('🍪 충전 확인.'+(d.granted?' 까까 '+d.granted+'개'+(d.granted_talk?' + 상담 '+d.granted_talk+'회':'')+' 들어왔다냥.':'')+' 잘 골랐다냥.');}   /* 지급 확인 = 칸쵸(정확함) */
       else alert('결제 확인에 실패했어요: '+((d&&d.error)||'잠시 후 상점에서 잔액을 확인해주세요'));
     }catch(e){alert('결제 확인 중 연결이 끊겼어요. 상점에서 잔액을 확인해주세요!');}
     history.replaceState(null,'',location.pathname);
@@ -3468,7 +3498,9 @@ async function spendKkaSrv(n,kind){
   const r=await rpc('wallet_spend',{p_token:ME.token,p_n:n,p_kind:kind});
   if(r&&r.ok){KKA=r.kka;renderSnack();save();return true;}
   if(r&&r.error==='poor'){
-    if(confirm('앗, 까까가 조금 모자라요. (지금 '+(r.kka||0)+'개)\n상점에서 채우고 올까요?'))openWallet();   /* 아쉬움 달래기 = 츄비 */
+    /* 잔액 제로 3-① 부족분 원클릭 충전 — 패키지로 쫓아내지 않고 딱 부족분만 */
+    const lack=Math.max(1,n-(r.kka||0));
+    if(confirm('앗, 까까가 '+lack+'개 모자라요. (지금 '+(r.kka||0)+'개)\n부족한 '+lack+'개만 충전할까요? · '+kkaWon(lack)))buyKkaExact(lack);   /* 아쉬움 달래기 = 츄비 */
   }else if(r&&r.error==='login'){alert('로그인이 풀렸어요. 다시 로그인해주세요!');}
   else alert('잠시 후 다시 시도해주세요!');
   return false;
