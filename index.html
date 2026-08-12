@@ -578,12 +578,15 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 <!-- ═══════════ 온보딩 (첫 방문) ═══════════ -->
 <section class="screen" id="s-onboard">
   <div class="hero">
+    <!-- 🔴 2026-08-12: 홈만 실사 사진으로 바꾸고 이 화면은 옛 만화 고양이가 남아
+         있었다. 손님이 제일 먼저 보는 화면인데 홈과 캐릭터가 달랐다. -->
     <div class="cats">
-      <div class="cat chuvi"><div class="ear l"></div><div class="ear r"></div><div class="head"><div class="eye l"></div><div class="eye r"></div><div class="nose"></div><div class="mouth"></div></div></div>
-      <div class="cat kancho"><div class="ear l"></div><div class="ear r"></div><div class="head"><div class="eye l"></div><div class="eye r"></div><div class="nose"></div><div class="mouth"></div></div></div>
+      <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
+      <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
     </div>
     <h1>어서 오세요!</h1>
-    <p>육아 전문가의 지식, 전문 서적, 발표된 논문과<br>검증된 척도를 학습해 분석하는 기질 성향 리포트예요.</p>
+    <p class="hero-proof" style="margin-top:8px">🐾 우리 아이 기반 설문조사와 검증된 기질 척도를 학습한
+      <b>두 고양이 연구원</b>이 봐드려요</p>
   </div>
   <div class="card" id="ob-step1">
     <h3 style="font-size:.98rem;margin-bottom:4px">누구의 검사를 시작할까요?</h3>
