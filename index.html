@@ -3112,7 +3112,7 @@ async function unlockDeep(){
   if(!(await spendKkaSrv(2,'fit-deep')))return;
   DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;applyDeepLock();save();
 }
-/* ===== js/talk.js (163) ===== */
+/* ===== js/talk.js (164) ===== */
 /* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
    사장님 확정 스펙: 사연 + 투표("어떻게 했어야 할까") + 발바닥 공감 + 연구원 한마디.
    댓글 없음(운영 부담) · 보상 없음(참여 붙으면 이벤트로) · 누적 피드.
@@ -3243,9 +3243,10 @@ async function addTalk(){
   if(ops.length===1){alert('투표는 항목 2개 이상이 필요해요!');return;}
   const kid=S.kids[S.activeK]||{};
   const who=(kid.label?kid.label+' 아이 ':'')+(S.myRole||'보호자');
-  const btn=event.target;btn.disabled=true;btn.textContent='올리는 중…';
+  const btn=(typeof event!=='undefined'&&event)?event.target:null;
+  if(btn){btn.disabled=true;btn.textContent='올리는 중…';}
   const r=await rpc('talk_write',{p_token:ME.token,p_who:who,p_text:v,p_poll:ops.length>=2?ops:null});
-  btn.disabled=false;btn.textContent='올리기';
+  if(btn){btn.disabled=false;btn.textContent='올리기';}
   if(!(r&&r.ok)){
     alert(r&&r.error==='daily'?'하루에 5개까지 올릴 수 있어요!':r&&r.error==='login'?'로그인이 풀렸어요. 다시 로그인해주세요!':'잠시 후 다시 시도해주세요!');
     return;
