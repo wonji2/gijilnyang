@@ -399,6 +399,7 @@ details.acc>*:not(summary){margin-top:10px}
     <div class="typedesc">5가지 성향 축으로 본 나의 양육 에너지</div>
   </div>
   <div class="card" id="p-bars"></div>
+  <div id="p-voice"></div>
   <details class="card acc"><summary><h3>🗓 하루 4장면 예보</h3><span class="acc-arrow">▾</span></summary><div id="p-scenes"></div></details>
   <div class="card locked" id="p-lock-wrap">
     <div id="p-lock-inner">
@@ -408,6 +409,7 @@ details.acc>*:not(summary){margin-top:10px}
       <div style="font-size:1.5rem">🔒</div>
       <p style="font-family:'Jua'">여기부터 심화 풀이</p>
       <p class="small">외향성·온정·성실… 다섯 축 각각의 등급별 해설과<br>나의 무기 · 살펴볼 지점이 내 점수 기준으로 열려요<br><b>+ 🩺 냥쪽처방 1회권 선물</b></p>
+      <p class="small" style="color:#8B5C4A;font-weight:500;margin-top:6px">칸쵸 · 여기부터가 팩트다냥. 다섯 축이 실제 하루에 어떻게 나오는지, 네 무기와 약점을 짚어놨다냥.</p>
       <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockPReport()"><i class="ddeok-i"></i> 까까 1개로 심화 풀이 보기</button>
     </div>
   </div>
@@ -434,6 +436,7 @@ details.acc>*:not(summary){margin-top:10px}
        궁금하게 만든다. 제목이 곧 후킹이라 접혀 있어도 읽고 싶어진다. -->
   <div class="card"><h3 style="font-size:1rem;margin-bottom:6px">기질 색깔의 비율</h3><div id="c-cluster" class="mt8"></div></div>
   <div class="card"><h3 style="font-size:1rem;margin-bottom:6px">🔮 우리 아이 풀이</h3><div id="c-story" style="font-size:.93rem;line-height:1.8"></div></div>
+  <div id="c-voice"></div>
   <details class="card acc"><summary><h3>우리 아이 마음의 3가지 힘</h3><span class="acc-arrow">▾</span></summary><div id="c-super"></div><p class="small mt8" id="c-super-note"></p></details>
   <details class="card acc"><summary><h3>💞 이런 아이는, 이런 부모와 잘 맞아요</h3><span class="acc-arrow">▾</span></summary><div id="c-fitpar"></div></details>
   <div class="card locked" id="c-lock-wrap">
@@ -444,6 +447,7 @@ details.acc>*:not(summary){margin-top:10px}
       <div style="font-size:1.5rem">🔒</div>
       <p style="font-family:'Jua'">여기부터 심화 풀이</p>
       <p class="small">활동량·리듬·민감성… 10가지 온도 각각의 등급과<br>맞춤 해설이 우리 아이 기준으로 열려요<br><b>+ 🩺 냥쪽처방 1회권 선물</b></p>
+      <p class="small" style="color:#8B5C4A;font-weight:500;margin-top:6px">칸쵸 · 여기부터는 내 구역이다냥. 열 가지 온도를 하나씩 짚고, 오늘 집에서 바꿀 것부터 순서대로 적어놨다냥.</p>
       <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockCReport()"><i class="ddeok-i"></i> 까까 1개로 심화 풀이 보기</button>
     </div>
   </div>
@@ -559,6 +563,7 @@ details.acc>*:not(summary){margin-top:10px}
   </div>
   <div class="card" id="f-axes"></div>
   <div class="card"><div id="f-story" style="font-size:.93rem;line-height:1.8"></div></div>
+  <div id="f-voice"></div>
   <div class="card">
     <h3 style="font-size:1rem;margin-bottom:6px">🌱 대물림에 대해 꼭 알아둘 것</h3>
     <p style="font-size:.88rem">부모가 되는 방식은 자신이 받은 양육의 영향을 받는다는 게 여러 종단연구와 메타분석의 결론이에요. 하지만 그 힘은 <b>완만한 경향이지 운명이 아닙니다.</b> 자신이 어떻게 자랐는지 돌아보고 말로 정리할 수 있는 것 — 지금 이 리포트를 읽는 행위 자체가 대물림의 고리를 느슨하게 만드는 가장 검증된 방법이에요.</p>
@@ -573,6 +578,7 @@ details.acc>*:not(summary){margin-top:10px}
       <div style="font-size:1.5rem">🔒</div>
       <p style="font-family:'Jua'">여기부터 심화 풀이</p>
       <p class="small">이 집에서 얻은 힘 · 육아에서 만나기 쉬운 순간 ·<br>대물림을 다루는 나만의 처방이 열려요</p>
+      <p class="small" style="color:#8B5C4A;font-weight:500;margin-top:6px">칸쵸 · 여기부터다냥. 그 방식이 지금 네 육아에 어떻게 스며들었는지, 어디서 끊으면 되는지 짚어놨다냥.</p>
       <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockFam()"><i class="ddeok-i"></i> 까까 1개로 심화 풀이 보기</button>
     </div>
   </div>
@@ -695,6 +701,7 @@ details.acc>*:not(summary){margin-top:10px}
     <div id="cr-lock-inner"><div id="cr-deep"></div></div>
     <div class="lock-cover" id="cr-cover">
       <p style="font-size:.9rem"><b>계열 해설 · AI 시대 관점 · 지금 해줄 것 · 오해받기 쉬운 지점</b></p>
+      <p class="small" style="color:#8B5C4A;font-weight:500;margin-top:6px">칸쵸 · 여기부터다냥. 지금 기질에 맞는 일의 결과 왜 그런지, 부모가 뭘 열어주면 되는지 적어놨다냥.</p>
       <button class="btn pri" style="width:auto;padding:12px 20px" onclick="unlockCareer()"><i class="ddeok-i"></i> 까까 1개로 열기 (1,000원)</button>
     </div>
   </div>
@@ -986,7 +993,7 @@ const P_EXTRA=[
 const PARENT_ROLES=[['엄마','🌷'],['아빠','🌲'],['할머니·할아버지','🌼'],['이모·고모','🌸'],['삼촌·외삼촌','🌿'],['예비부모','🌱'],['보호자','🍀']];
 const ROLE_EMOJI=Object.fromEntries(PARENT_ROLES);
 const AGE_OPTS=[['t','만 3세 미만 (개월수 입력)'],['3','만 3세'],['4','만 4세'],['5','만 5세'],['6','만 6세'],['7','만 7세'],['s','초등학생'],['a','중·고등학생']];
-/* ===== js/data/texts.js (329) ===== */
+/* ===== js/data/texts.js (367) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
   gain:["실패를 두려워하지 않는 도전 감각","감정을 말로 꺼내는 게 자연스러움","'집=쉬는 곳'이라는 안정감"],
@@ -1315,6 +1322,44 @@ const KID_PARENT_MATCH={
     care:['탐험형'],
     careWhy:'변화를 자주 주면 아이가 어느 모드로 있어야 할지 헷갈립니다. 바꿀 땐 미리 알려주는 것 하나만 지켜도 충분해요.'
   }
+};
+
+/* ══ 캐릭터 음성 — 리포트 섹션 끝 츄비·칸쵸 한마디 쌍 (캐릭터_메인화 3장·8장 1단계) ══
+   말투 바이블(7장): 츄비=존댓말 ~요·감정 먼저·물음표 / 칸쵸=반말 ~다냥·결론+처방1개.
+   {N} = 아이 이름(주격, 렌더에서 josa 치환). 근거 있는 말만(실수6). */
+const KID_VOICE={
+ '햇살형':{chuvi:'{N} 순하다는 말, 자주 듣죠? 그 안정감은 세상을 믿고 있다는 증거예요.',
+          kancho:'순한 아이일수록 속상함을 조용히 삼킨다냥. 별일 없어 보여도 "오늘 마음 어땠어?" 한 번만 물어라냥.'},
+ '불꽃형':{chuvi:'{N} 기분을 온 집이 알죠? 그만큼 솔직하고 큰 아이예요.',
+          kancho:'그 화력은 끄는 게 아니라 벽난로에 넣는 거다냥. 감정에 이름부터 붙여라냥 — "화가 이만큼 컸구나".'},
+ '새벽형':{chuvi:'{N} 낯선 데서 먼저 멈칫하죠? 겁이 아니라 정보를 모으는 중이에요.',
+          kancho:'등 떠밀면 두 배로 느려진다냥. 반 걸음 먼저 예고하고 기다려라냥 — 그럼 제 속도로 핀다냥.'},
+ '무지개형':{chuvi:'{N} 어제랑 오늘이 달라 보이죠? 여러 결을 다 가진 아이라 그게 정상이에요.',
+          kancho:'규정하지 말고 그날 컨디션부터 봐라냥. 상황이 모습을 만드는 아이다냥.'}
+};
+const PARENT_VOICE={
+ '활력형':{chuvi:'몸으로 놀아주는 힘이 있으시네요. 그게 아이한테 큰 선물이에요.',
+          kancho:'에너지가 강점이다냥. 다만 하루 한 번은 아이가 이끄는 놀이에 따라가라냥 — 주도권이 자율성의 연료다냥.'},
+ '온기형':{chuvi:'아이 마음을 잘 알아채시죠? 그 온기가 아이의 안전기지가 돼요.',
+          kancho:'공감이 강점이지만 단호함도 필요하다냥. 부드러운 목소리로 같은 규칙을 반복하는 게 너의 단호함이다냥.'},
+ '등대형':{chuvi:'예측 가능한 하루를 만들어주는 분이네요. 아이가 기댈 구조가 있어요.',
+          kancho:'규칙이 많아지면 소음이 된다냥. "대원칙 3개"만 남기고 나머지는 상황 대응으로 돌려라냥.'},
+ '안테나형':{chuvi:'아이 신호를 예민하게 읽으시죠? 그 섬세함이 무기예요.',
+          kancho:'아이 감정에 같이 끓는 날엔 "물 한잔 루틴"부터다냥. 내 마음 분리가 먼저다냥.'},
+ '탐험형':{chuvi:'새로운 걸 함께 즐기는 분이네요. 아이 세계가 그만큼 넓어져요.',
+          kancho:'방향만 같이 정해라냥. 새것 앞에서 신중한 아이에겐 미리 예고가 다리가 된다냥.'},
+ '카멜레온형':{chuvi:'어느 쪽으로도 크게 치우치지 않는 분이에요. 아이에 맞춰 변신할 폭이 가장 넓죠.',
+          kancho:'지친 날 내가 어느 쪽으로 기우는지만 관찰해라냥. 그게 카멜레온형의 유일한 숙제다냥.'}
+};
+const FAM_VOICE={
+ 'warm_ctrl':{chuvi:'많이 사랑받고 자라셨네요. 그 온기를 물려주고 싶은 마음, 그대로 좋아요.',
+          kancho:'관심이 방향을 정해주려 할 때가 있다냥. 아이 선택을 한 번 더 기다려주는 게 네가 받은 것과 다른 한 수다냥.'},
+ 'warm_free':{chuvi:'따뜻하고 자유로운 집에서 자라셨군요. 그 여유가 아이에게도 흘러요.',
+          kancho:'자율이 넉넉했던 만큼 한계 설정에서 망설일 수 있다냥. "안 되는 것 3개"만 분명히 정해두라냥.'},
+ 'cold_ctrl':{chuvi:'기준이 분명한 집에서 자라셨네요. 그 성실함이 지금 육아의 힘이 돼요.',
+          kancho:'통제가 익숙하면 나도 모르게 대물림된다냥. 규칙 앞에 "왜"를 한 줄 붙이면 아이가 받아들이는 게 달라진다냥.'},
+ 'cold_free':{chuvi:'스스로 컸다는 감각이 있으시죠? 그 독립심이 강점이에요.',
+          kancho:'표현이 적었던 집일수록 "알아줌"을 먼저 연습하라냥. 감정에 이름 붙여주는 반 문장이면 충분하다냥.'}
 };
 /* ===== js/data/career.js (97) ===== */
 /* ══════════════ 미래 직업 — 문항 · 결 · 직업 사전 ══════════════
@@ -1754,7 +1799,7 @@ function answer(v){
   concernIntro();
   show('s-concern');
 }
-/* ===== js/render/parent.js (88) ===== */
+/* ===== js/render/parent.js (90) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -1838,12 +1883,14 @@ function renderParentReport(){
     if(pu){pcover.style.display='none';pinner.classList.remove('locked-peek');}
     else{pcover.style.display='flex';pinner.classList.add('locked-peek');}
   }
+  /* 츄비·칸쵸 한마디 쌍 — 부모 유형(myPT) 기준 (캐릭터_메인화 8장 1단계) */
+  if(typeof paintVoice==='function'&&typeof PARENT_VOICE!=='undefined')paintVoice('p-voice',PARENT_VOICE[myPT],null);
   const R=document.getElementById('p-routes');
   if(R)R.innerHTML=`<button class="btn ghost" onclick="openShare('parent')">🔗 결과 카드 만들기 · 공유</button><div class="mt16">`+nextRoutes('parent')+`</div>`;
   inviteReward();
 
 }
-/* ===== js/render/child.js (128) ===== */
+/* ===== js/render/child.js (133) ===== */
 function renderChildReport(){
   const avg=(S.kids[S.activeK]&&S.kids[S.activeK].score)||S.cScore;
   // Thomas & Chess 군집 — 연속체로 계산 (rhy, app, ada, int, moo 5개 결정 차원)
@@ -1968,17 +2015,23 @@ function renderChildReport(){
   cta.removeAttribute('onclick');
   if(hasPr){cta.textContent=josa(nm,'랑')+' 나, 얼마나 맞을까? 보러가기';cta.onclick=goFit;}
   else{cta.textContent='나는 어떤 부모일까? 보러가기';cta.onclick=goParentTest;}
+  /* 츄비·칸쵸 한마디 쌍 — 계열(kbase) 기준. main 은 '무지개형 (혼합)'일 수 있어 정규화 (캐릭터_메인화 8장 1단계) */
+  if(typeof paintVoice==='function'&&typeof KID_VOICE!=='undefined'){
+    const vk=main.indexOf('무지개')===0?'무지개형':main;
+    paintVoice('c-voice',KID_VOICE[vk],kid?kid.name:null);
+  }
   const R2=document.getElementById('c-routes');if(R2)R2.innerHTML=nextRoutes('child');
   inviteReward();
 }
 function animateBars(){requestAnimationFrame(()=>{document.querySelectorAll('.screen.on .bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});});}
-/* ===== js/render/family.js (39) ===== */
+/* ===== js/render/family.js (42) ===== */
 function scoreFamily(){
   let care=0,ctrl=0;
   F_ITEMS.forEach((q,i)=>{const raw=S.fAns[i];const v=q.r?6-raw:raw;if(q.f==='c')care+=v;else ctrl+=v;});
   care/=6;ctrl/=6;
   S.family={care,ctrl};
-  const quad=care>=3.2?(ctrl>=3.2?FAM_QUAD.warm_ctrl:FAM_QUAD.warm_free):(ctrl>=3.2?FAM_QUAD.cold_ctrl:FAM_QUAD.cold_free);
+  const qkey=care>=3.2?(ctrl>=3.2?'warm_ctrl':'warm_free'):(ctrl>=3.2?'cold_ctrl':'cold_free');
+  const quad=FAM_QUAD[qkey];
   document.getElementById('f-typename').textContent=quad.n;
   let extra='';
   if(S.pScore){
@@ -2007,6 +2060,8 @@ function scoreFamily(){
     </div>`);
   });
   const st=document.getElementById('st-fam');if(st)st.textContent='✓';
+  /* 츄비·칸쵸 한마디 쌍 — 원가족 유형 기준 (캐릭터_메인화 8장 1단계) */
+  if(typeof paintVoice==='function'&&typeof FAM_VOICE!=='undefined')paintVoice('f-voice',FAM_VOICE[qkey],null);
   show('s-family-result');animateBars();
   const R3=document.getElementById('f-routes');if(R3)R3.innerHTML=nextRoutes('family');
   inviteReward();
@@ -2357,7 +2412,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (158) ===== */
+/* ===== js/share.js (172) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -2496,6 +2551,20 @@ function gaugeUpdate(el,gid,cid){
     : n<200 ? `🐈 츄비 "오, 이제 뭔가 보이기 시작해요" (${n}자)`
     : n<300 ? `🐈 츄비 "좋아요, 거의 다 왔어요" (${n}자)`
     : `🐈 츄비 "완벽해요. 이 정도면 제대로 짚어드릴 수 있어요" (${n}자)`;
+}
+
+/* 리포트 섹션 끝 츄비·칸쵸 한마디 쌍 (캐릭터_메인화 3장·8장 1단계).
+   궁합 fit.js 의 .fit-item .say 패턴을 그대로 재사용해 CSS 를 안 건드린다. */
+function voicePairHTML(chuvi,kancho){
+  return `<div class="card"><div class="fit-item">
+    <div class="say"><div class="mini"></div><div><b style="font-family:'Jua'">츄비</b> · ${chuvi}</div></div>
+    <div class="say"><div class="mini k"></div><div><b style="font-family:'Jua'">칸쵸</b> · ${kancho}</div></div>
+  </div></div>`;
+}
+function paintVoice(containerId, voice, name){
+  const el=document.getElementById(containerId);if(!el||!voice)return;
+  const N=name?josa(name,'는'):'우리 아이는';
+  el.innerHTML=voicePairHTML((voice.chuvi||'').replace('{N}',N), (voice.kancho||'').replace('{N}',N));
 }
 
 /* ── 리포트 하단 '다음 루트' — 사주아이의 진짜 매출 엔진 ── */
