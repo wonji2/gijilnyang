@@ -250,6 +250,12 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 .hero-cta{margin-top:16px;padding:14px;font-size:1.02rem}
 .hero-proof{font-size:.76rem;line-height:1.65;color:var(--sub);margin-top:10px}
 @media (max-width:360px){.hero-hook{font-size:1.18rem}}
+
+/* 🔴 알약 배지는 절대 줄바꿈되지 않게 (2026-08-12)
+   숫자만 들어가던 자리에 긴 문장을 넣었더니 좁은 폭에서 한 글자씩 세로로
+   쪼개졌다. 폭이 모자라면 줄을 바꾸지 말고 폰트를 줄이거나 넘치게 둔다. */
+.snack-pill,.kka-pill{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.snack-pill>*,.kka-pill>*{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -763,7 +769,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="daily" style="display:flex;align-items:center;gap:12px">
     <div style="flex:1"><span class="d-label">🎟 오늘의 무료 상담권이 도착했어요</span><div class="d-text" style="margin-top:2px;font-size:.85rem">매일 밤 11시에 자동 충전돼요</div></div>
-    <div class="snack-pill" style="background:var(--amber-soft)">🎟 오늘 <b id="free-badge">2</b>회 · 매일 자정 충전</div>
+    <div class="snack-pill" style="background:var(--amber-soft)">🎟 오늘 남은 상담 <b id="free-badge">3</b>회</div>
   <p class="small" id="chat-tip" style="display:none;margin-top:6px">검사를 하나 마치면 우리 집 데이터로 맞춤 상담이 돼요</p>
   </div>
   <div class="card" role="button" tabindex="0" onclick="openChat('chuvi')" style="display:flex;gap:12px;align-items:center;cursor:pointer">
@@ -2388,7 +2394,7 @@ const CAT_META={
   kancho:{name:'칸쵸 연구원',tag:'팩트분석 담당 · 원인부터 짚습니다',cls:'moss'}
 };
 function goChat(){
-  const fb=document.getElementById('free-badge');if(fb)fb.textContent=meetLeftStr();
+  const fb=document.getElementById('free-badge');if(fb)fb.textContent=meetLeft();
   renderSnack();
   show('s-chat-list');
   const tip=document.getElementById('chat-tip');
@@ -2488,9 +2494,9 @@ function renderChips(list){
 function renderChat(){
   const log=document.getElementById('chat-log');log.innerHTML='';
   CHAT.hist[CHAT.cat].forEach(m=>{log.insertAdjacentHTML('beforeend',m.html||msgHTML(m.role,m.text));});
-  document.getElementById('free-left').textContent=meetLeftStr();
+  document.getElementById('free-left').textContent=meetLeft();
   renderSnack();
-  const badge=document.getElementById('free-badge');if(badge)badge.textContent=meetLeftStr();
+  const badge=document.getElementById('free-badge');if(badge)badge.textContent=meetLeft();
 }
 function msgHTML(role,text){
   if(role==='user')return `<div style="align-self:flex-end;max-width:85%;background:var(--ink);color:#fff;padding:11px 14px;border-radius:16px 16px 4px 16px;font-size:.93rem">${text}</div>`;
@@ -2696,7 +2702,7 @@ function buyMeet(i){
   const dur=p.min==='day'?'오늘 자정까지':p.min+'분';
   if(!confirm(p.name+' · '+dur+' 면담을 '+wonStr(p.won)+'에 여실까요?\n(데모: 결제 없이 바로 열립니다)'))return;
   grantMeet(p);renderSnack();renderWallet();
-  alert('⏱ 면담이 열렸어요! '+meetLeftStr());
+  alert('💬 상담이 충전됐어요! '+meetLeftStr());
 }
 function openWallet(){show('s-wallet');renderWallet();}
 function renderWallet(){
@@ -2738,8 +2744,8 @@ function buyKka(i){
 function renderSnack(){
   const s=document.getElementById('snack-n');if(s)s.textContent=KKA;
   const w=document.getElementById('kka-chat');if(w)w.textContent=KKA;
-  const f=document.getElementById('free-left');if(f)f.textContent=meetLeftStr();
-  const b=document.getElementById('free-badge');if(b)b.textContent=meetLeftStr();
+  const f=document.getElementById('free-left');if(f)f.textContent=meetLeft();
+  const b=document.getElementById('free-badge');if(b)b.textContent=meetLeft();
 }
 function unlockCReport(){
   if(!needKka(1))return;
@@ -2964,7 +2970,7 @@ function goDaily(){
       <button class="btn pri mt8" onclick="startTest('child')">기질검사 하러 가기 →</button></div>`}
     <div class="card">
       <h3 style="font-size:1rem;margin-bottom:6px">💬 무료 상담</h3>
-      <p style="font-size:.92rem">남은 면담 <b>${meetLeftStr()}</b></p>
+      <p style="font-size:.92rem">남은 상담 <b>${meetLeft()}회</b></p>
       <p class="small mt8">다음 충전까지 <b id="cd-clock">--:--:--</b></p>
       <button class="btn ghost mt8" onclick="goChat()">상담실 가기</button>
     </div>
