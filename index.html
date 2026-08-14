@@ -854,7 +854,7 @@ details.acc>*:not(summary){margin-top:10px}
   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
 </button>
 <script>
-/* ===== js/data/items.js (187) ===== */
+/* ===== js/data/items.js (248) ===== */
 /* ══════════════ 데이터 ══════════════ */
 // 부모: Mini-IPIP 20문항 한국어 번안 (Donnellan et al., 2006 / IPIP 퍼블릭 도메인)
 // f: E외향 A우호 C성실 N정서 O개방  |  r: 역채점
@@ -1042,6 +1042,67 @@ const P_EXTRA=[
 const PARENT_ROLES=[['엄마','🌷'],['아빠','🌲'],['할머니·할아버지','🌼'],['이모·고모','🌸'],['삼촌·외삼촌','🌿'],['예비부모','🌱'],['보호자','🍀']];
 const ROLE_EMOJI=Object.fromEntries(PARENT_ROLES);
 const AGE_OPTS=[['t','만 3세 미만 (개월수 입력)'],['3','만 3세'],['4','만 4세'],['5','만 5세'],['6','만 6세'],['7','만 7세'],['s','초등학생'],['a','중·고등학생']];
+
+/* ── 아이 장면 보조 문항 (2026-08-14 사장님 승인: "문항 추가·구체화 디벨롭")
+   점수 미반영·해설 전용 — 부모 P_EXTRA와 같은 원칙. 밴드별 2문항, 연령에 맞는 장면만.
+   note = 리포트 심화 "우리 집 장면 메모"에 인용되는 해설 + 상담 컨텍스트로 전달. */
+const C_SCENE={
+ i:[
+  {key:'stranger',q:'낯선 사람이 다가와 안으려 하면 우리 아기는?',opts:[
+   {t:'울음이 터져요',note:'낯선 자극에 경계가 빠른 타입이에요. 새 얼굴은 천천히 소개하는 예열이 필요해요.'},
+   {t:'굳은 표정으로 가만히 살펴요',note:'관찰형이에요. 정보를 모은 뒤 마음을 여는 신중한 기질의 싹이에요.'},
+   {t:'방긋 웃으며 안겨요',note:'사람을 반기는 접근형이에요. 새로운 얼굴이 자극이 아니라 즐거움인 아기예요.'},
+   {t:'그날 컨디션에 따라 달라요',note:'컨디션이 반응을 좌우하는 시기예요. 낮잠·배고픔 관리가 곧 사회성 관리예요.'}]},
+  {key:'sleep',q:'재우려고 눕히면 우리 아기는?',opts:[
+   {t:'눕히자마자 울어요 (등센서)',note:'감각이 민감하다는 신호예요. 온도·소리·눕히는 속도를 한 단계 부드럽게 해보세요.'},
+   {t:'뒤척이다 스스로 잠들어요',note:'자기 진정의 싹이 보여요. 그 뒤척이는 시간을 방해하지 않는 게 도움이에요.'},
+   {t:'안아서 흔들어야 자요',note:'접촉으로 안정을 얻는 타입이에요. 아주 조금씩 내려놓는 연습이 통해요.'},
+   {t:'그날그날 달라요',note:'리듬이 아직 자리 잡는 중이에요. 순서(수유→노래→눕히기)를 고정해 주면 좋아요.'}]}],
+ t:[
+  {key:'tantrum',q:'가게에서 원하는 걸 안 사주면 우리 아이는?',opts:[
+   {t:'드러눕거나 크게 울어요',note:'감정의 화력이 큰 타입이에요. 들어가기 전 예고("오늘은 구경만")와 감정 이름 붙이기가 잘 들어요.'},
+   {t:'칭얼대다 금방 다른 데 관심이 가요',note:'주의 전환이 빠른 타입이에요. 관심 돌리기가 훌륭한 진정 도구가 됩니다.'},
+   {t:'안아달라고 매달려요',note:'속상함을 접촉으로 푸는 타입이에요. 안아준 다음에 말하면 잘 들어요.'},
+   {t:'크게 떼쓰지 않는 편이에요',note:'수용이 빠른 타입이에요. 대신 속마음을 삼키는 건 아닌지 가끔 살펴봐 주세요.'}]},
+  {key:'newplace',q:'처음 가는 놀이터나 문화센터에서 우리 아이는?',opts:[
+   {t:'바로 뛰어들어요',note:'접근형이에요. 새 환경이 연료인 아이라 안전만 챙기면 됩니다.'},
+   {t:'보호자 옆에서 한참 구경만 해요',note:'관찰형이에요. 워밍업 시간을 주면 제 속도로 들어가는 아이예요.'},
+   {t:'다른 아이 노는 걸 보고 따라 해요',note:'모방으로 배우는 타입이에요. 또래 관찰이 이 아이의 최고 선생님이에요.'},
+   {t:'그날 기분 따라 달라요',note:'그날 컨디션이 반응을 정하는 아이예요. 상태 확인이 먼저예요.'}]}],
+ p:[
+  {key:'mart',q:'마트에서 사달라고 조르다 안 되면 우리 아이는?',opts:[
+   {t:'드러눕거나 소리 질러요',note:'감정 화력형이에요. 마트 들어가기 전 약속("오늘은 안 사는 날")이 최고의 예방이에요.'},
+   {t:'계속 말로 조르고 협상해요',note:'언어·주장형이에요. 말싸움 대신 선택지 2개("이건 생일에")가 잘 통해요.'},
+   {t:'삐져서 입을 닫아요',note:'속으로 삭이는 타입이에요. 진정된 뒤 "아까 속상했지?" 한마디가 중요해요.'},
+   {t:'아쉬워해도 금방 받아들여요',note:'조절이 자라 있는 신호예요. 그 순간을 꼭 짚어서 칭찬해 주세요.'}]},
+  {key:'stopplay',q:'재미있게 놀다가 집에 갈 시간이 되면 우리 아이는?',opts:[
+   {t:'크게 저항해서 실랑이가 돼요',note:'전환이 어려운 타입이에요. "10분 뒤 출발" 예고가 실랑이를 크게 줄여요.'},
+   {t:'"5분만!" 하고 협상해요',note:'협상형이에요. 딱 한 번의 연장 규칙을 정해두면 서로 편해요.'},
+   {t:'아쉬워하면서도 따라와요',note:'수용형이에요. 아쉬움을 말로 표현하게 도와주면 더 좋아요.'},
+   {t:'그날그날 달라요',note:'컨디션 영향형이에요. 피곤한 날의 전환은 미리 더 부드럽게 준비하세요.'}]}],
+ s:[
+  {key:'homework',q:'숙제를 시키면 우리 아이는?',opts:[
+   {t:'미루다가 몰아서 해요',note:'시동이 늦는 타입이에요. 시작 장벽을 낮추는 "딱 5분만 하기"가 통해요.'},
+   {t:'잔소리를 해야 시작해요',note:'외부 신호 의존형이에요. 잔소리 대신 시작 시간을 아이가 정하게 해보세요.'},
+   {t:'스스로 계획해서 해요',note:'자기조절이 자라 있는 신호예요. 결과보다 과정을 칭찬해 지켜주세요.'},
+   {t:'과목·기분 따라 달라요',note:'흥미 민감형이에요. 좋아하는 과목으로 시동을 걸면 나머지가 따라와요.'}]},
+  {key:'game',q:'게임·영상을 그만하라고 하면 우리 아이는?',opts:[
+   {t:'화내거나 실랑이가 돼요',note:'몰입 중 차단에 민감한 타입이에요. "이 판만 끝나면"처럼 마디를 존중하는 예고가 효과적이에요.'},
+   {t:'"한 판만!" 하고 협상해요',note:'협상형이에요. 연장 규칙을 미리 합의해 두면 갈등이 줄어요.'},
+   {t:'못 들은 척해요',note:'회피형이에요. 멀리서 반복해 소리치기보다, 다가가 눈 맞추고 한 번 말하는 게 잘 들려요.'},
+   {t:'군말 없이 끄는 편이에요',note:'조절형이에요. 스스로 끈 순간을 짚어 칭찬하면 습관이 됩니다.'}]}],
+ a:[
+  {key:'upset',q:'속상한 일이 있을 때 우리 아이는?',opts:[
+   {t:'방문 닫고 혼자 삭여요',note:'혼자 정리형이에요. 캐묻기보다 "필요하면 말해" 신호가 마음의 문을 지켜줘요.'},
+   {t:'친구에게만 이야기해요',note:'또래 의존기의 정상 신호예요. 부모는 2순위여도 안전기지면 충분해요.'},
+   {t:'부모에게 털어놓는 편이에요',note:'소통 통로가 살아 있는 집이에요. 판단 없이 듣기만 해도 그 통로가 유지돼요.'},
+   {t:'아무렇지 않은 척해요',note:'감정을 감추는 타입이에요. 표정 대신 밥·잠의 변화로 상태를 읽어주세요.'}]},
+  {key:'phone',q:'스마트폰 사용을 지적하면 우리 아이는?',opts:[
+   {t:'짜증부터 내요',note:'자율성 침해로 받아들인다는 신호예요. 규칙을 함께 정하면 저항이 줄어요.'},
+   {t:'알겠다고 하고 그대로예요',note:'회피형이에요. 잔소리 횟수보다 구체적인 시간 약속 하나가 낫습니다.'},
+   {t:'자기 계획을 제시하며 협상해요',note:'자기주장형이에요. 협상 자체가 자율성 연습이라 나쁜 신호가 아니에요.'},
+   {t:'스스로 조절하는 편이에요',note:'자기조절형이에요. 신뢰를 말로 표현해 주면 더 단단해져요.'}]}]
+};
 /* ===== js/data/texts.js (421) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
@@ -1924,7 +1985,7 @@ function onboardStart(){
   S.activeK=S.kids.length-1;
   beginTest('child');
 }
-/* ===== js/render/test.js (50) ===== */
+/* ===== js/render/test.js (84) ===== */
 function startTest(mode){if(mode==='family'){beginTest('family');return;}chooseWho(mode);}
 /* ── 부모 검사로 가는 단 하나의 입구 ────────────────────────────
    화면 여러 곳에 "나는 어떤 부모일까?" 버튼이 있는데 서로 다른 함수를
@@ -1961,19 +2022,53 @@ function renderQ(){
     b.onclick=()=>{answer(i+1);};box.appendChild(b);
   });
 }
-function prevQ(){if(S.idx>0){S.idx--;renderQ();}}
+function prevQ(){
+  if(SCENE_I>=0){ if(SCENE_I>0){SCENE_I--;renderScene();} else {SCENE_I=-1;S.idx--;renderQ();} return; }
+  if(S.idx>0){S.idx--;renderQ();}
+}
 function answer(v){
   const arr=S.mode==='parent'?S.pAns:S.mode==='family'?S.fAns:S.cAns;
   arr[S.idx]=v;S.idx++;
   if(S.idx<items().length){renderQ();return;}
   if(S.mode==='parent'){scoreParent();return;}
   if(S.mode==='family'){scoreFamily();return;}
-  /* 기질검사 끝 → 결과 전에 주관식 300자 (2026-08-12 사장님 지시)
-     사주아이가 검사 끝에 '궁금한 것'을 길게 적게 하는 것과 같은 자리.
-     여기 적은 내용은 상담(면담) 프롬프트에 그대로 들어가 답변이 개인화된다. */
-  CONCERN_NEXT=scoreChild;
-  concernIntro();
-  show('s-concern');
+  /* 아이 검사: 채점 22문항 끝 → 장면 보조 문항 2개 (점수 미반영, 2026-08-14) → 주관식 */
+  SCENE_I=0;renderScene();
+}
+/* ── 장면 보조 문항 (밴드별 2개, 해설 전용) — 답은 kid.scene 에 저장 ── */
+let SCENE_I=-1;
+function sceneList(){const k=S.kids[S.activeK];return (typeof C_SCENE!=='undefined'&&k&&C_SCENE[k.band])?C_SCENE[k.band]:(typeof C_SCENE!=='undefined'?C_SCENE.p:[]);}
+function renderScene(){
+  const qs=sceneList();
+  if(!qs.length||SCENE_I>=qs.length){
+    SCENE_I=-1;
+    /* 장면 끝 → 결과 전에 주관식 300자 (2026-08-12 사장님 지시) */
+    CONCERN_NEXT=scoreChild;concernIntro();show('s-concern');return;
+  }
+  const it=items(),total=it.length+qs.length,pos=it.length+SCENE_I;
+  const q=qs[SCENE_I];
+  document.getElementById('prog').style.width=(pos/total*100)+'%';
+  document.getElementById('qnum').textContent=(pos+1)+' / '+total;
+  document.getElementById('qtext').textContent=q.q;
+  const isC=pos%2===0;
+  const bub=document.getElementById('test-bubble');
+  bub.className='bubble '+(isC?'amber':'moss');
+  bub.innerHTML='<span class="who">'+(isC?'츄비 연구원':'칸쵸 연구원')+'</span>'+(isC?'실제 있었던 장면을 떠올리면 딱 맞는 답이 보여요. 이건 점수가 아니라 우리 집 맞춤 해설에 쓰여요.':'점수엔 안 들어간다냥. 대신 리포트와 상담이 너네 집 얘기가 된다냥. 솔직하게 골라라냥.');
+  const ava=document.getElementById('test-ava');
+  if(ava){ava.src='assets/'+(isC?'chuvi':'kancho')+'.png';ava.className='pho md '+(isC?'chuvi':'kancho');ava.alt=(isC?'츄비':'칸쵸')+' 연구원';}
+  document.getElementById('prev-btn').style.visibility='visible';
+  const box=document.getElementById('opts');box.innerHTML='';
+  const kid=S.kids[S.activeK];
+  q.opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt'+((kid&&kid.scene&&kid.scene[q.key]&&kid.scene[q.key].label===o.t)?' sel':'');
+    b.textContent=o.t;
+    b.onclick=()=>{
+      if(kid){(kid.scene=kid.scene||{})[q.key]={q:q.q,label:o.t,note:o.note};}
+      SCENE_I++;renderScene();
+    };
+    box.appendChild(b);
+  });
 }
 /* ===== js/render/parent.js (97) ===== */
 function renderParentReport(){
@@ -2073,7 +2168,7 @@ function renderParentReport(){
   inviteReward();
 
 }
-/* ===== js/render/child.js (157) ===== */
+/* ===== js/render/child.js (167) ===== */
 function renderChildReport(){
   const avg=(S.kids[S.activeK]&&S.kids[S.activeK].score)||S.cScore;
   // Thomas & Chess 군집 — 연속체로 계산 (rhy, app, ada, int, moo 5개 결정 차원)
@@ -2185,6 +2280,16 @@ function renderChildReport(){
        <p class="mt8" style="font-size:.88rem">· 힘든 날의 첫 신호를 알아두면, 크게 무너지기 전에 받쳐줄 수 있어요.<br>· 잘 지내는 날이 많다고 마음까지 늘 괜찮은 건 아니에요 — 가끔 속마음을 따로 물어봐 주세요.</p>`;
     }
     bars.insertAdjacentHTML('beforeend',synHtml);
+    /* 📸 우리 집 장면 메모 — 장면 보조 문항 답변 인용 (2026-08-14, 점수 미반영·해설 전용) */
+    if(kid&&kid.scene&&Object.keys(kid.scene).length){
+      let sc='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">📸 우리 집 장면 메모</h3>'
+        +'<p class="small" style="margin-bottom:8px">검사 때 골라주신 실제 장면이에요. 점수가 아니라 우리 집 맞춤 해설입니다.</p>';
+      Object.values(kid.scene).forEach(s2=>{
+        sc+=`<p style="font-size:.9rem;margin:8px 0 2px"><b>${s2.q}</b> → ${s2.label}</p>
+             <p style="font-size:.87rem;color:var(--sub);margin:0 0 6px">${s2.note}</p>`;
+      });
+      bars.insertAdjacentHTML('beforeend',sc);
+    }
   }
   // 💞 이런 부모와 잘 맞아요
   const fpEl=document.getElementById('c-fitpar');
@@ -2940,7 +3045,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (491) ===== */
+/* ===== js/chat.js (492) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -3287,6 +3392,7 @@ function sysPrompt(){
   if(CHAT.intake.need)ctx.push('지금 원하는 것: '+CHAT.intake.need);
   if(CHAT.intake.style)ctx.push('집안 규칙 스타일: '+CHAT.intake.style+STYLE_HINT[CHAT.intake.style]);
   if(S.concern&&(S.concern.text||(S.concern.events&&S.concern.events.length)))ctx.push('보호자가 직접 적은 현재 상황: '+[(S.concern.events||[]).join(','),S.concern.text].filter(Boolean).join(' / '));
+  if(_kid&&_kid.scene&&Object.keys(_kid.scene).length)ctx.push('실제 관찰된 우리 집 장면: '+Object.values(_kid.scene).map(s2=>`"${s2.q}"→${s2.label}`).join(' / ')+' — 이 구체 장면을 답변에 활용한다');
   if(S.family)ctx.push('보호자의 원가족(회고): 따뜻함 '+S.family.care.toFixed(1)+', 통제 '+S.family.ctrl.toFixed(1)+' — 대물림은 경향일 뿐 운명이 아니라는 톤 유지');
   return `${persona}
 [검사 결과 맥락] ${ctx.join(' / ')||'아직 없음 — 검사가 없어도 결론 없이 끝내지 마라. 상황 묘사 자체에서 기질 가설을 세우고(예: 반응 강도가 크고 지속성이 강한 아이로 보인다), 그 가설을 근거로 원인 해석과 처방까지 반드시 완결하라. 끝에 기질검사를 하면 더 정확해진다고 한 문장만 덧붙인다.'}
