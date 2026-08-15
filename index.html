@@ -410,6 +410,7 @@ details.acc>*:not(summary){margin-top:10px}
 
   <!-- 🐱 30초 닮은꼴 테스트 (2026-08-15 C안) — 부담 없는 재미 입구 → 공유 → 본검사 유도 -->
   <div class="mimic-card" role="button" tabindex="0" onclick="startMimic()">
+    <span class="price free" style="position:static;float:right;margin-left:8px">무료</span>
     <div style="display:flex;align-items:center;gap:10px">
       <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="40" height="40" style="margin-right:-18px;z-index:1">
       <img class="pho md kancho" src="assets/kancho.png" alt="" width="40" height="40">
@@ -425,13 +426,17 @@ details.acc>*:not(summary){margin-top:10px}
        나의 리포트 타일(s-me 입구)은 부모성향+원가족과 겹치는 중복 입구라 제거.
        예비부모 문구는 '부모 성향' sub 로 흡수. -->
   <div class="grid2">
+    <!-- 🔴 가격 라벨은 전 타일 필수 (사주아이 실측 패턴 — 무료/일부무료/N까까).
+         뭐가 공짜인지 한눈에 보여야 진입장벽이 낮아진다. (2026-08-15) -->
     <div class="tile" style="background:var(--amber-soft)" role="button" tabindex="0" onclick="startTest('child')">
+      <span class="price free">일부무료</span>
       <div class="big">아이 기질</div>
-      <div class="sub">0세~중·고등<br>연령 맞춤 검사 <span id="st-child"></span></div>
+      <div class="sub">0세~중·고등 · 연령 맞춤 <span id="st-child"></span></div>
     </div>
     <div class="tile" style="background:var(--moss-soft)" role="button" tabindex="0" onclick="startTest('parent')">
+      <span class="price free">일부무료</span>
       <div class="big">부모 성향</div>
-      <div class="sub">예비부모도 · 3분<br>나의 양육 에너지 <span id="st-parent"></span></div>
+      <div class="sub">예비부모도 · 3분 <span id="st-parent"></span></div>
     </div>
     <div class="tile" style="background:var(--pink-soft)" role="button" tabindex="0" onclick="goFit()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
@@ -439,7 +444,7 @@ details.acc>*:not(summary){margin-top:10px}
       <div class="sub">부모×아이 마찰 지점<br><span id="st-fit">두 검사 완료 후</span></div>
     </div>
     <div class="tile" style="background:var(--lav-soft)" role="button" tabindex="0" onclick="startTest('family')">
-      <span class="price">NEW</span>
+      <span class="price free">일부무료</span>
       <div class="big">원가족</div>
       <div class="sub">내 육아는 어디서 왔을까 <span id="st-fam"></span></div>
     </div>
