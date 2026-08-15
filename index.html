@@ -337,6 +337,18 @@ details.acc>*:not(summary){margin-top:10px}
   body.print-book #book-print-inner,body.print-book #book-print-inner *{visibility:visible}
   body.print-book #book-print-inner{position:fixed;left:0;top:0;width:100%;border:none}
 }
+
+/* ── 🗨 말 거는 연구소 — 히어로 말풍선 (2026-08-15 A안) ── */
+.hero-talk{display:flex;flex-direction:column;gap:8px;margin:12px auto 4px;max-width:400px;text-align:left}
+.ht-row{display:flex;align-items:flex-end;gap:8px;cursor:pointer}
+.ht-row.r{justify-content:flex-end}
+.ht-bubble{background:var(--card);border:1.5px solid var(--amber);border-radius:16px 16px 16px 4px;padding:9px 13px;font-size:.88rem;line-height:1.55;max-width:82%;box-shadow:0 2px 6px rgba(46,42,58,.07)}
+.ht-bubble.k{background:var(--moss-soft);border-color:var(--moss);border-radius:16px 16px 4px 16px}
+.ht-row:active .ht-bubble{transform:scale(.98)}
+
+/* ── 🐱 닮은꼴 테스트 입구 카드 (2026-08-15 C안) ── */
+.mimic-card{background:linear-gradient(135deg,var(--amber-soft),var(--moss-soft));border:1.5px solid var(--line);border-radius:16px;padding:13px 15px;margin:0 0 14px;cursor:pointer}
+.mimic-card:active{transform:scale(.99)}
 </style>
 </head>
 <body>
@@ -366,6 +378,10 @@ details.acc>*:not(summary){margin-top:10px}
       <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
       <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
     </div>
+    <!-- 🗨 말 거는 연구소 (2026-08-15 A안) — 사진이 '전시'가 아니라 '장면'이 되게.
+         멘트는 home.js renderHeroTalk: 시간대·검사상태 기반. 근거 없는 개인화 금지 원칙 유지
+         (신규에겐 보편 공감만, 이름·기질 언급은 검사한 사람에게만) -->
+    <div class="hero-talk" id="hero-talk"></div>
     <h1>기질냥구소</h1>
     <!-- 훅 → 스토리 → 오퍼 → 근거 순서 (2026-08-12 전면 교체)
          이전엔 "여기는 ~해주는 곳이다냥" 하고 기능을 설명했다. 그건 카테고리 설명이지
@@ -379,9 +395,23 @@ details.acc>*:not(summary){margin-top:10px}
   </div>
 
   <div class="daily" id="daily-card" style="display:none">
-    <span class="d-label">🌤 오늘의 육아 한마디 · 매일 무료</span>
+    <span class="d-label">🌤 오늘의 육아 날씨 · 매일 무료</span>
     <div class="d-text" id="daily-text">검사를 완료하면 열려요</div>
     <button class="btn pri mt8" id="daily-cta" style="padding:11px" onclick="startTest('child')">검사하러 가기 →</button>
+    <p class="small" style="margin-top:8px;text-align:center;color:var(--sub)">매일 밤 12시, 새 날씨로 바뀌어요</p>
+  </div>
+
+  <!-- 🐱 30초 닮은꼴 테스트 (2026-08-15 C안) — 부담 없는 재미 입구 → 공유 → 본검사 유도 -->
+  <div class="mimic-card" role="button" tabindex="0" onclick="startMimic()">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="40" height="40" style="margin-right:-18px;z-index:1">
+      <img class="pho md kancho" src="assets/kancho.png" alt="" width="40" height="40">
+      <div style="flex:1;margin-left:6px">
+        <div style="font-family:'Jua';font-size:1.05rem">우리 애는 츄비상? 칸쵸상?</div>
+        <div class="small">6문항 30초 · 무료 · 맞혀보세요</div>
+      </div>
+      <span class="small">›</span>
+    </div>
   </div>
 
   <!-- 상품 이름은 사주아이처럼 2~5글자 명사로 통일 (2026-08-12 사장님 지시)
@@ -429,6 +459,13 @@ details.acc>*:not(summary){margin-top:10px}
   </div>
 
   
+</section>
+
+<!-- ═══════════ 닮은꼴 테스트 (무료 입구, 2026-08-15) ═══════════ -->
+<section class="screen" id="s-mimic">
+  <button class="back" onclick="show('s-home')">← 홈으로</button>
+  <div class="result-hero"><span class="tag">30초 무료 테스트</span><div class="typename">우리 애는 츄비상? 칸쵸상?</div></div>
+  <div id="mimic-body"></div>
 </section>
 
 <!-- ═══════════ 검사 ═══════════ -->
@@ -2746,7 +2783,7 @@ function printBook(){
   window.print();
   setTimeout(()=>document.body.classList.remove('print-book'),800);
 }
-/* ===== js/render/home.js (108) ===== */
+/* ===== js/render/home.js (213) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -2758,6 +2795,111 @@ function updateHome(){
   if(S.pScore||S.cScore)_st('st-chat','열기');
   renderDaily();
   renderHomeGreet();
+  renderHeroTalk();
+}
+
+/* ── 🗨 말 거는 연구소 (2026-08-15 A안) ──────────────────────────────
+   사진 아래에서 츄비·칸쵸가 번갈아 말을 건다. 탭하면 바로 그 행동으로.
+   🔴 근거 없는 개인화 금지(실수6): 검사 0개면 시간대 보편 공감만,
+      이름·기질 언급은 검사 완료자에게만. 츄비=존댓말·공감 / 칸쵸=~다냥·처방 1개. */
+function renderHeroTalk(){
+  const el=document.getElementById('hero-talk');if(!el)return;
+  const h=new Date().getHours();
+  const hasK=S.kids&&S.kids.some(k=>k&&k.score);
+  const hasP=!!S.pScore||Object.values(S.parents||{}).some(x=>x&&x.score);
+  let chuvi,kancho;
+  if(!hasK&&!hasP){
+    const t=h<5?'night':h<10?'morning':h<17?'day':h<22?'evening':'night';
+    chuvi={
+      morning:['아침 등원 준비, 오늘도 전쟁이었죠? 엄마 잘못도 아이 잘못도 아니에요.',"startTest('child')"],
+      day:['"우리 애만 유난인가?" 싶은 날 있죠? 알고 보면 대부분 타고난 기질이에요.',"startTest('child')"],
+      evening:['저녁 먹이고 재우기까지가 하루 중 제일 길죠. 오늘도 고생 많았어요.',"startTest('child')"],
+      night:['아이 재우고 이제야 폰 보는 시간이죠? 오늘 하루도 애쓰셨어요.',"startTest('child')"]
+    }[t];
+    kancho={
+      morning:['아침 실랑이가 기질 문제인지, 3분 검사면 판별된다냥.',"startTest('child')"],
+      day:['궁금해하는 것보다 재보는 게 빠르다냥. 22문항, 3분이다냥.',"startTest('child')"],
+      evening:['재우고 나서 후회하지 말고, 원인부터 보자냥. 검사는 무료다냥.',"startTest('child')"],
+      night:['밤마다 검색하는 그 고민, 검사 한 번이 답이 빠르다냥.',"startTest('child')"]
+    }[t];
+  }else{
+    const kid=(S.kids||[]).find(k=>k&&k.score);
+    const nm=kid?kid.name:'우리 아이';
+    const base=kid?(kid.kbase||kid.ktype||''):'';
+    const vk=base.indexOf('무지개')===0?'무지개형':base;
+    const kline={'햇살형':'오늘도 순하게 흘러갔나요?','불꽃형':'오늘 화산은 안 터졌어요?','새벽형':'오늘은 어디서 오래 관찰하던가요?','무지개형':'오늘은 어떤 모드였어요?'}[vk]||'오늘 하루 어땠어요?';
+    chuvi=[josa(nm,'는')+' '+kline+' 오늘의 육아 날씨 보고 가요.','goDaily()'];
+    kancho=!hasP
+      ?['아이만 알면 반쪽이다냥. 부모 성향 3분 검사로 궁합까지 보자냥.','goParentTest()']
+      :((typeof UNLOCKS!=='undefined'&&UNLOCKS[(S.activeP||'엄마')+'×'+nm]&&UNLOCKS[(S.activeP||'엄마')+'×'+nm].deep)
+        ?['궁금한 건 상담실로 와라냥. 오늘 무료 상담 남아 있다냥.','goChat()']
+        :['둘 다 검사했으면 궁합을 봐야 완성이다냥.','goFit()']);
+  }
+  el.innerHTML=`
+    <div class="ht-row" onclick="${chuvi[1]}"><img class="pho sm chuvi" src="assets/chuvi.png" alt="츄비" width="34" height="34"><div class="ht-bubble">${chuvi[0]}</div></div>
+    <div class="ht-row r" onclick="${kancho[1]}"><div class="ht-bubble k">${kancho[0]}</div><img class="pho sm kancho" src="assets/kancho.png" alt="칸쵸" width="34" height="34"></div>`;
+}
+
+/* ── 🐱 닮은꼴 테스트 (2026-08-15 C안) — 무료 재미 입구 → 공유 → 본검사 유도 ──
+   점수 저장 없음(재미 전용). 결과 문구에 진단 냄새 금지, 본검사와 다른 것임을 명시. */
+const MIMIC_Q=[
+ {q:'아이가 넘어져서 울 때, 먼저 필요한 건?',a:'안아주면 눈물이 뚝',b:'"왜 넘어졌지?" 현장 검증'},
+ {q:'새 장난감을 받으면?',a:'일단 끌어안고 같이 잔다',b:'일단 분해부터 한다'},
+ {q:'우리 애 말버릇에 더 가까운 쪽은?',a:'"엄마 사랑해~" 수시 발사',b:'"왜요? 그건 왜요?" 수시 발사'},
+ {q:'친구가 울고 있으면?',a:'옆에서 같이 운다',b:'휴지를 가져다준다'},
+ {q:'혼날 것 같은 순간에는?',a:'눈물부터 그렁그렁',b:'논리로 항변을 시작한다'},
+ {q:'더 좋아하는 놀이는?',a:'역할놀이 · 인형극',b:'블록 · 퍼즐 · 줄 세우기'}
+];
+let MIMIC_I=0,MIMIC_ANS=[];
+function startMimic(){MIMIC_I=0;MIMIC_ANS=[];renderMimicQ();show('s-mimic');}
+function renderMimicQ(){
+  const el=document.getElementById('mimic-body');if(!el)return;
+  const q=MIMIC_Q[MIMIC_I];
+  el.innerHTML=`
+    <div class="card">
+      <p class="small" style="text-align:center">${MIMIC_I+1} / ${MIMIC_Q.length}</p>
+      <p style="font-family:'Jua';font-size:1.1rem;text-align:center;margin:10px 0 14px">${q.q}</p>
+      <button class="btn" style="background:var(--amber)" onclick="mimicPick(1)">${q.a}</button>
+      <button class="btn mt8" style="background:var(--moss)" onclick="mimicPick(0)">${q.b}</button>
+      ${MIMIC_I>0?'<button class="back mt8" style="margin:10px auto 0;display:block" onclick="mimicBack()">↩ 이전</button>':''}
+    </div>`;
+}
+function mimicPick(isA){MIMIC_ANS[MIMIC_I]=isA?1:0;MIMIC_I++;if(MIMIC_I>=MIMIC_Q.length)renderMimicResult();else renderMimicQ();}
+function mimicBack(){if(MIMIC_I<1)return;MIMIC_I--;renderMimicQ();}   /* 답은 배열이라 다시 고르면 덮어써짐 */
+function renderMimicResult(){
+  const el=document.getElementById('mimic-body');if(!el)return;
+  const a=MIMIC_ANS.reduce((s,x)=>s+x,0),b=MIMIC_Q.length-a;
+  const r=a>=5?{img:'chuvi',name:'완전 츄비상 🤍',d:'마음이 먼저 도착하는 아이예요. 안아주는 품이 세상에서 제일 좋은 해결책이고, 감정을 알아주면 금방 풀립니다.'}
+        :a===4?{img:'chuvi',name:'츄비상 🤍',d:'감정 표현이 풍부한 편이에요. 공감 한 스푼이면 대화가 두 배로 잘 통합니다.'}
+        :a===3?{img:'both',name:'츄비 반, 칸쵸 반 🌈',d:'마음도 쓰고 머리도 쓰는 아이예요. 그날그날 필요한 쪽을 꺼내 씁니다 — 그래서 더 궁금해지는 타입이죠.'}
+        :a===2?{img:'kancho',name:'칸쵸상 🩶',d:'이유가 궁금한 아이예요. "안 돼"보다 "왜냐하면"이 열 배 잘 통합니다.'}
+        :{img:'kancho',name:'완전 칸쵸상 🩶',d:'관찰과 분석이 먼저인 아이예요. 감정보다 팩트로 다가가면 마음이 열립니다.'};
+  const imgs=r.img==='both'
+    ?`<img class="pho lg chuvi" src="assets/chuvi.png" alt="" width="72" height="72" style="margin-right:-14px"><img class="pho lg kancho" src="assets/kancho.png" alt="" width="72" height="72">`
+    :`<img class="pho lg ${r.img}" src="assets/${r.img}.png" alt="" width="88" height="88">`;
+  el.innerHTML=`
+    <div class="card" style="text-align:center">
+      <div style="margin:6px 0 10px">${imgs}</div>
+      <p style="font-family:'Jua';font-size:1.3rem;color:var(--pri)">${r.name}</p>
+      <p class="small" style="margin-top:2px">츄비 성향 ${a} · 칸쵸 성향 ${b}</p>
+      <p style="font-size:.92rem;line-height:1.8;margin-top:10px">${r.d}</p>
+      <button class="btn mt16" onclick="shareMimic(${a},${b})">🔗 결과 공유하고 자랑하기</button>
+    </div>
+    <div class="card" style="background:var(--pri-soft);border-color:var(--pri);text-align:center">
+      <p style="font-size:.9rem"><b>닮은꼴은 재미로!</b> 진짜 기질은 10가지 온도로 잽니다.</p>
+      <p class="small mt8">연령별 맞춤 22문항 · 3분 · 무료</p>
+      <button class="btn pri mt8" style="width:auto;padding:12px 24px" onclick="startTest('child')">우리 아이 진짜 기질 보러가기</button>
+    </div>`;
+}
+async function shareMimic(a,b){
+  const name=a>=5?'완전 츄비상':a===4?'츄비상':a===3?'츄비 반 칸쵸 반':a===2?'칸쵸상':'완전 칸쵸상';
+  const txt=`우리 애 닮은꼴 테스트 결과: ${name}\n(츄비 성향 ${a} · 칸쵸 성향 ${b})\n너희 애는? → ${location.origin+location.pathname}`;
+  try{
+    if(navigator.share){await navigator.share({text:txt});return;}
+    await navigator.clipboard.writeText(txt);
+    if(typeof toast==='function')toast('📋 결과가 복사됐어요<br><span style="font-size:.82rem;color:var(--sub)">단톡방에 붙여넣어 보세요</span>');
+    else alert('결과가 복사됐어요! 단톡방에 붙여넣어 보세요.');
+  }catch(e){/* 사용자가 공유 취소 — 조용히 */}
 }
 
 /* ── 홈 최상단 선톡 카드 (캐릭터_메인화 4장 A) ───────────────────────
