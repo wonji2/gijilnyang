@@ -3173,7 +3173,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (252) ===== */
+/* ===== js/share.js (255) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -3233,9 +3233,12 @@ function shareCardText(kind){
     return `📕 우리 집 이야기\n${S.activeP||'나'}(${pt}) × ${kid.name||'아이'}(${kid.ktype||''})\n원가족부터 사용설명서까지 한 권으로`;
   }
   if(kind==='mimic'){
-    const a=(typeof MIMIC_ANS!=='undefined')?MIMIC_ANS.reduce((s,x)=>s+x,0):0;
+    /* 🔴 문항을 푸는 도중에도 공유 FAB 이 떠서 미완성 결과가 나가던 것 방지 (2026-08-15 재검토) */
+    const done=(typeof MIMIC_ANS!=='undefined')&&(typeof MIMIC_Q!=='undefined')&&MIMIC_ANS.filter(x=>x!=null).length===MIMIC_Q.length;
+    if(!done)return '🐱 우리 애는 츄비상? 칸쵸상?\n30초 6문항 · 무료 테스트';
+    const a=MIMIC_ANS.reduce((s,x)=>s+x,0);
     const nm=a>=5?'완전 츄비상':a===4?'츄비상':a===3?'츄비 반 칸쵸 반':a===2?'칸쵸상':'완전 칸쵸상';
-    return `🐱 우리 애 닮은꼴 · ${nm}\n츄비 성향 ${a} · 칸쵸 성향 ${6-a}`;
+    return `🐱 우리 애 닮은꼴 · ${nm}\n츄비 성향 ${a} · 칸쵸 성향 ${MIMIC_Q.length-a}`;
   }
   return '기질냥구소 — 우리 아이 기질검사';
 }
