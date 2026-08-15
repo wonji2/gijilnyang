@@ -2389,7 +2389,7 @@ function scoreFamily(){
   inviteReward();
 
 }
-/* ===== js/render/fit.js (142) ===== */
+/* ===== js/render/fit.js (151) ===== */
 function pairKey(){return (S.activeP||'엄마')+'×'+(S.activeK!=null&&S.kids[S.activeK]?S.kids[S.activeK].name:'아이');}
 function goFit(){
   const ps=Object.keys(S.parents).filter(n=>S.parents[n]&&S.parents[n].score);
@@ -2474,6 +2474,15 @@ function computeFit(){
   });
   /* 후킹 문단 — 아이 리포트와 같은 패턴: 공감 → 처방(아래 잠금)·원가족 은근 유도 (HANDOFF 다음할일 1) */
   bb.insertAdjacentHTML('beforeend',`<p class="mt8" style="font-size:.9rem;line-height:1.8">같은 장면에서 자꾸 부딪힌다면, 그건 아이 탓도 내 탓도 아니라 조합의 문제예요. 그리고 그 순간 내 입에서 나오는 말은, 사실 내가 자란 집에서 듣던 말일 때가 많습니다. 마찰마다 준비된 처방을 열어보시고, 내 반응의 뿌리가 궁금해지면 원가족 리포트로 이어 보세요.</p>`);
+  /* 잠금 커버 무료 티저 — 마찰 개수·대표 제목은 공개, 내용은 잠금 (무료도 내용 있게, 2026-08-15) */
+  const fcv=document.getElementById('fit-cover');
+  if(fcv){const p1=fcv.querySelector('p');
+    if(p1)p1.innerHTML=bad.length
+      ?`이 조합에서 마찰 지점 <b>${bad.length}곳</b>을 찾았어요<br>「${bad[0].title}」${bad.length>1?` 외 ${bad.length-1}곳`:''} — 이유와 처방이 잠겨 있어요`
+      :'마찰 지점과 츄비·칸쵸의 처방이 잠겨 있어요';}
+  const dcv=document.getElementById('deep-cover');
+  if(dcv){const ps=dcv.querySelectorAll('p');
+    if(ps[1])ps[1].innerHTML=`무작위 임상시험으로 검증된 개입 연구에서 뽑은<br>"오늘 밤 쓰는 대사 3개 + 1주 실행 플랜"<br>이 조합 기준 코칭 <b>${(bad.length||1)+1}편</b> 분량이에요`;}
   show('s-fit');applyFitLock();buildDeep();applyDeepLock();
   const R4=document.getElementById('fit-routes');if(R4)R4.innerHTML=nextRoutes('fit');
   inviteReward();
