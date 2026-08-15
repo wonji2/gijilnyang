@@ -338,17 +338,29 @@ details.acc>*:not(summary){margin-top:10px}
   body.print-book #book-print-inner{position:fixed;left:0;top:0;width:100%;border:none}
 }
 
-/* ── 🗨 말 거는 연구소 — 히어로 말풍선 (2026-08-15 A안) ── */
-.hero-talk{display:flex;flex-direction:column;gap:8px;margin:12px auto 4px;max-width:400px;text-align:left}
-.ht-row{display:flex;align-items:flex-end;gap:8px;cursor:pointer}
-.ht-row.r{justify-content:flex-end}
-.ht-bubble{background:var(--card);border:1.5px solid var(--amber);border-radius:16px 16px 16px 4px;padding:9px 13px;font-size:.88rem;line-height:1.55;max-width:82%;box-shadow:0 2px 6px rgba(46,42,58,.07)}
-.ht-bubble.k{background:var(--moss-soft);border-color:var(--moss);border-radius:16px 16px 4px 16px}
-.ht-row:active .ht-bubble{transform:scale(.98)}
+/* 🗨 말 거는 연구소는 상단 토스트(#kn-toast)로 이전 — 홈 상시 말풍선은 폐기 (2026-08-15) */
+/* ── 히어로 '자세히' 접기 — 홈 글자수 줄이기 ── */
+.hero-more{margin:10px auto 0;max-width:400px;text-align:left}
+.hero-more>summary{list-style:none;cursor:pointer;font-size:.84rem;color:var(--sub);text-align:center;padding:6px}
+.hero-more>summary::-webkit-details-marker{display:none}
+.hero-more>summary::after{content:' ⌄'}
+.hero-more[open]>summary::after{content:' ⌃'}
+.hero-more p{font-size:.88rem;line-height:1.75;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:4px}
 
 /* ── 🐱 닮은꼴 테스트 입구 카드 (2026-08-15 C안) ── */
 .mimic-card{background:linear-gradient(135deg,var(--amber-soft),var(--moss-soft));border:1.5px solid var(--line);border-radius:16px;padding:13px 15px;margin:0 0 14px;cursor:pointer}
 .mimic-card:active{transform:scale(.99)}
+
+/* ── 🗺 우리 가족 궁합 지도 격자 (2026-08-15) ── */
+.map-row{display:flex;gap:6px;margin-bottom:6px}
+.map-head{font-size:.8rem}
+.map-cnr{flex:0 0 62px}
+.map-th{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;font-family:'Jua';font-size:.86rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px 2px}
+.map-th.l{flex:0 0 62px;justify-content:flex-start;font-size:.82rem}
+.map-cell{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center}
+.map-i{font-size:1.15rem;line-height:1.2}
+.map-g{font-size:.72rem;color:var(--sub);margin-top:2px}
 </style>
 </head>
 <body>
@@ -378,27 +390,22 @@ details.acc>*:not(summary){margin-top:10px}
       <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
       <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
     </div>
-    <!-- 🗨 말 거는 연구소 (2026-08-15 A안) — 사진이 '전시'가 아니라 '장면'이 되게.
-         멘트는 home.js renderHeroTalk: 시간대·검사상태 기반. 근거 없는 개인화 금지 원칙 유지
-         (신규에겐 보편 공감만, 이름·기질 언급은 검사한 사람에게만) -->
-    <div class="hero-talk" id="hero-talk"></div>
     <h1>기질냥구소</h1>
-    <!-- 훅 → 스토리 → 오퍼 → 근거 순서 (2026-08-12 전면 교체)
-         이전엔 "여기는 ~해주는 곳이다냥" 하고 기능을 설명했다. 그건 카테고리 설명이지
-         손님이 지금 하고 있는 고민이 아니다. 첫 문장은 반드시 손님의 고민이어야 한다. -->
+    <!-- 훅 = 손님의 고민 한 줄 (2026-08-12 확정 문구, 유지)
+         🔴 2026-08-15 정리: 홈에 문단 3개를 나열하니 정신없다는 지적 → 훅 1줄 + 결론 1줄만 남기고
+         나머지 설명(오퍼·근거)은 접기로. 사주아이·MBTI 앱 모두 홈엔 설명문이 거의 없다. -->
     <p class="hero-hook">애한테 소리지르고<br>재우고 나서 후회한 밤이 있다면</p>
-    <p class="hero-story">옆집 애는 안 그러는데 왜 우리 애만 이럴까 —<br>
-      <b>부모가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
-    <p class="hero-offer"><b>우리 아이 기질</b>과 <b>내 성향</b>,<br>
-      둘이 <b>부딪히는 정확한 지점</b>과<br>
-      <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요.</p>
+    <p class="hero-story"><b>부모가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
+    <details class="hero-more">
+      <summary>어떻게 알려주나요?</summary>
+      <p><b>우리 아이 기질</b>과 <b>내 성향</b>, 둘이 <b>부딪히는 정확한 지점</b>과 <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요. 공개된 연구와 검증된 척도를 학습해 분석합니다.</p>
+    </details>
   </div>
 
   <div class="daily" id="daily-card" style="display:none">
     <span class="d-label">🌤 오늘의 육아 날씨 · 매일 무료</span>
     <div class="d-text" id="daily-text">검사를 완료하면 열려요</div>
     <button class="btn pri mt8" id="daily-cta" style="padding:11px" onclick="startTest('child')">검사하러 가기 →</button>
-    <p class="small" style="margin-top:8px;text-align:center;color:var(--sub)">매일 밤 12시, 새 날씨로 바뀌어요</p>
   </div>
 
   <!-- 🐱 30초 닮은꼴 테스트 (2026-08-15 C안) — 부담 없는 재미 입구 → 공유 → 본검사 유도 -->
@@ -434,17 +441,22 @@ details.acc>*:not(summary){margin-top:10px}
     <div class="tile" style="background:var(--lav-soft)" role="button" tabindex="0" onclick="startTest('family')">
       <span class="price">NEW</span>
       <div class="big">원가족</div>
-      <div class="sub">나를 키운 방식이 내 육아에?<br>대물림 지도 <span id="st-fam"></span></div>
+      <div class="sub">내 육아는 어디서 왔을까 <span id="st-fam"></span></div>
     </div>
     <div class="tile" style="background:#FDF0F6;grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="startCareer()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 미래 직업</div><div class="sub">지금 기질에 잘 맞는 일 3가지 · 친구들이랑 비교해보세요</div></div>
+      <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 미래 직업</div><div class="sub">기질에 맞는 일 5가지</div></div>
+      <span class="small">›</span>
+    </div>
+    <div class="tile" style="background:var(--moss-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="goMap()">
+      <span class="price"><i class="ddeok-i"></i> 3</span>
+      <div style="flex:1"><div class="big" style="font-size:1.2rem">🗺 가족 궁합 지도</div><div class="sub">누가 누구와 잘 맞는지 <span id="st-map">가족 3명부터</span></div></div>
       <span class="small">›</span>
     </div>
     <!-- 프리미엄 앵커 — 이게 있어야 1,000원이 싸 보인다 (수익구조_가격 2장) -->
     <div class="tile" style="background:var(--pri-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px;border:1.5px solid var(--pri)" role="button" tabindex="0" onclick="goBook()">
       <span class="price"><i class="ddeok-i"></i> 5</span>
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">📕 우리 집 이야기</div><div class="sub">원가족→나→아이→궁합 한 권으로 · 인쇄용 한 장 <span id="st-book">두 검사 완료 후</span></div></div>
+      <div style="flex:1"><div class="big" style="font-size:1.2rem">📕 우리 집 이야기</div><div class="sub">전부 한 권으로 · 인쇄용 한 장 <span id="st-book">두 검사 완료 후</span></div></div>
       <span class="small">›</span>
     </div>
   </div>
@@ -454,14 +466,14 @@ details.acc>*:not(summary){margin-top:10px}
        · 항목명은 '츄비' '칸쵸' 만 (면담 글자 제거), 소개문은 제목 바로 밑에
        · 특징 설명이 한 줄로 잘리던 것 → .pretalk p 를 여러 줄 허용으로 -->
   <p class="sec-label">💬 냥구원 냥쪽상담실</p>
-  <p class="sec-sub">우리 아이 기반 설문조사와 검증된 기질 척도를 학습한 <b>두 고양이 연구원</b>과 상담해보세요</p>
+  <p class="sec-sub">우리 아이 검사 결과를 아는 <b>두 연구원</b>과 상담해보세요</p>
   <div class="pretalk" onclick="openChat('chuvi')">
     <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비" width="46" height="46">
-    <p><b>츄비</b> 마음부터 들어주는 공감분석 담당. 왜 그런 마음이 드는지 기질의 언어로 짚어주고, 오늘 해볼 수 있는 작은 것 하나까지 챙겨줘요.</p><span class="small">›</span>
+    <p><b>츄비</b> 마음부터 들어주는 공감 담당</p><span class="small">›</span>
   </div>
   <div class="pretalk" onclick="openChat('kancho')">
     <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸" width="46" height="46">
-    <p><b>칸쵸</b> 감정 빼고 원인부터 짚는 팩트분석 담당. 기질 데이터로 상황을 해석하고 오늘 실행할 행동 처방을 딱 하나 내려줘요.</p><span class="small">›</span>
+    <p><b>칸쵸</b> 원인부터 짚고 처방 하나 주는 팩트 담당</p><span class="small">›</span>
   </div>
 
   
@@ -617,6 +629,29 @@ details.acc>*:not(summary){margin-top:10px}
   <button class="btn" onclick="goChat()">이 결과, 츄비·칸쵸에게 직접 물어보기 💬</button>
   <button class="btn ghost mt8" onclick="openShare('fit')">🔗 결과 카드 만들기 · 공유</button>
   <div class="card mt16" id="fit-routes"></div>
+</section>
+
+<!-- ═══════════ 우리 가족 궁합 지도 (3까까) ═══════════ -->
+<section class="screen" id="s-map">
+  <button class="back" onclick="show('s-home')">← 홈으로</button>
+  <div class="result-hero">
+    <span class="tag">가족 단위 리포트</span>
+    <div class="typename">우리 가족 궁합 지도</div>
+    <div class="typedesc">양육자 전원 × 아이 전원 — 누가 누구와 잘 맞는지 한눈에</div>
+  </div>
+  <div class="card" id="map-grid-wrap"><div id="map-grid"></div></div>
+  <div class="card" id="map-lead"></div>
+  <div class="card locked" id="map-lock-wrap" style="padding:0;border:none;background:none">
+    <div id="map-lock-inner"><div id="map-body"></div></div>
+    <div class="lock-cover" id="map-cover">
+      <div style="font-size:1.6rem">🗺</div>
+      <p style="font-family:'Jua'">조합별 풀이와 역할 나누기가 잠겨 있어요</p>
+      <p class="small">칸마다 왜 그런지 · 어떤 장면을 누구에게 맡길지<br>+ 이번 주 가족 실험</p>
+      <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockMap()"><i class="ddeok-i"></i>×3 까까 3개로 지도 전체 열기</button>
+    </div>
+  </div>
+  <button class="btn ghost mt8" onclick="openShare('map')">🔗 결과 카드 만들기 · 공유</button>
+  <div class="card mt16" id="map-routes"></div>
 </section>
 
 <!-- ═══════════ 온가족 종합 리포트 「우리 집 이야기」 (5까까) ═══════════ -->
@@ -1747,7 +1782,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (177) ===== */
+/* ===== js/state.js (178) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -1755,7 +1790,7 @@ const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},
 /* 복원 = 저장 데이터만으로 안전하게 다시 그릴 수 있는 화면만. (2026-08-12 감사)
    s-family-result: 원답(S.fAns) 미저장이라 복원 불가. s-career: career 객체 구조 의존이 커
    복원 시 크래시 위험 → 둘 다 제외(새로고침 시 홈으로 안전 폴백, 내정보에서 다시 열림). */
-const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1};   /* s-book 추가 2026-08-15: 5까까 상품인데 뒤로가기/새로고침에 홈으로 튕기던 것 */
+const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1,'s-map':1};   /* s-book·s-map 추가 2026-08-15: 유료 화면인데 뒤로가기/새로고침에 홈으로 튕기던 것 */
 let _navLock=false;   // popstate 로 화면을 되돌릴 땐 다시 pushState 하지 않게
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);
   if(window.__booted&&RESTORABLE[id]){try{localStorage.setItem('kn_view',id);}catch(e){}}
@@ -1766,7 +1801,7 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
   /* 공유 플로팅 — 공유 가치 있는 화면에서만 (바이럴_후킹 3-b) */
   try{const sf=document.getElementById('share-fab');if(sf){if(SHARE_SCREENS[id]){sf.classList.add('on');sf.dataset.kind=SHARE_SCREENS[id];}else sf.classList.remove('on');}}catch(e){}}
 /* 🔴 공유 플로팅은 전 상품 필수(결정 2026-08-12). 새 상품 화면을 만들면 여기에 반드시 추가한다. */
-const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app','s-book':'book','s-mimic':'mimic'};
+const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app','s-book':'book','s-mimic':'mimic','s-map':'map'};
 /* 저장된 데이터로 특정 화면을 다시 그려 보여준다. 못 그리면 false → 부르는 쪽이 홈. (restoreView·popstate 공용) */
 function renderScreen(id){
   try{
@@ -1775,6 +1810,7 @@ function renderScreen(id){
     else if(id==='s-fit'){if(!(S.pScore&&S.cScore))return false;computeFit();animateBars();}   /* computeFit 이 show 를 부름 */
     else if(id==='s-career'){if(!(S.activeK!=null&&S.kids[S.activeK]&&S.kids[S.activeK].career))return false;renderCareer();show('s-career');animateBars();}
     else if(id==='s-book'){if(!(S.pScore&&S.cScore))return false;renderBook();show('s-book');}
+    else if(id==='s-map'){const mp=mapPairs();if(!mp.ps.length||!mp.ks.length)return false;renderMap();show('s-map');}
     else if(id==='s-library'){goLibrary();}   /* goX 는 자체적으로 show 를 부른다 */
     else if(id==='s-daily'){goDaily();}
     else if(id==='s-talk'){goTalk();}
@@ -2791,7 +2827,124 @@ function printBook(){
   window.print();
   setTimeout(()=>document.body.classList.remove('print-book'),800);
 }
-/* ===== js/render/home.js (213) ===== */
+/* ===== js/render/map.js (116) ===== */
+/* ══════════ 우리 가족 궁합 지도 — 3까까 (2026-08-15 본편) ══════════
+   양육자 전원 × 아이 전원 매트릭스. 궁합(1:1)의 상위 상품 = 가족 단위 업셀.
+   무료: 격자와 등급(찰떡/무난/연습)까지 — "우리 집 지도"를 보여주고
+   잠금: 칸별 해설 · 제일 잘 맞는 짝 · 제일 연습 필요한 짝 · 가족 전체 처방.
+   데이터는 FITMAT(부모6×아이4) 재사용 — 새 표를 만들지 않는다(단일 소스 유지). */
+
+let MAP_UNLOCKED=false;
+const MAP_KEY='가족지도';
+
+function mapPairs(){
+  const ps=Object.keys(S.parents||{}).filter(n=>S.parents[n]&&S.parents[n].score);
+  const ks=(S.kids||[]).map((k,i)=>(k&&k.score)?i:-1).filter(i=>i>=0);
+  return {ps,ks};
+}
+function goMap(){
+  const {ps,ks}=mapPairs();
+  if(!ps.length||!ks.length){alert('가족 궁합 지도는 양육자 검사와 아이 검사가 각각 하나 이상 있어야 그릴 수 있어요!');return;}
+  if(ps.length+ks.length<3){
+    alert('지도는 가족이 셋 이상일 때 진가가 나와요.\n(예: 엄마·아빠 × 아이 / 엄마 × 첫째·둘째)\n\n지금은 한 조합뿐이라 궁합 리포트로 안내할게요!');
+    goFit();return;
+  }
+  renderMap();show('s-map');
+}
+
+/* 등급 → 색·아이콘 (FITMAT 1번째 값이 "💞 찰떡궁합" 처럼 이모지로 시작) */
+function mapGrade(mm){
+  const g=(mm&&mm[0])||'';
+  if(g.indexOf('💞')>=0)return {i:'💞',c:'var(--pink-soft)',b:'#E59AB8',t:'찰떡'};
+  if(g.indexOf('🔧')>=0)return {i:'🔧',c:'var(--amber-soft)',b:'var(--amber)',t:'연습'};
+  return {i:'🌿',c:'var(--moss-soft)',b:'var(--moss)',t:'무난'};
+}
+function mapCell(pName,kIdx){
+  const prec=S.parents[pName]||{};
+  const kid=S.kids[kIdx]||{};
+  const pt=prec.ptype||(prec.score?calcPType(prec.score):'카멜레온형');
+  const base=kid.kbase||kid.ktype||(kid.score?calcKType(kid.score):'무지개형');
+  const kk=base.indexOf('무지개')===0?'무지개형':base;
+  const mm=(FITMAT[pt]||{})[kk]||null;
+  return {pt,kk,mm,g:mapGrade(mm),name:kid.name||'아이'};
+}
+
+function renderMap(){
+  MAP_UNLOCKED=!!((UNLOCKS[MAP_KEY]||{}).map);
+  const {ps,ks}=mapPairs();
+  const cells=[];
+  ps.forEach(p=>ks.forEach(k=>cells.push(Object.assign({p,k},mapCell(p,k)))));
+
+  /* ── 격자 (무료) ── */
+  const head=`<div class="map-row map-head"><div class="map-cnr"></div>${ks.map(i=>`<div class="map-th">${S.kids[i].name||'아이'}</div>`).join('')}</div>`;
+  const body=ps.map(p=>`<div class="map-row"><div class="map-th l">${p}</div>${ks.map(k=>{
+      const c=mapCell(p,k);
+      return `<div class="map-cell" style="background:${c.g.c};border-color:${c.g.b}"><div class="map-i">${c.g.i}</div><div class="map-g">${c.g.t}</div></div>`;
+    }).join('')}</div>`).join('');
+  document.getElementById('map-grid').innerHTML=head+body+
+    `<p class="small mt8" style="text-align:center">💞 찰떡 · 🌿 무난 · 🔧 연습이 필요한 합</p>`;
+
+  /* 한 줄 요약 (무료) — 지도 전체의 인상 */
+  const cnt={찰떡:0,무난:0,연습:0};cells.forEach(c=>cnt[c.g.t]++);
+  const lead=cnt.찰떡>=cells.length/2
+    ? '우리 집은 대체로 결이 잘 맞는 편이에요. 잘 맞는 짝이 다른 조합의 완충 역할을 해줍니다.'
+    : cnt.연습>=cells.length/2
+    ? '연습이 필요한 조합이 많은 집이에요. 나쁜 게 아니라, 서로 다른 언어를 쓰는 사람들이 한집에 사는 겁니다 — 번역기만 있으면 됩니다.'
+    : '잘 맞는 짝과 연습이 필요한 짝이 섞여 있어요. 이런 집은 "누가 누구와 무엇을 하느냐"를 나누면 하루가 편해집니다.';
+  document.getElementById('map-lead').innerHTML=
+    `<p style="font-size:.92rem;line-height:1.8">${lead}</p>
+     <p class="small mt8">조합 ${cells.length}개 · 💞 ${cnt.찰떡} · 🌿 ${cnt.무난} · 🔧 ${cnt.연습}</p>`;
+
+  /* ── 잠금 영역 ── */
+  const best=cells.slice().sort((a,b)=>(b.g.t==='찰떡')-(a.g.t==='찰떡'))[0];
+  const hard=cells.slice().sort((a,b)=>(b.g.t==='연습')-(a.g.t==='연습'))[0];
+  /* 칸마다 실제 점수로 마찰·강점을 계산해 붙인다 — 등급만 있는 표가 아니라 "왜"까지 (2026-08-15) */
+  const detail=cells.map(c=>{
+    const p=(S.parents[c.p]||{}).score, k=(S.kids[c.k]||{}).score;
+    let fr=[],st=[];
+    try{fr=FRICTIONS.filter(f=>f.when(p,k));st=STRENGTHS.filter(f=>f.when(p,k));}catch(e){}
+    const f1=fr[0],s1=st[0];
+    return `<div class="fit-item" style="border-color:${c.g.b}">
+      <h4>${c.p} × ${c.name} — ${c.g.i} ${c.g.t}${(c.mm&&c.mm[2])?` · 「${c.mm[2]}」`:''}</h4>
+      <p style="font-size:.88rem;line-height:1.7">${(c.mm&&c.mm[1])||'서로를 새로 배워가는 조합이에요.'}</p>
+      ${s1?`<p style="font-size:.87rem;line-height:1.7;margin-top:6px"><b>🌿 이 짝의 무기</b> — ${s1.title}: ${s1.why}</p>`:''}
+      ${f1?`<p style="font-size:.87rem;line-height:1.7;margin-top:4px"><b>🔥 부딪히는 장면</b> — ${f1.title}: ${f1.why}</p>
+           ${f1.kancho?`<p style="font-size:.84rem;line-height:1.6;color:var(--sub);margin-top:2px">🩶 칸쵸 · ${f1.kancho}</p>`:''}`
+         :`<p style="font-size:.87rem;line-height:1.7;margin-top:4px">구조적인 마찰 지점이 뚜렷하지 않은 편한 짝이에요. 힘든 날은 기질보다 컨디션을 먼저 보세요.</p>`}
+      <p class="small" style="margin-top:6px;color:var(--sub)">${c.pt} × ${c.kk} · 마찰 ${fr.length}곳 · 강점 ${st.length}가지</p>
+    </div>`;
+  }).join('');
+
+  const roles=[];
+  if(best)roles.push(`<b>${best.p}</b>${hasJong(best.p)?'이':'가'} ${josa(best.name,'와')} 만나는 순간이 이 집에서 가장 매끄러워요. 재우기·달래기처럼 <b>실랑이가 잦은 장면</b>을 이 짝에게 먼저 맡기면 하루의 마찰 총량이 줄어듭니다.`);
+  if(hard&&hard!==best)roles.push(`<b>${hard.p} × ${hard.name}</b>는 서로 힘이 더 드는 조합이에요. 이 짝에겐 <b>규칙이 필요한 장면(훈육·정리)보다 즐거운 장면(놀이·간식·외출)</b>을 배정해보세요. 사이가 좋아진 다음에 규칙을 얹는 순서가 훨씬 빠릅니다.`);
+  roles.push('한 아이를 두 양육자가 다르게 대하는 건 문제가 아니에요 — 다만 <b>꼭 지킬 원칙 2~3개</b>만 어른들끼리 먼저 맞추세요. 나머지는 각자의 방식대로 가도 아이는 헷갈리지 않습니다.');
+
+  document.getElementById('map-body').innerHTML=`
+    <div class="card">
+      <h3 style="font-size:1rem;margin-bottom:6px">🔍 조합별 풀이</h3>
+      ${detail}
+    </div>
+    <div class="card">
+      <h3 style="font-size:1rem;margin-bottom:6px">🧭 우리 집 역할 나누기</h3>
+      ${roles.map(r=>`<p style="font-size:.9rem;line-height:1.8;margin:6px 0">· ${r}</p>`).join('')}
+    </div>
+    <div class="card">
+      <h3 style="font-size:1rem;margin-bottom:6px">📌 이번 주 가족 실험</h3>
+      <p style="font-size:.9rem;line-height:1.8">일주일 동안 <b>재우기 담당</b>을 ${best?best.p:'한 사람'}으로 고정해보세요. 매일 바꾸는 것보다 한 사람이 맡을 때 아이의 잠드는 시간이 짧아지는 집이 많습니다. 그동안 다른 양육자는 <b>목욕이나 놀이</b>처럼 즐거운 장면을 맡으면, 아이에게는 "두 사람 다 좋은 사람"이 됩니다.</p>
+      <p class="small mt16" style="border-top:1px dashed var(--line);padding-top:10px">⚕️ 참고용 분석이며 전문 심리검사·진단이 아닙니다.</p>
+    </div>`;
+
+  applyMapLock();
+  const R=document.getElementById('map-routes');if(R&&typeof nextRoutes==='function')R.innerHTML=nextRoutes('map');
+}
+function applyMapLock(){
+  const cover=document.getElementById('map-cover'),inner=document.getElementById('map-lock-inner');
+  if(!cover)return;
+  if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
+  else{cover.style.display='flex';inner.classList.add('locked-peek');}
+}
+/* ===== js/render/home.js (227) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -2800,35 +2953,42 @@ function updateHome(){
   if(S.pScore)_st('st-parent','완료 ✓');
   if(S.cScore)_st('st-child','완료 ✓');
   if(S.pScore&&S.cScore){_st('st-fit','열기');_st('st-book','열기');}
+  if(typeof mapPairs==='function'){const mp=mapPairs();if(mp.ps.length&&mp.ks.length&&(mp.ps.length+mp.ks.length>=3))_st('st-map','열기');}
   if(S.pScore||S.cScore)_st('st-chat','열기');
   renderDaily();
   renderHomeGreet();
   renderHeroTalk();
 }
 
-/* ── 🗨 말 거는 연구소 (2026-08-15 A안) ──────────────────────────────
-   사진 아래에서 츄비·칸쵸가 번갈아 말을 건다. 탭하면 바로 그 행동으로.
+/* ── 🗨 말 거는 연구소 → 상단 토스트 (2026-08-15 개편) ──────────────────
+   사장님 지적: 홈에 말풍선을 상시 띄우니 글이 많아 정신없다.
+   → 사주아이처럼 **위에서 내려왔다 사라지는 토스트**(#kn-toast)로 옮긴다. 하루 1회만.
    🔴 근거 없는 개인화 금지(실수6): 검사 0개면 시간대 보편 공감만,
       이름·기질 언급은 검사 완료자에게만. 츄비=존댓말·공감 / 칸쵸=~다냥·처방 1개. */
 function renderHeroTalk(){
-  const el=document.getElementById('hero-talk');if(!el)return;
+  if(typeof toast!=='function')return;
+  /* 하루 1회 — 홈에 들를 때마다 뜨면 피곤하다 */
+  let last=null;try{last=localStorage.getItem('kn_talk_day');}catch(e){}
+  const today=(typeof todayStr==='function')?todayStr():String(new Date().getDate());
+  if(last===today)return;
   const h=new Date().getHours();
   const hasK=S.kids&&S.kids.some(k=>k&&k.score);
   const hasP=!!S.pScore||Object.values(S.parents||{}).some(x=>x&&x.score);
   let chuvi,kancho;
   if(!hasK&&!hasP){
     const t=h<5?'night':h<10?'morning':h<17?'day':h<22?'evening':'night';
+    const goKid=function(){startTest('child');};
     chuvi={
-      morning:['아침 등원 준비, 오늘도 전쟁이었죠? 엄마 잘못도 아이 잘못도 아니에요.',"startTest('child')"],
-      day:['"우리 애만 유난인가?" 싶은 날 있죠? 알고 보면 대부분 타고난 기질이에요.',"startTest('child')"],
-      evening:['저녁 먹이고 재우기까지가 하루 중 제일 길죠. 오늘도 고생 많았어요.',"startTest('child')"],
-      night:['아이 재우고 이제야 폰 보는 시간이죠? 오늘 하루도 애쓰셨어요.',"startTest('child')"]
+      morning:['아침 등원 준비, 오늘도 전쟁이었죠?',goKid],
+      day:['"우리 애만 유난인가?" 싶은 날 있죠?',goKid],
+      evening:['저녁 먹이고 재우기까지가 제일 길죠. 오늘도 고생 많았어요.',goKid],
+      night:['아이 재우고 이제야 폰 보는 시간이죠?',goKid]
     }[t];
     kancho={
-      morning:['아침 실랑이가 기질 문제인지, 3분 검사면 판별된다냥.',"startTest('child')"],
-      day:['궁금해하는 것보다 재보는 게 빠르다냥. 22문항, 3분이다냥.',"startTest('child')"],
-      evening:['재우고 나서 후회하지 말고, 원인부터 보자냥. 검사는 무료다냥.',"startTest('child')"],
-      night:['밤마다 검색하는 그 고민, 검사 한 번이 답이 빠르다냥.',"startTest('child')"]
+      morning:['아침 실랑이가 기질 문제인지 3분이면 판별된다냥.',goKid],
+      day:['궁금해하는 것보다 재보는 게 빠르다냥.',goKid],
+      evening:['후회하지 말고 원인부터 보자냥. 검사는 무료다냥.',goKid],
+      night:['밤마다 검색하는 그 고민, 검사 한 번이 빠르다냥.',goKid]
     }[t];
   }else{
     const kid=(S.kids||[]).find(k=>k&&k.score);
@@ -2836,16 +2996,23 @@ function renderHeroTalk(){
     const base=kid?(kid.kbase||kid.ktype||''):'';
     const vk=base.indexOf('무지개')===0?'무지개형':base;
     const kline={'햇살형':'오늘도 순하게 흘러갔나요?','불꽃형':'오늘 화산은 안 터졌어요?','새벽형':'오늘은 어디서 오래 관찰하던가요?','무지개형':'오늘은 어떤 모드였어요?'}[vk]||'오늘 하루 어땠어요?';
-    chuvi=[josa(nm,'는')+' '+kline+' 오늘의 육아 날씨 보고 가요.','goDaily()'];
+    chuvi=[josa(nm,'는')+' '+kline,function(){goDaily();}];
     kancho=!hasP
-      ?['아이만 알면 반쪽이다냥. 부모 성향 3분 검사로 궁합까지 보자냥.','goParentTest()']
+      ?['아이만 알면 반쪽이다냥. 부모 검사로 궁합까지 보자냥.',function(){goParentTest();}]
       :((typeof UNLOCKS!=='undefined'&&UNLOCKS[(S.activeP||'엄마')+'×'+nm]&&UNLOCKS[(S.activeP||'엄마')+'×'+nm].deep)
-        ?['궁금한 건 상담실로 와라냥. 오늘 무료 상담 남아 있다냥.','goChat()']
-        :['둘 다 검사했으면 궁합을 봐야 완성이다냥.','goFit()']);
+        ?['궁금한 건 상담실로 와라냥. 오늘 무료 상담 남아 있다냥.',function(){goChat();}]
+        :['둘 다 검사했으면 궁합을 봐야 완성이다냥.',function(){goFit();}]);
   }
-  el.innerHTML=`
-    <div class="ht-row" onclick="${chuvi[1]}"><img class="pho sm chuvi" src="assets/chuvi.png" alt="츄비" width="34" height="34"><div class="ht-bubble">${chuvi[0]}</div></div>
-    <div class="ht-row r" onclick="${kancho[1]}"><div class="ht-bubble k">${kancho[0]}</div><img class="pho sm kancho" src="assets/kancho.png" alt="칸쵸" width="34" height="34"></div>`;
+  /* 둘 중 하나만 — 검사 전엔 공감(츄비), 검사한 사람에겐 다음 행동(칸쵸)이 더 유용하다 */
+  const hasAny=hasK||hasP;
+  const pick=hasAny?kancho:chuvi;
+  const who=hasAny?'kancho':'chuvi';
+  const nameTag=hasAny?'칸쵸':'츄비';
+  toast(`<div style="display:flex;align-items:center;gap:10px">
+      <img class="pho sm ${who}" src="assets/${who}.png" alt="" width="34" height="34">
+      <div style="flex:1;min-width:0"><b style="font-family:'Jua'">${nameTag}</b> ${pick[0]}</div>
+      <span style="color:var(--sub)">›</span></div>`, pick[1]);
+  try{localStorage.setItem('kn_talk_day',today);}catch(e){}
 }
 
 /* ── 🐱 닮은꼴 테스트 (2026-08-15 C안) — 무료 재미 입구 → 공유 → 본검사 유도 ──
@@ -3173,7 +3340,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (255) ===== */
+/* ===== js/share.js (264) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -3209,7 +3376,7 @@ function inviteReward(){
 /* ── 공유 시트 ── */
 const SHARE_TITLES={
   career:'미래 직업', child:'아이 기질', parent:'부모 성향', fit:'우리 궁합', family:'원가족', app:'기질냥구소',
-  book:'우리 집 이야기', mimic:'닮은꼴 테스트'
+  book:'우리 집 이야기', mimic:'닮은꼴 테스트', map:'가족 궁합 지도'
 };
 function shareCardText(kind){
   const kid=S.kids[S.activeK]||{};
@@ -3231,6 +3398,10 @@ function shareCardText(kind){
   if(kind==='book'){   /* 온가족 종합 「우리 집 이야기」 (2026-08-15) */
     const pt=(S.parents[S.activeP]||{}).ptype||(S.pScore&&typeof calcPType==='function'?calcPType(S.pScore):'');
     return `📕 우리 집 이야기\n${S.activeP||'나'}(${pt}) × ${kid.name||'아이'}(${kid.ktype||''})\n원가족부터 사용설명서까지 한 권으로`;
+  }
+  if(kind==='map'&&typeof mapPairs==='function'){   /* 가족 궁합 지도 (2026-08-15) */
+    const mp=mapPairs();const n=mp.ps.length*mp.ks.length;
+    return `🗺 우리 가족 궁합 지도\n양육자 ${mp.ps.length}명 × 아이 ${mp.ks.length}명 = 조합 ${n}개\n누가 누구와 잘 맞는지 한눈에`;
   }
   if(kind==='mimic'){
     /* 🔴 문항을 푸는 도중에도 공유 FAB 이 떠서 미완성 결과가 나가던 것 방지 (2026-08-15 재검토) */
@@ -3257,6 +3428,7 @@ function shareHashtag(kind){
     return (mm&&mm[2])?'#'+mm[2]:(kind==='book'?'#우리집이야기':'#부모아이궁합');
   }
   if(kind==='mimic')return '#츄비상칸쵸상';
+  if(kind==='map')return '#우리가족궁합지도';
   return '#기질냥구소';
 }
 /* 비교 CTA — "너네 애는 뭐 나왔어?"를 유발 (바이럴_후킹 공식 6·5장) */
@@ -3268,6 +3440,7 @@ function shareCompareCTA(kind){
   if(kind==='family')return '내 육아는 어디서 왔을까? 👉 원가족 리포트';
   if(kind==='book')return '우리 집 사용설명서, 한 권으로 👉 온가족 종합 리포트';
   if(kind==='mimic')return '너희 애는 츄비상? 칸쵸상? 👉 30초 테스트';
+  if(kind==='map')return '너희 집 조합은 어때? 👉 가족 궁합 지도';
   return '우리 애는 어떤 기질일까? 👉 3분 검사';
 }
 function openShare(kind){
@@ -3420,6 +3593,9 @@ function nextRoutes(from){
   if(from!=='child'&&!hasC) R.push(['🐣','아이 기질검사','연령 맞춤 문항 · 4분','startTest(\'child\')','무료']);
   if(from!=='parent')       R.push(['🌷','다른 양육자도 검사','아빠·조부모·이모삼촌 누구나','startTest(\'parent\')','무료']);
   if(from!=='fit'&&hasP&&hasC) R.push(['💞','부모 × 아이 궁합','마찰 지점과 처방까지','goFit()','까까 1']);
+  /* 가족 궁합 지도 — 가족이 셋 이상일 때만 (2:1 · 1:2 부터 매트릭스가 의미 있다) */
+  if(from!=='map'&&typeof mapPairs==='function'){const mp=mapPairs();if(mp.ps.length&&mp.ks.length&&(mp.ps.length+mp.ks.length>=3))
+    R.push(['🗺','우리 가족 궁합 지도','누가 누구와 잘 맞는지 한눈에','goMap()','까까 3']);}
   if(from!=='book'&&hasP&&hasC) R.push(['📕','우리 집 이야기','원가족부터 사용설명서까지 한 권 · 인쇄용 한 장','goBook()','까까 5']);   /* 온가족 종합 (2026-08-15) */
   if(from!=='family'&&!S.family) R.push(['🏡','원가족 리포트','나를 키운 방식이 내 육아에','startTest(\'family\')','까까 1']);
   R.push(['💬','츄비·칸쵸와 이 결과로 얘기하기','매일 무료 '+FREE_TALK+'회','goChat()','무료']);
@@ -4103,7 +4279,7 @@ function maybeAskLogin(){
     if(h.scrollHeight<=window.innerHeight*1.15)onScroll();
   },2500);
 }
-/* ===== js/wallet.js (212) ===== */
+/* ===== js/wallet.js (218) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -4309,6 +4485,12 @@ async function unlockFit(){
 async function unlockDeep(){
   if(!(await spendKkaSrv(3,'fit-deep')))return;
   DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;applyDeepLock();save();
+}
+/* 우리 가족 궁합 지도 — 3까까 (2026-08-15 본편) */
+async function unlockMap(){
+  if(!(await spendKkaSrv(3,'map')))return;
+  MAP_UNLOCKED=true;(UNLOCKS[MAP_KEY]=UNLOCKS[MAP_KEY]||{}).map=true;applyMapLock();save();
+  toast('🗺 <b>가족 궁합 지도</b>가 전부 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">역할 나누기부터 읽어보세요</span>');
 }
 /* 온가족 종합 리포트 「우리 집 이야기」 — 5까까 프리미엄 앵커 (2026-08-15 본편) */
 async function unlockBook(){
