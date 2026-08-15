@@ -361,6 +361,13 @@ details.acc>*:not(summary){margin-top:10px}
 .map-cell{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center}
 .map-i{font-size:1.15rem;line-height:1.2}
 .map-g{font-size:.72rem;color:var(--sub);margin-top:2px}
+
+/* ── 고민 상황어 칩 (2026-08-16) — 가로 스크롤 없이 줄바꿈, 탭하면 상담 직행 ── */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
+.chip{font-family:'Gowun Dodum';font-size:.83rem;padding:8px 12px;border-radius:99px;
+  border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;line-height:1.2}
+.chip:active{transform:scale(.97)}
+.chip:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -472,6 +479,9 @@ details.acc>*:not(summary){margin-top:10px}
        · 특징 설명이 한 줄로 잘리던 것 → .pretalk p 를 여러 줄 허용으로 -->
   <p class="sec-label">💬 냥구원 냥쪽상담실</p>
   <p class="sec-sub">우리 아이 검사 결과를 아는 <b>두 연구원</b>과 상담해보세요</p>
+  <!-- 고민을 구체 상황어로 부른다 (기질아이 실측 패턴 — "기질 분석" 같은 추상어보다 클릭이 잘 된다).
+       누르면 그 고민을 들고 상담실로 직행. (2026-08-16) -->
+  <div class="chips" id="worry-chips"></div>
   <div class="pretalk" onclick="openChat('chuvi')">
     <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비" width="46" height="46">
     <p><b>츄비</b> 마음부터 들어주는 공감 담당</p><span class="small">›</span>
@@ -1215,7 +1225,7 @@ const C_SCENE={
    {t:'자기 계획을 제시하며 협상해요',note:'자기주장형이에요. 협상 자체가 자율성 연습이라 나쁜 신호가 아니에요.'},
    {t:'스스로 조절하는 편이에요',note:'자기조절형이에요. 신뢰를 말로 표현해 주면 더 단단해져요.'}]}]
 };
-/* ===== js/data/texts.js (432) ===== */
+/* ===== js/data/texts.js (447) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
   gain:["실패를 두려워하지 않는 도전 감각","감정을 말로 꺼내는 게 자연스러움","'집=쉬는 곳'이라는 안정감"],
@@ -1249,23 +1259,38 @@ const PAR_TEXT={
  E:{name:"외향성",what:"사람·활동에서 에너지를 얻는 정도예요. 양육에서는 아이와의 놀이 자극 수준, 바깥 활동량으로 나타나요.",
   hi:"아이와 몸으로 놀고 새로운 곳에 데려가는 게 어렵지 않은 에너지형이에요. 활동량 많은 아이에겐 최고의 짝이지만, 조용한 기질의 아이에겐 자극 총량 조절이 배려가 됩니다.",
   mid:"필요할 땐 놀아주고, 필요할 땐 조용히 곁에 있는 조절형이에요. 아이 기질에 맞춰 수위를 바꿀 수 있는 유연함이 자산이에요.",
-  lo:"조용한 일상에서 충전하는 타입이에요. 시끌벅적한 놀이가 버겁게 느껴지는 건 애정 부족이 아니라 배터리 방식 차이 — 15분 전력 놀이처럼 짧고 진한 방식이 잘 맞아요."},
+  lo:"조용한 일상에서 충전하는 타입이에요. 시끌벅적한 놀이가 버겁게 느껴지는 건 애정 부족이 아니라 배터리 방식 차이 — 15분 전력 놀이처럼 짧고 진한 방식이 잘 맞아요.",
+  exp:{hi:'이번 주엔 하루 한 번, 내가 이끄는 놀이 대신 <b>아이가 정한 놀이에 10분만 따라가</b> 보세요. 제안을 참는 게 이 유형의 가장 어려운 연습이고, 아이의 주도성은 거기서 자랍니다.',
+       mid:'이번 주엔 아이의 에너지 상태에 따라 놀이 수위를 <b>의식적으로 두 단계로 나눠</b> 보세요("오늘은 신나게 / 오늘은 조용히"). 조절형의 강점은 의식할 때 무기가 됩니다.',
+       lo:'이번 주엔 <b>하루 15분만 전력으로</b> 놀아주고, 대신 그 시간엔 폰을 다른 방에 두세요. 길게 버티는 것보다 짧고 진한 15분이 이 유형에겐 훨씬 오래 갑니다.'}},
  A:{name:"우호성",what:"타인의 마음에 공감하고 맞춰주는 정도예요. 연구들에서 양육의 온정·반응성과 가장 일관되게 연결되는 축이에요.",
   hi:"아이 마음을 읽고 따뜻하게 반응하는 게 자연스러운 온기형이에요. 다만 갈등을 피하고 싶어 한계 설정이 늦어질 수 있어요 — 따뜻함과 단호함은 공존할 수 있습니다.",
   mid:"공감과 소신 사이의 균형형이에요. 들어줄 때와 버틸 때를 구분하는 힘이 있어요. 마음은 알아주되 안 되는 건 안 된다고 말할 수 있는 자리 — 연구들이 아이 적응에 가장 좋다고 말하는 '따뜻하고 단단한 양육'에 서기 좋은 위치입니다.",
-  lo:"감정보다 사실과 해결책이 먼저 보이는 실용형이에요. 아이가 원하는 건 종종 해결이 아니라 '알아줌'이라는 것만 기억하면, 담백함은 오히려 신뢰가 됩니다."},
+  lo:"감정보다 사실과 해결책이 먼저 보이는 실용형이에요. 아이가 원하는 건 종종 해결이 아니라 '알아줌'이라는 것만 기억하면, 담백함은 오히려 신뢰가 됩니다.",
+  exp:{hi:'이번 주에 딱 한 번, 아이가 떼를 쓸 때 <b>마음은 받아주되 결정은 바꾸지 않는</b> 연습을 해보세요. "사고 싶었구나. 그래도 오늘은 안 사." — 온기형에게 가장 어려운 한 문장입니다.',
+       mid:'이번 주엔 훈육 상황에서 <b>공감 한 문장 → 규칙 한 문장</b> 순서를 지켜보세요. 순서만 고정해도 아이가 받아들이는 속도가 달라집니다.',
+       lo:'이번 주엔 해결책을 말하기 전에 <b>"많이 속상했겠다" 한 문장을 먼저</b> 붙여보세요. 다섯 번만 해보면, 아이가 말을 훨씬 길게 한다는 걸 느끼게 됩니다.'}},
  C:{name:"성실성",what:"계획·규칙·꾸준함의 정도예요. 연구에서 일관된 훈육, 구조화된 환경 제공과 연결돼요.",
   hi:"루틴과 약속을 지키는 등대형이에요. 아이에게 예측 가능한 세상을 만들어주는 큰 힘이지만, 계획이 어긋날 때의 스트레스가 아이에게 전달되지 않게 '계획 B'를 미리 품어두세요.",
   mid:"지킬 건 지키되 융통성도 있는 균형형이에요. 아이에게 '예측은 되지만 숨 막히지 않는' 하루를 줄 수 있는 자리라, 루틴이 강한 아이든 즉흥적인 아이든 무난하게 맞출 수 있습니다.",
-  lo:"즉흥과 유연함이 강점인 자유형이에요. 아이가 루틴형이라면 '시간'은 못 지켜도 '순서'는 지키는 절충이 효과적이에요."},
+  lo:"즉흥과 유연함이 강점인 자유형이에요. 아이가 루틴형이라면 '시간'은 못 지켜도 '순서'는 지키는 절충이 효과적이에요.",
+  exp:{hi:'이번 주에 하루만 <b>계획이 어긋나도 그냥 넘어가는 날</b>을 정해보세요. 그날 아이 표정이 어떤지 보시면, 계획보다 부모의 여유가 아이에게 더 크게 전달된다는 걸 알게 됩니다.',
+       mid:'이번 주엔 하루 중 <b>딱 한 구간(아침 또는 잠자리)만 순서를 고정</b>해보세요. 전부 계획하지 않아도 한 구간의 예측 가능성만으로 하루가 정돈됩니다.',
+       lo:'이번 주엔 시간표 말고 <b>순서표</b>를 만들어보세요("목욕 → 책 → 불끄기"). 몇 시인지는 신경 쓰지 말고 순서만 지키면, 자유형도 무리 없이 지킬 수 있습니다.'}},
  N:{name:"정서 민감성",what:"스트레스와 감정 변화에 얼마나 크게 반응하는지예요. 양육 번아웃, 아이 감정과의 공명과 관련이 깊어요.",
   hi:"아이의 울음에 심장이 같이 뛰는 공명형이에요. 예민함은 아이 신호를 빨리 알아채는 레이더이기도 해요. 다만 내 마음이 끓을 땐 '잠깐 물 마시고 오기' 같은 분리 루틴이 꼭 필요합니다.",
   mid:"흔들리는 날도, 단단한 날도 있는 보통의 마음이에요. 그게 정상이에요.",
-  lo:"웬만한 일엔 흔들리지 않는 항해사형이에요. 아이의 폭풍 속에서 닻이 되어주는 큰 자산 — 대신 무던한 만큼 아이의 작은 신호를 지나칠 수 있으니, 하루 한 번 '오늘 마음 어땠어?'를 물어봐 주세요.",},
+  lo:"웬만한 일엔 흔들리지 않는 항해사형이에요. 아이의 폭풍 속에서 닻이 되어주는 큰 자산 — 대신 무던한 만큼 아이의 작은 신호를 지나칠 수 있으니, 하루 한 번 '오늘 마음 어땠어?'를 물어봐 주세요.",
+  exp:{hi:'이번 주엔 아이가 폭발할 때 <b>대응하기 전에 숨을 세 번</b> 쉬어보세요. 그 3초가 내 신경계와 아이 신경계를 분리합니다. 몇 번 해봤는지 세어두면 다음 주가 더 쉬워집니다.',
+       mid:'이번 주엔 하루를 마치고 <b>내 컨디션에 점수를 매겨</b> 보세요(1~5점). 낮은 날 아이에게 유독 날카로웠다면, 문제는 아이가 아니라 내 배터리였을 가능성이 큽니다.',
+       lo:'이번 주엔 아이에게 <b>"오늘 마음 몇 점이야?"</b>를 매일 한 번 물어보세요. 무던한 부모는 아이의 작은 신호를 놓치기 쉬운데, 숫자로 물으면 놓칠 일이 없습니다.'}},
  O:{name:"개방성",what:"새로운 방식·경험에 대한 호기심 정도예요. 아이에게 다양한 경험을 제공하는 것과 연결돼요.",
   hi:"새 육아법, 새 장소, 새 놀이를 시도하는 탐험형이에요. 아이 세계를 넓혀주지만, 방식이 자주 바뀌면 아이는 헷갈릴 수 있어요. '실험은 많이, 원칙은 하나'가 공식입니다.",
   mid:"검증된 것과 새로운 것을 골라 쓰는 실속형이에요. 아이가 새 경험을 원할 땐 넓혀주고 안정이 필요할 땐 익숙함을 지켜주는, 양쪽 조절이 다 되는 자리입니다.",
-  lo:"검증된 방식이 편안한 안정파예요. 아이에게 일관되고 안정적인 환경을 준다는 뜻이기도 해요. 가끔 아이가 이끄는 낯선 놀이에 따라가 보면, 안정감 위에 새 경험이 얹힙니다."}
+  lo:"검증된 방식이 편안한 안정파예요. 아이에게 일관되고 안정적인 환경을 준다는 뜻이기도 해요. 가끔 아이가 이끄는 낯선 놀이에 따라가 보면, 안정감 위에 새 경험이 얹힙니다.",
+  exp:{hi:'이번 주엔 새 육아법을 <b>하나만 골라 일주일 내내</b> 써보세요. 탐험형의 함정은 방법이 자주 바뀌는 것이라, 효과를 보려면 한 가지를 끝까지 밀어보는 연습이 필요합니다.',
+       mid:'이번 주엔 늘 하던 방식 하나를 골라 <b>아이 반응을 관찰</b>해보세요. 잘 통하면 원칙으로 굳히고, 안 통하면 그때 새 방법을 찾으면 됩니다.',
+       lo:'이번 주에 딱 한 번, <b>아이가 만든 놀이 규칙에 그대로 따라</b> 보세요. 익숙한 방식이 편한 부모에게도, 아이가 이끄는 10분은 안정감 위에 얹는 새 경험이 됩니다.'}}
 };
 const PAR_QUAD_MSG={
  E:"햇살", A:"온기", C:"등대", N:"이슬", O:"바람"};
@@ -1787,7 +1812,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (178) ===== */
+/* ===== js/state.js (179) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -1839,7 +1864,7 @@ window.addEventListener('popstate',function(e){
 S.myRole=null;
 const UNLOCKS={};let PAIR_SEL={p:null,k:null};
 const CHAT={cat:"chuvi",free:2,paid:0,presc:0,prescMode:false,hist:{chuvi:[],kancho:[]},intakeDone:false,intake:{},busy:false,upsold:false,
-            until:0, freeDay:null};   /* until: 면담 종료 시각(ms) · freeDay: 무료 3분을 쓴 날 */
+            until:0, freeDay:null, lastDay:null};   /* until: 면담 종료 시각(ms) · freeDay: 무료 상담을 쓴 날 · lastDay: 마지막 상담일(재방문 오프너용) */
 
 /* ══════════ 면담 시간제 (2026-08-12 사장님 결정) ══════════
    회차제(사주아이식)를 안 쓰는 이유: 한 번이 아까우면 손님이 질문을 아낀다.
@@ -1937,7 +1962,7 @@ function save(){
       myRole:S.myRole, activeP:S.activeP, activeK:S.activeK,
       concern:S.concern, concernDone:S.concernDone,
       kka:KKA, unlocks:UNLOCKS,
-      chat:{free:CHAT.free,paid:CHAT.paid,presc:CHAT.presc,intake:CHAT.intake,intakeDone:CHAT.intakeDone,hist:CHAT.hist,until:CHAT.until,freeDay:CHAT.freeDay},
+      chat:{free:CHAT.free,paid:CHAT.paid,presc:CHAT.presc,intake:CHAT.intake,intakeDone:CHAT.intakeDone,hist:CHAT.hist,until:CHAT.until,freeDay:CHAT.freeDay,lastDay:CHAT.lastDay},
       day:todayStr()
     }));
   }catch(e){}
@@ -1960,6 +1985,7 @@ function load(){
   if(d.chat){
     CHAT.paid=d.chat.paid||0;CHAT.intake=d.chat.intake||{};CHAT.intakeDone=!!d.chat.intakeDone;
     CHAT.hist=d.chat.hist||CHAT.hist;CHAT.until=d.chat.until||0;CHAT.freeDay=d.chat.freeDay||null;CHAT.presc=d.chat.presc||0;
+    CHAT.lastDay=d.chat.lastDay||null;   /* 옛 저장분엔 없음 → null (첫 재방문에 오프너 안 뜨는 정도, 무해) */
     /* 무료 상담은 매일 자정에 다시 2회 */
     CHAT.free=(d.chat.freeDay===todayStr())?(d.chat.free||0):FREE_TALK;
   }
@@ -2196,7 +2222,7 @@ function renderScene(){
     box.appendChild(b);
   });
 }
-/* ===== js/render/parent.js (109) ===== */
+/* ===== js/render/parent.js (112) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -2280,9 +2306,12 @@ function renderParentReport(){
     let deepHtml='';
     for(const k of ['E','A','C','N','O']){
       const v=avg[k];const t=PAR_TEXT[k];const lv=plv(v);
+      /* 💡 이번 주 실험 — 아이 심화와 대칭 (2026-08-16 부모 쪽 증량) */
+      const ex=(t.exp&&t.exp[lv])||null;
       deepHtml+=`<div style="margin:14px 0">
         <p style="font-size:.92rem"><b>${P_LABEL[k]} ${v.toFixed(1)} · ${lv==='hi'?'높음':lv==='lo'?'낮음':'중간'}</b></p>
         <p style="font-size:.88rem;margin-top:3px">${t[lv]}</p>
+        ${ex?`<p class="small" style="margin-top:5px;background:var(--amber-soft);border-radius:8px;padding:7px 10px;line-height:1.7">💡 <b>이번 주 실험</b> · ${ex}</p>`:''}
       </div>`;
     }
     deepHtml+='<h3 style="font-size:1rem;margin:18px 0 8px">이런 양육자예요</h3>'
@@ -2949,7 +2978,7 @@ function applyMapLock(){
   if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (227) ===== */
+/* ===== js/render/home.js (258) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -2962,6 +2991,7 @@ function updateHome(){
   if(S.pScore||S.cScore)_st('st-chat','열기');
   renderDaily();
   renderHomeGreet();
+  renderWorryChips();
   renderHeroTalk();
 }
 
@@ -3115,6 +3145,36 @@ function renderHomeGreet(){
     <span class="greet-arr">›</span></div>`+banner;
 }
 
+/* ── 고민 상황어 칩 (2026-08-16, 기질아이 패턴) ──────────────────────
+   누르면 그 문장을 들고 상담실로 직행 — 빈 입력창 앞에서 뭘 물을지 몰라 나가는 걸 막는다.
+   문구는 부모가 실제로 쓰는 말 그대로(추상어 금지). */
+const WORRIES=[
+ ['😤 떼쓰기','마트나 집에서 원하는 걸 못 하게 하면 크게 떼를 써요. 어떻게 해야 할까요?'],
+ ['🏫 등원거부','어린이집 갈 때마다 울면서 안 가려고 해요.'],
+ ['👧👦 형제 다툼','아이들끼리 자꾸 싸워요. 어떻게 중재해야 할지 모르겠어요.'],
+ ['😴 잠','밤에 잘 안 자려고 하고 재우는 데 너무 오래 걸려요.'],
+ ['🍽 편식','먹는 게 너무 편식이 심해요.'],
+ ['📱 스마트폰','폰만 보려고 하고 그만하라고 하면 화를 내요.'],
+ ['😢 예민함','작은 일에도 크게 울고 예민해요.'],
+ ['🙅 말대꾸','말대꾸가 늘고 하라는 걸 안 하려고 해요.']
+];
+function renderWorryChips(){
+  const el=document.getElementById('worry-chips');if(!el)return;
+  el.innerHTML=WORRIES.map((w,i)=>`<button class="chip" onclick="askWorry(${i})">${w[0]}</button>`).join('');
+}
+let _worryTm=null;
+function askWorry(i){
+  const w=WORRIES[i];if(!w)return;
+  clearTimeout(_worryTm);   /* 연타 시 앞선 타이머가 나중에 덮어쓰는 것 방지 */
+  goChat();
+  _worryTm=setTimeout(function(){
+    openChat('chuvi');
+    _worryTm=setTimeout(function(){
+      const inp=document.getElementById('chat-input');
+      if(inp){inp.value=w[1];inp.focus();}
+    },250);
+  },60);
+}
 function tabOn(t){document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('on'));document.getElementById('tab-'+t).classList.add('on');}
 function goLibrary(){
   const list=document.getElementById('lib-list');list.innerHTML='';
@@ -3610,7 +3670,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (492) ===== */
+/* ===== js/chat.js (509) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -3776,7 +3836,23 @@ const STYLE_HINT={
  '아이가 하자는 대로 따라가는 편':' → "단호하게 자르세요"는 안 먹힌다. 아이가 고르게 하되 선택지를 두 개로 좁혀주는 쪽으로 처방하라.'
 };
 /* ── 개인화 선톡 + 추천 질문 칩 ── */
+/* ── 재방문 오프너 (2026-08-16, 기질아이 패턴) ────────────────────────
+   "저번에 해보라던 거 해봤어" 가 되면 관계가 생긴다 = 재방문의 진짜 이유.
+   날이 바뀐 뒤 다시 오면, 새 인사 대신 **지난 이야기를 먼저 묻는다**.
+   대화 내용은 이미 CHAT.hist 로 서버에 함께 전달되므로 맥락은 이어진다. */
+function backOpener(){
+  const h=(CHAT.hist[CHAT.cat]||[]).filter(m=>m.text&&m.role==='user');
+  if(!h.length)return null;
+  const day=(typeof todayStr==='function')?todayStr():null;
+  if(!day||CHAT.lastDay===day)return null;   /* 같은 날 재입장이면 평소대로 */
+  const last=h[h.length-1].text.replace(/\s+/g,' ').slice(0,24);
+  return CHAT.cat==='chuvi'
+    ? `다시 오셨네요. 지난번에 "${last}…" 얘기 나눴었죠 — 그 뒤로 좀 어땠어요? 해보신 게 있으면 그 얘기부터 들려주세요.`
+    : `또 왔다냥. 지난번 "${last}…" 건, 해봤냥? 됐으면 다음 단계로 가고 안 됐으면 방법을 바꾼다냥.`;
+}
 function openerMsg(){
+  const back=backOpener();
+  if(back){addMsg('cat',back);renderChips();return;}
   const f=topFriction();
   let msg;
   if(CHAT.cat==='chuvi'){
@@ -4002,6 +4078,7 @@ async function sendChat(){
   else{spent=ensureMeet();if(!spent){showRecharge();return;}}   /* 비로그인: 하루 무료 2회 (프론트) */
   if(!aiKey()&&!setAiKey())return;
   inp.value='';CHAT.busy=true;
+  try{CHAT.lastDay=(typeof todayStr==='function')?todayStr():null;}catch(e){}   /* 재방문 오프너 기준일 (2026-08-16) */
   if(isPresc)inp.placeholder='어떤 점이 고민이세요?';
   document.getElementById('chat-chips').innerHTML='';
   addMsg('user',text);
