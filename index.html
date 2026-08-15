@@ -3717,7 +3717,7 @@ function addProductCard(){
   const m=CAT_META[CHAT.cat];
   const reason=CHAT.cat==='chuvi'?'같은 상황이 반복되는 건 조합 전체를 봐야 풀려요.':'반복 패턴은 대증요법으론 못 잡는다냥. 조합 전체를 봐야 한다냥.';
   CHAT.hist[CHAT.cat].push({role:'cat',html:`<div class="card" style="border-color:var(--amber);margin:0;max-width:88%;align-self:flex-start;padding:14px">
-    <span class="tag amber" style="font-size:.65rem">🧩 궁합 심층 리포트 · <i class="ddeok-i"></i> 까까 1개</span>
+    <span class="tag amber" style="font-size:.65rem">🧩 궁합 마찰 처방 · <i class="ddeok-i"></i> 까까 1개</span>
     <p style="font-size:.85rem;margin-top:6px"><b>${m.name}${hasJong(m.name)?'이':'가'} 추천하는 이유:</b> ${reason}</p>
     <button class="btn amber mt8" style="padding:10px" onclick="lightOpenFit()"><i class="ddeok-i"></i> 까까 1개로 바로 열기</button></div>`});
   renderChat();
