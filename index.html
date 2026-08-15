@@ -441,6 +441,12 @@ details.acc>*:not(summary){margin-top:10px}
       <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 미래 직업</div><div class="sub">지금 기질에 잘 맞는 일 3가지 · 친구들이랑 비교해보세요</div></div>
       <span class="small">›</span>
     </div>
+    <!-- 프리미엄 앵커 — 이게 있어야 1,000원이 싸 보인다 (수익구조_가격 2장) -->
+    <div class="tile" style="background:var(--pri-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px;border:1.5px solid var(--pri)" role="button" tabindex="0" onclick="goBook()">
+      <span class="price"><i class="ddeok-i"></i> 5</span>
+      <div style="flex:1"><div class="big" style="font-size:1.2rem">📕 우리 집 이야기</div><div class="sub">원가족→나→아이→궁합 한 권으로 · 인쇄용 한 장 <span id="st-book">두 검사 완료 후</span></div></div>
+      <span class="small">›</span>
+    </div>
   </div>
 
   <!-- 판매 항목 아래 = 냥쪽상담실 (2026-08-12 사장님 지시)
@@ -628,7 +634,7 @@ details.acc>*:not(summary){margin-top:10px}
       <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockBook()"><i class="ddeok-i"></i>×5 까까 5개로 책 전체 열기</button>
     </div>
   </div>
-  <button class="btn ghost mt8" onclick="openShare('fit')">🔗 결과 카드 만들기 · 공유</button>
+  <button class="btn ghost mt8" onclick="openShare('book')">🔗 결과 카드 만들기 · 공유</button>
   <div class="card mt16" id="book-routes"></div>
 </section>
 
@@ -1741,7 +1747,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (175) ===== */
+/* ===== js/state.js (177) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -1749,7 +1755,7 @@ const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},
 /* 복원 = 저장 데이터만으로 안전하게 다시 그릴 수 있는 화면만. (2026-08-12 감사)
    s-family-result: 원답(S.fAns) 미저장이라 복원 불가. s-career: career 객체 구조 의존이 커
    복원 시 크래시 위험 → 둘 다 제외(새로고침 시 홈으로 안전 폴백, 내정보에서 다시 열림). */
-const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1};
+const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1};   /* s-book 추가 2026-08-15: 5까까 상품인데 뒤로가기/새로고침에 홈으로 튕기던 것 */
 let _navLock=false;   // popstate 로 화면을 되돌릴 땐 다시 pushState 하지 않게
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);
   if(window.__booted&&RESTORABLE[id]){try{localStorage.setItem('kn_view',id);}catch(e){}}
@@ -1759,7 +1765,8 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
   try{if(typeof paintMemberCards==='function')paintMemberCards();}catch(e){}/* 회원 카드 최신화 (2026-08-12) */
   /* 공유 플로팅 — 공유 가치 있는 화면에서만 (바이럴_후킹 3-b) */
   try{const sf=document.getElementById('share-fab');if(sf){if(SHARE_SCREENS[id]){sf.classList.add('on');sf.dataset.kind=SHARE_SCREENS[id];}else sf.classList.remove('on');}}catch(e){}}
-const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app'};
+/* 🔴 공유 플로팅은 전 상품 필수(결정 2026-08-12). 새 상품 화면을 만들면 여기에 반드시 추가한다. */
+const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app','s-book':'book','s-mimic':'mimic'};
 /* 저장된 데이터로 특정 화면을 다시 그려 보여준다. 못 그리면 false → 부르는 쪽이 홈. (restoreView·popstate 공용) */
 function renderScreen(id){
   try{
@@ -1767,6 +1774,7 @@ function renderScreen(id){
     else if(id==='s-parent-result'){if(!(S.activeP&&S.parents[S.activeP]&&S.parents[S.activeP].score))return false;renderParentReport();show('s-parent-result');animateBars();}
     else if(id==='s-fit'){if(!(S.pScore&&S.cScore))return false;computeFit();animateBars();}   /* computeFit 이 show 를 부름 */
     else if(id==='s-career'){if(!(S.activeK!=null&&S.kids[S.activeK]&&S.kids[S.activeK].career))return false;renderCareer();show('s-career');animateBars();}
+    else if(id==='s-book'){if(!(S.pScore&&S.cScore))return false;renderBook();show('s-book');}
     else if(id==='s-library'){goLibrary();}   /* goX 는 자체적으로 show 를 부른다 */
     else if(id==='s-daily'){goDaily();}
     else if(id==='s-talk'){goTalk();}
@@ -2767,7 +2775,7 @@ function renderBook(){
       <p class="small mt8" style="text-align:center">인쇄가 어려우면 이 카드를 캡처해서 가족 단톡방에 올려도 좋아요</p>
     </div>`;
   applyBookLock();
-  const R=document.getElementById('book-routes');if(R&&typeof nextRoutes==='function')R.innerHTML=nextRoutes('fit');
+  const R=document.getElementById('book-routes');if(R&&typeof nextRoutes==='function')R.innerHTML=nextRoutes('book');
 }
 
 function applyBookLock(){
@@ -2791,7 +2799,7 @@ function _st(id,txt){const e=document.getElementById(id);if(e){e.textContent=txt
 function updateHome(){
   if(S.pScore)_st('st-parent','완료 ✓');
   if(S.cScore)_st('st-child','완료 ✓');
-  if(S.pScore&&S.cScore)_st('st-fit','열기');
+  if(S.pScore&&S.cScore){_st('st-fit','열기');_st('st-book','열기');}
   if(S.pScore||S.cScore)_st('st-chat','열기');
   renderDaily();
   renderHomeGreet();
@@ -2993,7 +3001,7 @@ function renderDaily(){
   el.innerHTML=parts.length?parts.join('<br><br>'):(DAILY_POOL.base||'');
 
   const lab=card.querySelector('.d-label');
-  if(lab)lab.innerHTML='🌤 오늘의 육아 한마디'+(age?' · <b>'+age.label+'</b> 맞춤':'')+' · 매일 무료';
+  if(lab)lab.innerHTML='🌤 오늘의 육아 날씨'+(age?' · <b>'+age.label+'</b> 맞춤':'')+' · 매일 무료';   /* 라벨은 index.html 과 반드시 같게 (2026-08-15 리브랜딩) */
   const dc=document.getElementById('daily-cta');if(dc)dc.style.display='none';
 }
 
@@ -3165,7 +3173,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (236) ===== */
+/* ===== js/share.js (252) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -3200,7 +3208,8 @@ function inviteReward(){
 
 /* ── 공유 시트 ── */
 const SHARE_TITLES={
-  career:'미래 직업', child:'아이 기질', parent:'부모 성향', fit:'우리 궁합', family:'원가족', app:'기질냥구소'
+  career:'미래 직업', child:'아이 기질', parent:'부모 성향', fit:'우리 궁합', family:'원가족', app:'기질냥구소',
+  book:'우리 집 이야기', mimic:'닮은꼴 테스트'
 };
 function shareCardText(kind){
   const kid=S.kids[S.activeK]||{};
@@ -3219,6 +3228,15 @@ function shareCardText(kind){
     return `${S.activeP||'나'} × ${kid.name||'아이'}\n${(mm&&mm[2])?'우리 집은 「'+mm[2]+'」':'조화적합성 리포트'}`;
   }
   if(kind==='family'&&S.family)  return `나를 키운 집 · ${document.getElementById('f-typename')?document.getElementById('f-typename').textContent:''}`;
+  if(kind==='book'){   /* 온가족 종합 「우리 집 이야기」 (2026-08-15) */
+    const pt=(S.parents[S.activeP]||{}).ptype||(S.pScore&&typeof calcPType==='function'?calcPType(S.pScore):'');
+    return `📕 우리 집 이야기\n${S.activeP||'나'}(${pt}) × ${kid.name||'아이'}(${kid.ktype||''})\n원가족부터 사용설명서까지 한 권으로`;
+  }
+  if(kind==='mimic'){
+    const a=(typeof MIMIC_ANS!=='undefined')?MIMIC_ANS.reduce((s,x)=>s+x,0):0;
+    const nm=a>=5?'완전 츄비상':a===4?'츄비상':a===3?'츄비 반 칸쵸 반':a===2?'칸쵸상':'완전 칸쵸상';
+    return `🐱 우리 애 닮은꼴 · ${nm}\n츄비 성향 ${a} · 칸쵸 성향 ${6-a}`;
+  }
   return '기질냥구소 — 우리 아이 기질검사';
 }
 /* 해시태그 — 유형을 자기소개 라벨로 (바이럴_후킹 4장 #○○형아이) */
@@ -3229,12 +3247,13 @@ function shareHashtag(kind){
     return '#'+vk+'형아이';
   }
   if(kind==='parent'&&S.activeP){const pt=(S.parents[S.activeP]||{}).ptype||'';return pt?'#'+pt.replace('형','')+(S.activeP==='아빠'?'빠':'맘'):'#기질냥구소';}
-  if(kind==='fit'){
+  if(kind==='fit'||kind==='book'){
     const pt=(S.parents[S.activeP]||{}).ptype||(S.pScore&&typeof calcPType==='function'?calcPType(S.pScore):'');
     const kb=(kid.kbase||kid.ktype||'');const kk=kb.indexOf('무지개')===0?'무지개형':kb;
     const mm=(typeof FITMAT!=='undefined'&&FITMAT[pt])?FITMAT[pt][kk]:null;
-    return (mm&&mm[2])?'#'+mm[2]:'#부모아이궁합';
+    return (mm&&mm[2])?'#'+mm[2]:(kind==='book'?'#우리집이야기':'#부모아이궁합');
   }
+  if(kind==='mimic')return '#츄비상칸쵸상';
   return '#기질냥구소';
 }
 /* 비교 CTA — "너네 애는 뭐 나왔어?"를 유발 (바이럴_후킹 공식 6·5장) */
@@ -3244,6 +3263,8 @@ function shareCompareCTA(kind){
   if(kind==='fit')return '둘째도, 배우자도 궁금하죠? 👉 다른 조합도 보기';
   if(kind==='career')return '너네 애는 뭐 나왔어? 👉 미래직업 뽑기';
   if(kind==='family')return '내 육아는 어디서 왔을까? 👉 원가족 리포트';
+  if(kind==='book')return '우리 집 사용설명서, 한 권으로 👉 온가족 종합 리포트';
+  if(kind==='mimic')return '너희 애는 츄비상? 칸쵸상? 👉 30초 테스트';
   return '우리 애는 어떤 기질일까? 👉 3분 검사';
 }
 function openShare(kind){
@@ -3390,11 +3411,14 @@ function nextRoutes(from){
   const hasP=Object.values(S.parents).some(x=>x&&x.score);
   const hasC=S.kids.some(k=>k&&k.score);
   const R=[];
-  if(from!=='career'&&hasC) R.push(['🔮','우리 아이 미래 직업','지금 기질에 잘 맞는 일 5가지','startCareer()','까까 1']);
+  /* 🔴 2026-08-15 전면 재검토: ①이미 끝낸 리포트를 계속 권하던 것 정리(원가족·미래직업)
+       ②새 상품(책)이 slice(0,4) 에 잘려 한 번도 안 뜨던 것 → 궁합 다음 순서로 올림 */
+  if(from!=='career'&&hasC&&!kid.career) R.push(['🔮','우리 아이 미래 직업','지금 기질에 잘 맞는 일 5가지','startCareer()','까까 1']);
   if(from!=='child'&&!hasC) R.push(['🐣','아이 기질검사','연령 맞춤 문항 · 4분','startTest(\'child\')','무료']);
   if(from!=='parent')       R.push(['🌷','다른 양육자도 검사','아빠·조부모·이모삼촌 누구나','startTest(\'parent\')','무료']);
   if(from!=='fit'&&hasP&&hasC) R.push(['💞','부모 × 아이 궁합','마찰 지점과 처방까지','goFit()','까까 1']);
-  if(from!=='family')       R.push(['🏡','원가족 리포트','나를 키운 방식이 내 육아에','startTest(\'family\')','까까 1']);
+  if(from!=='book'&&hasP&&hasC) R.push(['📕','우리 집 이야기','원가족부터 사용설명서까지 한 권 · 인쇄용 한 장','goBook()','까까 5']);   /* 온가족 종합 (2026-08-15) */
+  if(from!=='family'&&!S.family) R.push(['🏡','원가족 리포트','나를 키운 방식이 내 육아에','startTest(\'family\')','까까 1']);
   R.push(['💬','츄비·칸쵸와 이 결과로 얘기하기','매일 무료 '+FREE_TALK+'회','goChat()','무료']);
   return `<h3 style="font-size:1rem;margin-bottom:8px">이건 어때요?</h3>`+
     R.slice(0,4).map(r=>`<div class="book" style="align-items:center;cursor:pointer" onclick="${r[3]}">
