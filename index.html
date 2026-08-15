@@ -312,7 +312,9 @@ details.acc>*:not(summary){margin-top:10px}
 #ov-msg{font-family:'Jua';font-size:1.05rem;color:var(--pri);line-height:1.5;min-height:2.6em}
 @media (prefers-reduced-motion:reduce){.ov-spin{animation:none}}
 /* 공유 플로팅 버튼 — 결과·리포트·대나무숲 우측 하단 상시 (바이럴_후킹 3-b) */
-#share-fab{position:fixed;right:16px;bottom:80px;z-index:60;width:52px;height:52px;border-radius:50%;border:none;background:var(--amber);color:#fff;box-shadow:0 4px 14px rgba(224,162,60,.45);cursor:pointer;display:none;align-items:center;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+/* 🔴 탭바(하단 5버튼) 위로 확실히 띄운다 — '내정보' 버튼과 겹쳐 눌리던 것 수정 (2026-08-16 사장님 지적).
+   탭바 높이 88px + 중앙 FAB 돌출 16px 를 피해 104px. padding-bottom 은 버튼 내부라 무의미했던 것도 정리. */
+#share-fab{position:fixed;right:16px;bottom:calc(104px + env(safe-area-inset-bottom));z-index:60;width:52px;height:52px;border-radius:50%;border:none;background:var(--amber);color:#fff;box-shadow:0 4px 14px rgba(224,162,60,.45);cursor:pointer;display:none;align-items:center;justify-content:center}
 #share-fab.on{display:flex}
 #share-fab svg{width:24px;height:24px}
 #share-fab:active{transform:scale(.94)}
@@ -324,7 +326,8 @@ details.acc>*:not(summary){margin-top:10px}
 #kn-toast{position:fixed;top:-120px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:480px;
   background:#fff;border:1.5px solid var(--amber);border-radius:16px;padding:13px 16px;z-index:120;
   box-shadow:0 8px 24px rgba(46,42,58,.18);font-size:.9rem;line-height:1.6;transition:top .35s ease}
-#kn-toast.on{top:calc(12px + env(safe-area-inset-top))}
+/* 🔴 상단바(까까 pill·☰)와 겹치던 것 수정 — 토스트는 반드시 상단바 아래로 (2026-08-16 사장님 지적) */
+#kn-toast.on{top:calc(76px + env(safe-area-inset-top))}
 /* 첫 상담 게이트 — 검사 전에는 연구원 카드가 흐려지고, 눌러도 안내 카드가 이유를 말해준다 */
 .chat-cat-card.gated{opacity:.45;filter:grayscale(.35)}
 @keyframes gatePulse{0%{transform:scale(1)}35%{transform:scale(1.025)}100%{transform:scale(1)}}
@@ -368,6 +371,19 @@ details.acc>*:not(summary){margin-top:10px}
   border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;line-height:1.2}
 .chip:active{transform:scale(.97)}
 .chip:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* ── 첫 접속 후킹 카드 (30초 테스트) — 히어로 바로 아래, 눈에 띄게 (2026-08-16) ── */
+.mimic-card.hook{border:2px solid var(--pri);box-shadow:0 4px 14px rgba(124,92,201,.18);padding:15px}
+.mimic-go{font-family:'Jua';font-size:.86rem;color:#fff;background:var(--pri);border-radius:99px;padding:7px 13px;white-space:nowrap}
+/* 사이트 정보 — 사업자정보·문헌은 최소 노출 (맘캘린더 방식) */
+.legal-min{font-size:.7rem;color:var(--sub);opacity:.65;line-height:1.6;text-align:center}
+.legal-min summary{cursor:pointer;list-style:none}
+.legal-min summary::-webkit-details-marker{display:none}
+
+/* ── 상담실 잔여 표시 — 무엇이 몇 개인지 이름을 붙여 분리 (2026-08-16) ── */
+.chat-meter{display:flex;gap:8px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--sub);flex-wrap:wrap}
+.chat-meter span{background:var(--bg);border-radius:99px;padding:4px 10px}
+.chat-meter b{font-family:'Jua';color:var(--ink)}
 </style>
 </head>
 <body>
@@ -409,24 +425,25 @@ details.acc>*:not(summary){margin-top:10px}
     </details>
   </div>
 
+  <!-- 🐱 30초 닮은꼴 테스트 — 첫 접속 후킹 (2026-08-16 사장님 지시로 히어로 바로 아래로 승격).
+       검사 안 한 사람이 제일 먼저 만나는 것이 '부담 없는 30초'여야 한다. -->
+  <div class="mimic-card hook" role="button" tabindex="0" onclick="startMimic()">
+    <span class="price free" style="position:static;float:right;margin-left:8px">무료</span>
+    <div style="display:flex;align-items:center;gap:10px">
+      <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="44" height="44" style="margin-right:-18px;z-index:1">
+      <img class="pho md kancho" src="assets/kancho.png" alt="" width="44" height="44">
+      <div style="flex:1;margin-left:6px">
+        <div style="font-family:'Jua';font-size:1.12rem">우리 애는 츄비상? 칸쵸상?</div>
+        <div class="small">6문항 · <b>30초면 끝</b> · 가입 없이 바로</div>
+      </div>
+      <span class="mimic-go">시작 ›</span>
+    </div>
+  </div>
+
   <div class="daily" id="daily-card" style="display:none">
     <span class="d-label">🌤 오늘의 육아 날씨 · 매일 무료</span>
     <div class="d-text" id="daily-text">검사를 완료하면 열려요</div>
     <button class="btn pri mt8" id="daily-cta" style="padding:11px" onclick="startTest('child')">검사하러 가기 →</button>
-  </div>
-
-  <!-- 🐱 30초 닮은꼴 테스트 (2026-08-15 C안) — 부담 없는 재미 입구 → 공유 → 본검사 유도 -->
-  <div class="mimic-card" role="button" tabindex="0" onclick="startMimic()">
-    <span class="price free" style="position:static;float:right;margin-left:8px">무료</span>
-    <div style="display:flex;align-items:center;gap:10px">
-      <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="40" height="40" style="margin-right:-18px;z-index:1">
-      <img class="pho md kancho" src="assets/kancho.png" alt="" width="40" height="40">
-      <div style="flex:1;margin-left:6px">
-        <div style="font-family:'Jua';font-size:1.05rem">우리 애는 츄비상? 칸쵸상?</div>
-        <div class="small">6문항 30초 · 무료 · 맞혀보세요</div>
-      </div>
-      <span class="small">›</span>
-    </div>
   </div>
 
   <!-- 상품 이름은 사주아이처럼 2~5글자 명사로 통일 (2026-08-12 사장님 지시)
@@ -804,9 +821,10 @@ details.acc>*:not(summary){margin-top:10px}
     대화 내용은 답변을 만드는 데만 쓰이고, <b>대나무숲에 직접 올리지 않으면 공개되지 않습니다.</b><br>
     아이 실명은 처음부터 받지 않아요 — 애칭만 씁니다.</p>
   </div>
-  <div class="card"><div class="footer-note">
-  <details>
-    <summary style="font-family:'Jua';cursor:pointer;color:var(--ink);font-size:.85rem;padding:4px 0">📚 이 검사의 근거 문헌 · <span style="color:var(--pri)" id="lit-badge">문헌 반영 2026.08.11</span> — 탭해서 펼치기</summary>
+  <!-- 문헌 목록도 칸을 차지하지 않게 최소 노출 — 필요한 사람만 펼쳐 본다 (2026-08-16 사장님 지시) -->
+  <div class="footer-note" style="margin-top:14px">
+  <details class="legal-min">
+    <summary style="font-size:.75rem;padding:4px 0">📚 근거 문헌 · <span id="lit-badge">문헌 반영 2026.08.11</span></summary>
     <p style="margin-bottom:6px">아이 기질 검사는 연령대별로 다른 문항을 써요 — 걸음마기(만 3세 미만, ECBQ 프레임) / 유아(만 3~7세, CBQ 프레임) / 초등(TMCQ 프레임) / 중·고등(EATQ-R 프레임). 모두 같은 Rothbart 이론 계보의 연령별 척도에 근거합니다.</p>
     <ol>
       <li>Thomas, A., &amp; Chess, S. (1977). <i>Temperament and Development.</i> — 9개 기질 차원과 유형 분류의 원전(NYLS).</li>
@@ -841,12 +859,16 @@ details.acc>*:not(summary){margin-top:10px}
     <p class="mt8">※ 문항은 위 문헌의 이론적 정의에 근거해 자체 제작·번안한 것으로, 표준화 심리검사가 아닌 참고용 콘텐츠입니다. 의학적·심리학적 진단이 아니며, 발달이 걱정되실 땐 소아청소년과 또는 육아종합지원센터와 상담하세요. AI 상담실 대화 역시 참고용이며, 위기 상황에는 자살예방상담 109, 가정폭력상담 1366에서 도움을 받으세요.</p>
     <p class="mt8">※ 결과 그래프의 회색 기준선(3.0)은 5점 응답 척도의 중간값이며, 표준화 규준 평균이 아닙니다. 색깔 비율 그래프의 세로선(33%)은 세 기질이 균등할 때의 값입니다. 정식 버전에서는 국내 타당화 연구의 규준 자료를 단계적으로 반영할 예정입니다.</p>
   </details>
-  </div></div>
-  <div class="card" style="text-align:center;font-size:.85rem">
+  </div>
+  <!-- 🔴 사업자정보는 표시 의무가 있어 지울 수는 없지만, 맘캘린더처럼 최소 노출로 접어둔다 (2026-08-16 사장님 지시) -->
+  <div style="text-align:center;font-size:.82rem;margin-top:18px">
     <a href="/privacy.html" style="color:var(--pri)">개인정보처리방침</a>
     &nbsp;·&nbsp;
     <a href="/terms.html" style="color:var(--pri)">이용약관</a>
-    <p class="small mt8">원츠비 · 대표 원지선 · 사업자등록 390-58-00826<br>통신판매업 제2024-용인수지-2336호 · momcal@kakao.com</p>
+    <details class="legal-min" style="margin-top:8px">
+      <summary>사업자정보</summary>
+      <p style="margin-top:5px">원츠비 · 대표 원지선 · 사업자등록 390-58-00826<br>통신판매업 제2024-용인수지-2336호 · momcal@kakao.com</p>
+    </details>
   </div>
 </section>
 
@@ -945,9 +967,32 @@ details.acc>*:not(summary){margin-top:10px}
   <button class="back" onclick="show('s-chat-list')">← 상담실</button>
   <!-- 같은 가로 flex + 알약 패턴. 좁은 폰에서 왼쪽이 짜부라지지 않게
        왼쪽에 min-width:0, 태그는 잘리게 두고 알약은 flex:none. -->
-  <div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:10px">
-    <div style="flex:1;min-width:0"><b class="jua" id="chat-cat-name">츄비</b> <span class="small" id="chat-cat-tag" style="display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom"></span></div>
-    <span class="snack-pill" role="button" onclick="openWallet()" style="font-size:.75rem;cursor:pointer;flex:none">💬 <b id="free-left">2</b>회 · <i class="ddeok-i"></i> <b id="kka-chat">2</b></span>
+  <!-- 🔴 2026-08-16 사장님 지적 정리:
+       ① "💬2회 · 🍪2" 가 뭐가 뭔지 헷갈림 → 항목마다 이름을 붙여 분리
+       ② 까까는 맨 위 오른쪽으로 (홈 상단바와 같은 자리)
+       ③ 연구원 소개가 "마음부터 듣…" 으로 잘림 → 자르지 않고 두 줄 허용 -->
+  <div class="topbar" style="margin-bottom:6px">
+    <button class="kka-pill" onclick="openWallet()" aria-label="까까상점 열기">
+      <svg class="ddeok" viewBox="0 0 24 24" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="10.2" ry="9.2" fill="#F4E6C9" stroke="#DCC49B" stroke-width="1.3"/>
+        <circle cx="8.4" cy="9.6" r="1.15" fill="#E6D2AC"/><circle cx="14.2" cy="8.9" r=".95" fill="#E6D2AC"/>
+        <circle cx="10.8" cy="14.2" r="1.05" fill="#E6D2AC"/><circle cx="15.8" cy="13.8" r=".85" fill="#E6D2AC"/>
+      </svg>
+      <b id="kka-chat">2</b><span class="kka-shop">까까상점 ›</span>
+    </button>
+  </div>
+  <div class="card" style="padding:12px 14px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img class="pho md" id="chat-cat-face" src="assets/chuvi.png" alt="" width="42" height="42">
+      <div style="flex:1;min-width:0">
+        <b class="jua" id="chat-cat-name">츄비 연구원</b>
+        <p class="small" id="chat-cat-tag" style="line-height:1.5"></p>
+      </div>
+    </div>
+    <div class="chat-meter">
+      <span>🎟 오늘 무료 상담 <b id="free-left">2</b>회 남음</span>
+      <span>🩺 냥쪽처방권 <b id="presc-left">0</b>장</span>
+    </div>
   </div>
   <div id="presc-banner" style="display:none"></div>
   <div id="chat-log" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
@@ -3670,7 +3715,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (509) ===== */
+/* ===== js/chat.js (512) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -3718,8 +3763,8 @@ function setAiKey(){
 }
 
 const CAT_META={
-  chuvi:{name:'츄비 연구원',tag:'공감분석 담당 · 마음부터 듣습니다',cls:'amber'},
-  kancho:{name:'칸쵸 연구원',tag:'팩트분석 담당 · 원인부터 짚습니다',cls:'moss'}
+  chuvi:{name:'츄비 연구원',tag:'공감 담당 · 마음부터 듣고 오늘 할 것 하나를 챙겨줘요',cls:'amber',face:'assets/chuvi.png'},
+  kancho:{name:'칸쵸 연구원',tag:'팩트 담당 · 원인부터 짚고 행동 처방을 하나 줘요',cls:'moss',face:'assets/kancho.png'}
 };
 /* ── 첫 상담 게이트 (HANDOFF 다음할일 2) ──
    검사가 하나도 없으면 상담을 열지 않는다 — 검사 결과가 있어야 맞춤 상담이 되고,
@@ -3769,6 +3814,8 @@ function openChat(cat){
   CHAT.cat=cat;
   document.getElementById('chat-cat-name').textContent=CAT_META[cat].name;
   document.getElementById('chat-cat-tag').textContent=CAT_META[cat].tag;
+  const _f=document.getElementById('chat-cat-face');if(_f)_f.src=CAT_META[cat].face;
+  if(typeof renderSnack==='function')renderSnack();   /* 까까·무료횟수·처방권 최신화 */
   show('s-chat');renderChat();
   if(!CHAT.intakeDone){runIntake();return;}
   if(!CHAT.hist[cat].length)openerMsg();
@@ -4151,6 +4198,7 @@ function autoPickCat(){
   const nm=document.getElementById('chat-cat-name'),tg=document.getElementById('chat-cat-tag');
   if(nm)nm.textContent=CAT_META[want].name;
   if(tg)tg.textContent=CAT_META[want].tag;
+  const fc=document.getElementById('chat-cat-face');if(fc)fc.src=CAT_META[want].face;
   renderChat();
 }
 /* 이 대화를 익명으로 대나무숲에 = 상담이 곧 콘텐츠가 된다.
@@ -4361,7 +4409,7 @@ function maybeAskLogin(){
     if(h.scrollHeight<=window.innerHeight*1.15)onScroll();
   },2500);
 }
-/* ===== js/wallet.js (218) ===== */
+/* ===== js/wallet.js (219) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -4508,6 +4556,7 @@ function renderSnack(){
   const w=document.getElementById('kka-chat');if(w)w.textContent=KKA;
   const f=document.getElementById('free-left');if(f)f.textContent=meetLeft();
   const b=document.getElementById('free-badge');if(b)b.textContent=meetLeft();
+  const p=document.getElementById('presc-left');if(p)p.textContent=(CHAT&&CHAT.presc)||0;   /* 처방권 장수 (2026-08-16) */
 }
 /* ── 까까 차감 공용 게이트 (2026-08-12 로그인 = 서버 지갑이 진실) ──
    로그인:   wallet_spend RPC — 서버에서 원자적으로 깎고 장부에 남긴다
@@ -4580,7 +4629,7 @@ async function unlockBook(){
   BOOK_UNLOCKED=true;const uk=bookKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).book=true;applyBookLock();save();
   toast('📕 <b>우리 집 이야기</b> 전체가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">마지막 장의 인쇄용 한 장까지 꼭 챙겨가세요</span>');
 }
-/* ===== js/talk.js (164) ===== */
+/* ===== js/talk.js (175) ===== */
 /* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
    사장님 확정 스펙: 사연 + 투표("어떻게 했어야 할까") + 발바닥 공감 + 연구원 한마디.
    댓글 없음(운영 부담) · 보상 없음(참여 붙으면 이벤트로) · 누적 피드.
@@ -4619,6 +4668,14 @@ async function talkLoad(more){
   renderTalk();
 }
 
+/* 잘린 조언 다듬기 — 마지막으로 끝맺은 문장까지만 남긴다(끝맺음이 없으면 원문 유지) */
+function tidyAi(s){
+  if(!s)return '';
+  const t=String(s).trim();
+  if(/[.!?…"'”’)\]]$/.test(t)||/[다요냥][.!?]?$/.test(t))return t;
+  const m=t.match(/^[\s\S]*[.!?](?=\s|$)/);
+  return (m&&m[0].length>=Math.min(40,t.length*0.4))?m[0].trim():t;
+}
 function renderTalk(){
   const box=document.getElementById('talk-list');if(!box)return;
   if(!TALK.length){
@@ -4642,8 +4699,11 @@ function renderTalk(){
         return `<button class="opt" style="display:block;width:100%;margin-top:6px;padding:10px 12px;font-size:.85rem" onclick="votePoll(${i},${j})">${esc(o.t)}</button>`;
       }).join('')+`<p class="small" style="margin-top:4px">${voted?'🗳 총 '+tot+'명 참여':'🗳 여러분이라면? 눌러서 답해주세요 (익명)'}</p></div>`;
     }
-    const aiHtml=p.ai
-      ?`<div class="bubble ${p.ai_cat==='kancho'?'moss':'amber'}" style="margin-top:10px;font-size:.86rem"><span class="who">${p.ai_cat==='kancho'?'칸쵸':'츄비'}의 한마디</span>${esc(p.ai)}</div>`
+    /* 🔴 옛 글은 서버 저장 한도(600자)에 걸려 문장 중간에서 끊긴 채 남아 있다 (2026-08-16 사장님 제보).
+       새 글은 짧게 완결되지만, 이미 저장된 것은 마지막 온전한 문장까지만 보여 잘린 티를 없앤다. */
+    const aiTxt=tidyAi(p.ai);
+    const aiHtml=aiTxt
+      ?`<div class="bubble ${p.ai_cat==='kancho'?'moss':'amber'}" style="margin-top:10px;font-size:.86rem"><span class="who">${p.ai_cat==='kancho'?'칸쵸':'츄비'}의 한마디</span>${esc(aiTxt)}<br><a style="color:var(--pri);font-size:.82rem;cursor:pointer" onclick="event.stopPropagation();askLikeThis(${i})">우리 아이 기준으로 더 듣기 →</a></div>`
       :'';
     box.insertAdjacentHTML('beforeend',`<div class="talk-post">
       <p class="small" style="margin-bottom:4px">🐣 ${esc(p.who||'익명')} · 익명${mine.indexOf(p.id)>=0?' · 내 글':''}</p>
