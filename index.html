@@ -330,6 +330,13 @@ details.acc>*:not(summary){margin-top:10px}
 @keyframes gatePulse{0%{transform:scale(1)}35%{transform:scale(1.025)}100%{transform:scale(1)}}
 #chat-gate.pulse{animation:gatePulse .45s ease}
 @media (prefers-reduced-motion:reduce){#chat-gate.pulse{animation:none}}
+
+/* ── 온가족 종합 「우리 집 이야기」 인쇄 — 한 장 요약만 종이에 (2026-08-15) ── */
+@media print{
+  body.print-book *{visibility:hidden}
+  body.print-book #book-print-inner,body.print-book #book-print-inner *{visibility:visible}
+  body.print-book #book-print-inner{position:fixed;left:0;top:0;width:100%;border:none}
+}
 </style>
 </head>
 <body>
@@ -551,9 +558,10 @@ details.acc>*:not(summary){margin-top:10px}
       <button class="btn moss" style="width:auto;padding:13px 24px" onclick="unlockDeep()"><i class="ddeok-i"></i><i class="ddeok-i"></i> 까까 2개로 심층 코칭 열기</button>
     </div>
   </div>
-  <div class="card" style="text-align:center;background:var(--pri-soft);border-color:var(--pri)">
-    <p style="font-size:.9rem"><b>👨‍👩‍👧 가족 종합 리포트</b> <span class="tag pri" style="font-size:.6rem;vertical-align:2px">준비 중</span></p>
-    <p class="small mt8">원가족 → 내 성향 → 아이 기질 → 궁합까지 한 권의 이야기로 (<i class="ddeok-i"></i> 3 · 4,470원)</p>
+  <div class="card" style="text-align:center;background:var(--pri-soft);border-color:var(--pri);cursor:pointer" role="button" tabindex="0" onclick="goBook()">
+    <p style="font-size:.9rem"><b>📕 우리 집 이야기 — 온가족 종합 리포트</b></p>
+    <p class="small mt8">원가족 → 내 성향 → 아이 기질 → 궁합까지 한 권으로<br>+ 냉장고에 붙이는 인쇄용 한 장 (<i class="ddeok-i"></i> 5 · 5,000원)</p>
+    <button class="btn pri" style="width:auto;padding:11px 22px;margin-top:8px">책 펼쳐보기</button>
   </div>
   <div class="card" id="fit-books">
     <h3 style="font-size:1rem;margin-bottom:8px">📚 더 깊이 알고 싶다면</h3>
@@ -564,6 +572,25 @@ details.acc>*:not(summary){margin-top:10px}
   <button class="btn" onclick="goChat()">이 결과, 츄비·칸쵸에게 직접 물어보기 💬</button>
   <button class="btn ghost mt8" onclick="openShare('fit')">🔗 결과 카드 만들기 · 공유</button>
   <div class="card mt16" id="fit-routes"></div>
+</section>
+
+<!-- ═══════════ 온가족 종합 리포트 「우리 집 이야기」 (5까까) ═══════════ -->
+<section class="screen" id="s-book">
+  <button class="back" onclick="show('s-fit')">← 궁합으로</button>
+  <div class="result-hero" id="book-cover-head"></div>
+  <div class="card" id="book-toc"></div>
+  <div class="card" id="book-ch1"></div>
+  <div class="card locked" id="book-lock-wrap" style="padding:0;border:none;background:none">
+    <div id="book-lock-inner"><div id="book-body"></div></div>
+    <div class="lock-cover" id="book-lock-cover">
+      <div style="font-size:1.6rem">📕</div>
+      <p style="font-family:'Jua'">2장부터 마지막 인쇄용 한 장까지 잠겨 있어요</p>
+      <p class="small">나의 에너지 → 아이의 날씨 → 우리 둘의 화학작용 → 우리 집 사용설명서<br>+ 어린이집 선생님·조부모님께 보여줄 요약 한 장</p>
+      <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockBook()"><i class="ddeok-i"></i>×5 까까 5개로 책 전체 열기</button>
+    </div>
+  </div>
+  <button class="btn ghost mt8" onclick="openShare('fit')">🔗 결과 카드 만들기 · 공유</button>
+  <div class="card mt16" id="book-routes"></div>
 </section>
 
 <!-- ═══════════ 내정보 ═══════════ -->
@@ -1103,7 +1130,7 @@ const C_SCENE={
    {t:'자기 계획을 제시하며 협상해요',note:'자기주장형이에요. 협상 자체가 자율성 연습이라 나쁜 신호가 아니에요.'},
    {t:'스스로 조절하는 편이에요',note:'자기조절형이에요. 신뢰를 말로 표현해 주면 더 단단해져요.'}]}]
 };
-/* ===== js/data/texts.js (421) ===== */
+/* ===== js/data/texts.js (432) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
   gain:["실패를 두려워하지 않는 도전 감각","감정을 말로 꺼내는 게 자연스러움","'집=쉬는 곳'이라는 안정감"],
@@ -1491,6 +1518,17 @@ const KID_PARENT_MATCH={
 /* ══ 캐릭터 음성 — 리포트 섹션 끝 츄비·칸쵸 한마디 쌍 (캐릭터_메인화 3장·8장 1단계) ══
    말투 바이블(7장): 츄비=존댓말 ~요·감정 먼저·물음표 / 칸쵸=반말 ~다냥·결론+처방1개.
    {N} = 아이 이름(주격, 렌더에서 josa 치환). 근거 있는 말만(실수6). */
+/* ══ 온가족 종합 리포트(5까까) 연결 서사 — 원가족→나→아이를 한 줄로 꿰는 다리 문장 (2026-08-15) ══
+   BOOK_ROOT: 원가족 사분면 → "그 집이 지금 내 육아에 남긴 것" (1장 마무리 = 2장 예고)
+   BOOK_BRIDGE: 마찰 유무 → 4장에서 대물림과 궁합을 잇는 문장 */
+const BOOK_ROOT={
+ warm_free:"안전기지에서 자란 사람은 안전기지를 지을 줄 압니다. 이제 그 설계도가 지금의 나에게 어떤 모양으로 남았는지 볼 차례예요.",
+ warm_ctrl:"사랑과 통제를 함께 물려받은 사람은, 챙기는 손과 쥐는 손을 구분하는 게 평생 과제가 됩니다. 그 손이 지금 내 성향 어디에 남아 있는지 보겠습니다.",
+ cold_free:"일찍 어른이 된 사람은 강함을 물려받은 대신 기대는 법을 새로 배웁니다. 그 흔적이 지금 내 성향 어디에 있는지 보겠습니다.",
+ cold_ctrl:"겨울을 지나온 사람이 봄을 만들겠다고 마음먹는 것 — 대물림 연구가 말하는 변화의 시작이 정확히 그 마음이에요. 이제 그 겨울이 남긴 것과 내가 새로 만든 것을 구분해보겠습니다."};
+const BOOK_BRIDGE={
+ fr:"위 마찰 지점에서 나오는 내 반응 중 어떤 것은, 사실 1장의 그 집에서 배운 반응이에요. 아이 때문이 아니라는 걸 아는 것 — 그게 이 책에서 가장 비싼 문장입니다.",
+ no:"큰 마찰이 없는 조합이라도, 육아가 버거운 날 나오는 내 반응의 뿌리는 1장의 그 집에 있을 때가 많아요. 지치는 날엔 아이를 보기 전에 내 어린 시절을 한 번 봐주세요."};
 const KID_VOICE={
  '햇살형':{chuvi:'{N} 순하다는 말, 자주 듣죠? 그 안정감은 세상을 믿고 있다는 증거예요.',
           kancho:'순한 아이일수록 속상함을 조용히 삼킨다냥. 별일 없어 보여도 "오늘 마음 어땠어?" 한 번만 물어라냥.'},
@@ -2540,6 +2578,142 @@ function applyFitLock(){
   const inner=document.getElementById('fit-lock-inner');
   if(FIT_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
+}
+/* ===== js/render/book.js (135) ===== */
+/* ══════════════ 온가족 종합 리포트 「우리 집 이야기」 — 5까까 프리미엄 앵커 (2026-08-15 본편) ══════════════
+   원가족 → 나 → 아이 → 궁합 → 사용설명서를 한 권으로 꿰는 책.
+   기존 데이터(FAM_QUAD·PAR_TEXT·KTYPE·FITMAT·FRICTIONS·DEEP)를 재조립 + BOOK_* 다리 문장.
+   잠금: 사주아이식 — 표지·목차·1장은 무료, 2장부터 잠금(제목은 전부 보임). */
+
+let BOOK_UNLOCKED=false;
+function bookKey(){return '책×'+pairKey();}
+function bookLv(v){return v>=3.4?'hi':v<=2.6?'lo':'mid';}
+
+function goBook(){
+  const prec=S.parents[S.activeP]||{};
+  const krec=S.kids[S.activeK]||{};
+  if(!prec.score||!krec.score){
+    alert('우리 집 이야기는 부모 성향검사와 아이 기질검사가 모두 끝나야 쓸 수 있어요!\n(원가족 검사까지 하면 3대가 이어진 완전판이 돼요)');
+    return;
+  }
+  renderBook();show('s-book');
+}
+
+function renderBook(){
+  const uk=bookKey();BOOK_UNLOCKED=!!((UNLOCKS[uk]||{}).book);
+  const pname=S.activeP||'나', kid=S.kids[S.activeK], kname=kid.name||'아이';
+  const prec=S.parents[pname]||{}, p=prec.score, c=kid.score;
+  const pt=prec.ptype||calcPType(p);
+  const ktRaw=kid.kbase||kid.ktype||calcKType(c);
+  const ktKey=ktRaw.indexOf('무지개')===0?'무지개형':ktRaw;
+  const ktShow=kid.ktype||ktRaw;
+  const hasFam=!!S.family;
+  const qkey=hasFam?(S.family.care>=3.2?(S.family.ctrl>=3.2?'warm_ctrl':'warm_free'):(S.family.ctrl>=3.2?'cold_ctrl':'cold_free')):null;
+  const quad=qkey?FAM_QUAD[qkey]:null;
+  const mm=(FITMAT[pt]||{})[ktKey]||['보기 드문 조합','서로를 새로 배워가는 조합이에요.'];
+  const goods=STRENGTHS.filter(f=>f.when(p,c));
+  const bads=FRICTIONS.filter(f=>f.when(p,c));
+  const ptop=['E','A','C','N','O'].sort((a,b)=>p[b]-p[a]);
+  const ctop=Object.keys(C_DIMS).filter(d=>c[d]!=null).sort((a,b)=>Math.abs(c[b]-3)-Math.abs(c[a]-3));
+
+  /* ── 표지 + 목차 (무료) ── */
+  document.getElementById('book-cover-head').innerHTML=`
+    <span class="tag">온가족 종합 리포트</span>
+    <div class="typename" style="font-size:1.5rem">우리 집 이야기</div>
+    <div class="typedesc">${pname} × ${josa(kname,'와')} 함께 읽는 한 권${hasFam?'<br>— 3대가 이어진 완전판':''}</div>`;
+  document.getElementById('book-toc').innerHTML=`
+    <h3 style="font-size:1rem;margin-bottom:6px">📖 목차</h3>
+    ${['1장 · 뿌리 — 내가 자란 집','2장 · 나 — '+pname+'의 양육 에너지','3장 · 아이 — '+josa(kname,'이')+' 타고난 날씨','4장 · 만남 — 우리 둘의 화학작용','5장 · 우리 집 사용설명서','📄 냉장고에 붙이는 한 장 요약 (인쇄)'].map((t,i)=>`<p style="font-size:.9rem;margin:5px 0">${t}${i>0?' <span class="small" style="color:var(--sub)">🔒</span>':''}</p>`).join('')}`;
+
+  /* ── 1장 뿌리 (무료 — 원가족 있으면 요약, 없으면 무료검사 유도) ── */
+  document.getElementById('book-ch1').innerHTML= hasFam?`
+    <h3 style="font-size:1rem">1장 · 뿌리 — 내가 자란 집</h3>
+    <p style="font-family:'Jua';font-size:1.05rem;margin:6px 0;color:var(--pri)">「${quad.n}」</p>
+    <p style="font-size:.9rem;line-height:1.8">${quad.d}</p>
+    <p style="font-size:.9rem;line-height:1.8" class="mt8">${BOOK_ROOT[qkey]}</p>`
+  :`<h3 style="font-size:1rem">1장 · 뿌리 — 내가 자란 집</h3>
+    <p style="font-size:.9rem;line-height:1.8">이 책의 첫 장은 아이가 아니라 당신의 어린 시절에서 시작해요. 육아하다 나도 모르게 튀어나오는 말과 반응의 뿌리가 거기 있거든요. <b>원가족 검사(무료)</b>를 마치면 이 장이 채워지고, 3대가 이어진 완전판이 됩니다.</p>
+    <button class="btn" style="margin-top:10px" onclick="startTest('family')">원가족 검사 하고 1장 채우기 (무료)</button>`;
+
+  /* ── 2~5장 (잠금) ── */
+  const body=document.getElementById('book-body');
+  const pl1=PAR_TEXT[ptop[0]],pl2=PAR_TEXT[ptop[1]],pl3=PAR_TEXT[ptop[2]];
+  const d1=ctop[0],d2=ctop[1],d3=ctop[2];
+  const dsyn=k=>{const s=C_DEEP_SYN[k];if(!s)return null;const lv=bookLv(c[k]);return s[lv==='mid'?(c[k]>=3?'hi':'lo'):lv];};
+  const sy1=dsyn(d1),sy2=dsyn(d2),sy3=dsyn(d3);
+  const rx=bads.slice(0,3);
+  const rxDeep=rx.map(f=>({f,d:DEEP[f.title]})).filter(x=>x.d);
+  const deepLines=rxDeep.flatMap(x=>x.d.lines.slice(0,2)).slice(0,4);
+  const week=rxDeep.length?rxDeep[0].d.week:null;
+  body.innerHTML=`
+    <div class="card">
+      <h3 style="font-size:1rem">2장 · 나 — ${pname}의 양육 에너지</h3>
+      <p style="font-family:'Jua';font-size:1.05rem;margin:6px 0;color:var(--pri)">「${pt}」</p>
+      <p style="font-size:.9rem;line-height:1.8">가장 앞서는 에너지는 <b>${P_LABEL[ptop[0]]}</b>(${p[ptop[0]].toFixed(1)}점)이에요. ${pl1[bookLv(p[ptop[0]])]}</p>
+      <p style="font-size:.9rem;line-height:1.8" class="mt8">그 다음은 <b>${P_LABEL[ptop[1]]}</b>(${p[ptop[1]].toFixed(1)}점). ${pl2[bookLv(p[ptop[1]])]}</p>
+      <p style="font-size:.9rem;line-height:1.8" class="mt8">세 번째 축 <b>${P_LABEL[ptop[2]]}</b>(${p[ptop[2]].toFixed(1)}점)까지 겹쳐 보면 입체가 됩니다. ${pl3[bookLv(p[ptop[2]])]}</p>
+      ${hasFam?`<p style="font-size:.88rem;line-height:1.8" class="mt8" style="color:var(--sub)">1장과 이어 읽기 — ${quad.n}에서 얻은 것(${quad.gain[0]})은 이 에너지의 연료가 되고, 조심할 것(${quad.watch[0].split(' — ')[0]})은 아래 4장의 마찰에서 다시 만나게 됩니다.</p>`:''}
+    </div>
+    <div class="card">
+      <h3 style="font-size:1rem">3장 · 아이 — ${josa(kname,'이')} 타고난 날씨</h3>
+      <p style="font-family:'Jua';font-size:1.05rem;margin:6px 0;color:#C97A2B">「${ktShow}」</p>
+      <p style="font-size:.9rem;line-height:1.8">${(CLUSTER_DEF[ktKey]||'').replace(/^[^ ]+ /,'')} ${(Object.values(KTYPE_FINE[ktKey]||{}).find(v=>v[0]===ktShow)||[])[1]||''}</p>
+      <p style="font-size:.9rem;line-height:1.8" class="mt8">가장 또렷한 축은 <b>${C_DIMS[d1]}</b>(${c[d1].toFixed(1)}점)이에요. ${(DIM_TEXT[d1]||{})[bookLv(c[d1])]||''}${sy1?` 그래서 ${sy1.tr} ${sy1.need}`:''}</p>
+      <p style="font-size:.9rem;line-height:1.8" class="mt8">두 번째 열쇠는 <b>${C_DIMS[d2]}</b>(${c[d2].toFixed(1)}점). ${(DIM_TEXT[d2]||{})[bookLv(c[d2])]||''}${sy2?` ${sy2.need}`:''}</p>
+      <p style="font-size:.9rem;line-height:1.8" class="mt8"><b>${C_DIMS[d3]}</b>(${c[d3].toFixed(1)}점)도 함께 봐주세요. ${(DIM_TEXT[d3]||{})[bookLv(c[d3])]||''}</p>
+      ${kid.scene&&Object.keys(kid.scene).length?`<p class="mt8" style="font-size:.88rem;line-height:1.7;background:var(--amber-soft);border-radius:10px;padding:10px 12px">📸 검사 때 알려주신 우리 집 장면 — ${Object.values(kid.scene).map(s=>`"${s.label}"`).join(', ')}. 위 축들이 실제로 이렇게 나타나고 있는 거예요.</p>`:''}
+    </div>
+    <div class="card">
+      <h3 style="font-size:1rem">4장 · 만남 — 우리 둘의 화학작용</h3>
+      ${mm[2]?`<p style="font-family:'Jua';font-size:1.05rem;margin:6px 0;color:var(--pri)">우리 집은 「${mm[2]}」</p>`:''}
+      <p style="font-size:.9rem;line-height:1.8">${mm[0]} ${mm[1]}</p>
+      ${goods.length?`<p class="mt8" style="font-size:.9rem"><b>🌿 우리의 무기 ${goods.length}가지</b></p>${goods.slice(0,3).map(g=>`<p style="font-size:.88rem;line-height:1.7;margin:4px 0">· <b>${g.title}</b> — ${g.why}</p>`).join('')}`:''}
+      ${rx.length?`<p class="mt8" style="font-size:.9rem"><b>🔥 부딪히기 쉬운 곳 ${bads.length}곳${bads.length>3?' (대표 3곳)':''}</b></p>${rx.map(f=>`<div style="margin:6px 0"><p style="font-size:.88rem;line-height:1.7">· <b>${f.title}</b> — ${f.why}</p>${f.chuvi?`<p style="font-size:.84rem;line-height:1.6;color:var(--sub);margin-top:2px">🤍 츄비 · ${f.chuvi}</p>`:''}${f.kancho?`<p style="font-size:.84rem;line-height:1.6;color:var(--sub)">🩶 칸쵸 · ${f.kancho}</p>`:''}</div>`).join('')}`:`<p class="mt8" style="font-size:.88rem;line-height:1.7">구조적인 마찰 지점이 뚜렷하지 않은, 드물게 편안한 조합이에요. 힘든 날이 있다면 기질보다 컨디션(수면·일정 과부하)을 먼저 점검하면 됩니다.</p>`}
+      <p class="mt8" style="font-size:.88rem;line-height:1.8;background:var(--pri-soft);border-radius:10px;padding:10px 12px">${hasFam?BOOK_BRIDGE[rx.length?'fr':'no']:'원가족 검사까지 마치면, 이 마찰에서 나오는 내 반응의 뿌리까지 이어서 읽어드려요.'}</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:1rem">5장 · 우리 집 사용설명서</h3>
+      <p style="font-size:.9rem" class="mt8"><b>📌 냉장고에 붙일 대원칙 3</b></p>
+      <p style="font-size:.88rem;line-height:1.7">1. ${(KID_PARENT_MATCH[ktKey]||{}).why||'아이의 속도를 기준으로 삼기.'}</p>
+      <p style="font-size:.88rem;line-height:1.7">2. ${rxDeep.length?rxDeep[0].d.good:'지금의 무난한 합을 루틴으로 지켜주기 — 잘 굴러갈 때의 순서를 기록해두면 흔들리는 날의 지도가 됩니다.'}</p>
+      <p style="font-size:.88rem;line-height:1.7">3. 부모가 먼저 쉬기 — 부모의 마음 상태가 따뜻한 반응을 거쳐 아이의 조절력까지 이어진다는 게 한국 1,455가구 연구의 결론이에요.</p>
+      ${rxDeep.length?`<p class="mt8" style="font-size:.9rem"><b>🚫 이 조합이 특히 조심할 말</b></p><p style="font-size:.88rem;line-height:1.7;color:#A0522D">${rxDeep[0].d.bad}</p>`:''}
+      ${deepLines.length?`<p class="mt8" style="font-size:.9rem"><b>💬 이번 주에 써볼 말</b></p>${deepLines.map(l=>`<p style="font-size:.88rem;margin:4px 0">· ${l}</p>`).join('')}`:''}
+      ${week?`<p class="mt8" style="font-size:.9rem"><b>📅 첫 1주 플랜</b></p><p style="font-size:.88rem;line-height:1.7">${week}</p>`:''}
+      ${hasFam?`<p class="mt8" style="font-size:.9rem"><b>🌳 3대를 잇는 마지막 문장</b></p><p style="font-size:.88rem;line-height:1.8">${quad.msg}</p>`:''}
+      <p class="mt8" style="font-size:.9rem"><b>✉️ 책을 덮으며</b></p>
+      <p style="font-size:.88rem;line-height:1.8">기질은 바꾸는 게 아니라 번역하는 거예요. 이 책은 ${josa(kname,'이')} 쓰는 언어의 사전이고, 사전은 자주 펼칠수록 값을 합니다. 아이가 자라 다음 시기로 넘어가면 같은 아이라도 문법이 달라져요 — 그때 다시 검사하고, 이 책의 다음 판을 함께 쓰면 됩니다. 오늘 이만큼 아이를 궁금해한 것, 그게 이미 좋은 부모의 증거예요.</p>
+      <p class="small mt16" style="border-top:1px dashed var(--line);padding-top:10px">⚕️ 이 리포트는 발표된 연구와 검증된 척도를 학습한 참고용 분석이며, 전문 심리검사·진단이 아닙니다.</p>
+    </div>
+    <div class="card" id="book-print">
+      <h3 style="font-size:1rem">📄 냉장고에 붙이는 한 장</h3>
+      <div id="book-print-inner" style="border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-top:8px">
+        <p style="font-family:'Jua';font-size:1.05rem;text-align:center">우리 집 사용설명서 — ${pname} × ${kname}</p>
+        <p style="font-size:.85rem;text-align:center;color:var(--sub);margin-bottom:8px">${pt} × ${ktShow}${mm[2]?' · 「'+mm[2]+'」':''}</p>
+        <p style="font-size:.85rem;line-height:1.7">🌿 무기: ${goods.length?goods.slice(0,2).map(g=>g.title).join(' · '):'균형 잡힌 합'}</p>
+        <p style="font-size:.85rem;line-height:1.7">🔥 조심: ${rx.length?rx.map(f=>f.title).join(' · '):'큰 마찰 없음'}</p>
+        <p style="font-size:.85rem;line-height:1.7">💬 이번 주의 말: ${deepLines[0]||'"오늘 마음 어땠어?"'}</p>
+        <p style="font-size:.78rem;color:var(--sub);text-align:center;margin-top:8px">기질냥구소 · 어린이집 선생님·조부모님과 공유해보세요</p>
+      </div>
+      <button class="btn" style="margin-top:10px" onclick="printBook()">🖨️ 인쇄 / PDF 저장</button>
+      <p class="small mt8" style="text-align:center">인쇄가 어려우면 이 카드를 캡처해서 가족 단톡방에 올려도 좋아요</p>
+    </div>`;
+  applyBookLock();
+  const R=document.getElementById('book-routes');if(R&&typeof nextRoutes==='function')R.innerHTML=nextRoutes('fit');
+}
+
+function applyBookLock(){
+  const cover=document.getElementById('book-lock-cover');
+  const inner=document.getElementById('book-lock-inner');
+  if(!cover)return;
+  if(BOOK_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
+  else{cover.style.display='flex';inner.classList.add('locked-peek');}
+}
+
+function printBook(){
+  document.body.classList.add('print-book');
+  window.print();
+  setTimeout(()=>document.body.classList.remove('print-book'),800);
 }
 /* ===== js/render/home.js (108) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
@@ -3729,7 +3903,7 @@ function maybeAskLogin(){
     if(h.scrollHeight<=window.innerHeight*1.15)onScroll();
   },2500);
 }
-/* ===== js/wallet.js (205) ===== */
+/* ===== js/wallet.js (211) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -3934,6 +4108,12 @@ async function unlockFit(){
 async function unlockDeep(){
   if(!(await spendKkaSrv(2,'fit-deep')))return;
   DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;applyDeepLock();save();
+}
+/* 온가족 종합 리포트 「우리 집 이야기」 — 5까까 프리미엄 앵커 (2026-08-15 본편) */
+async function unlockBook(){
+  if(!(await spendKkaSrv(5,'book')))return;
+  BOOK_UNLOCKED=true;const uk=bookKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).book=true;applyBookLock();save();
+  toast('📕 <b>우리 집 이야기</b> 전체가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">마지막 장의 인쇄용 한 장까지 꼭 챙겨가세요</span>');
 }
 /* ===== js/talk.js (164) ===== */
 /* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
