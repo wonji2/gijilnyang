@@ -455,6 +455,7 @@ details.acc>*:not(summary){margin-top:10px}
   <div class="card" id="p-bars"></div>
   <div id="p-voice"></div>
   <details class="card acc"><summary><h3>🗓 하루 4장면 예보</h3><span class="acc-arrow">▾</span></summary><div id="p-scenes"></div></details>
+  <div class="card" id="p-taste" style="display:none"></div>
   <div class="card locked" id="p-lock-wrap">
     <div id="p-lock-inner">
       <h3 style="font-size:1rem;margin-bottom:6px">다섯 축 등급 해설 · 심화 풀이</h3><div id="p-deep" class="mt8"></div>
@@ -493,6 +494,7 @@ details.acc>*:not(summary){margin-top:10px}
   <div id="c-voice"></div>
   <details class="card acc"><summary><h3>우리 아이 마음의 3가지 힘</h3><span class="acc-arrow">▾</span></summary><div id="c-super"></div><p class="small mt8" id="c-super-note"></p></details>
   <details class="card acc"><summary><h3>💞 이런 아이는, 이런 부모와 잘 맞아요</h3><span class="acc-arrow">▾</span></summary><div id="c-fitpar"></div></details>
+  <div class="card" id="c-taste" style="display:none"></div>
   <div class="card locked" id="c-lock-wrap">
     <div id="c-lock-inner">
       <h3 style="font-size:1rem;margin-bottom:6px">10가지 기질 온도계 · 심화 풀이</h3><div id="c-bars" class="mt8"></div>
@@ -555,7 +557,7 @@ details.acc>*:not(summary){margin-top:10px}
       <div style="font-size:1.6rem">🎓</div>
       <p style="font-family:'Jua'">심층 코칭이 잠겨 있어요</p>
       <p class="small">무작위 임상시험으로 검증된 개입 연구에서 뽑은<br>"오늘 밤 쓰는 대사 3개 + 1주 실행 플랜"</p>
-      <button class="btn moss" style="width:auto;padding:13px 24px" onclick="unlockDeep()"><i class="ddeok-i"></i><i class="ddeok-i"></i> 까까 2개로 심층 코칭 열기</button>
+      <button class="btn moss" style="width:auto;padding:13px 24px" onclick="unlockDeep()"><i class="ddeok-i"></i><i class="ddeok-i"></i><i class="ddeok-i"></i> 까까 3개로 심층 코칭 열기</button>
     </div>
   </div>
   <div class="card" style="text-align:center;background:var(--pri-soft);border-color:var(--pri);cursor:pointer" role="button" tabindex="0" onclick="goBook()">
@@ -1244,26 +1246,26 @@ const FITPAR={
 /* 심화 종합 풀이 재료 (2026-08-14 사장님 지시: "돈 냈는데 그래프가 다인 게 말이 안돼").
    축마다 낮음/높음 × {tr:한 문장 성격, lack:힘들기 쉬운 순간, need:필요한 것}. 렌더는 child.js */
 const C_DEEP_SYN={
- act:{hi:{tr:'몸을 움직일 때 세상이 제일 잘 배워지는 아이예요.',lack:'식당·수업처럼 가만히 있어야 하는 자리가 유난히 길게 느껴져 "산만하다"는 말을 듣기 쉬워요',need:'하루 한 번, 실컷 뛰는 시간을 먼저 채워주세요 — 몸이 채워져야 앉는 힘도 생깁니다'},
-      lo:{tr:'에너지를 아껴 쓰며 조용한 놀이에 깊게 잠기는 아이예요.',lack:'활동 제안에 시큰둥해 보여 "왜 안 놀아?" 하는 오해를 받기 쉬워요',need:'움직임을 억지로 늘리기보다, 좋아하는 조용한 놀이에 몰입할 시간을 지켜주세요'}},
- rhy:{hi:{tr:'먹고 자는 몸속 시계가 정확한 편이에요.',lack:'여행·명절처럼 일정이 흔들리는 날 컨디션이 크게 출렁일 수 있어요',need:'변동이 있는 날은 전날 미리 알려주고, 밥·잠 기본 리듬만은 지켜주세요'},
-      lo:{tr:'몸의 리듬이 자유로워 그날그날 파도가 달라요.',lack:'재우기·먹이기가 매일 달라져 양육자가 먼저 지치기 쉬워요',need:'시간을 맞추려 하지 말고 순서를 고정하세요 — "목욕 → 책 → 잠"이면 충분합니다'}},
- app:{hi:{tr:'처음 보는 것에 성큼 다가가는 용기가 있어요.',lack:'위험한 것에도 겁 없이 다가가 아찔한 순간을 만들 수 있어요',need:'무조건 막기보다, 안전하게 모험할 거리를 미리 깔아주세요'},
-      lo:{tr:'낯선 것 앞에서는 일단 멈춰 관찰부터 하는 신중파예요.',lack:'새 기관·새 친구에 마음이 데워지는 시간이 길어 "소심하다"는 오해를 받기 쉬워요',need:'첫 만남 전에 사진과 이야기로 미리 보여주고, 다가갈 때까지의 시간을 재촉하지 마세요 — 부모가 먼저 겁내는 표정을 보이면 아이의 겁이 커진다는 게 20여 개 연구의 결론이라, 담담한 표정이 최고의 예방주사예요'}},
- ada:{hi:{tr:'변화를 유연하게 타넘는 힘이 있어요.',lack:'워낙 잘 맞춰줘서 정작 제 속마음은 뒤로 밀리는 날이 있을 수 있어요',need:'순한 날일수록 "오늘 진짜 괜찮았어?" 하고 속마음을 따로 물어봐 주세요'},
-      lo:{tr:'익숙한 것에서 힘을 얻는 아이예요.',lack:'놀이 끝내기·장소 옮기기 같은 전환마다 실랑이가 반복되기 쉬워요',need:'"10분 뒤에 끝낼 거야" 예고를 습관으로 만드세요 — 예고 한 번이 실랑이 열 번을 줄입니다'}},
- int:{hi:{tr:'기쁨도 속상함도 온몸으로 크게 표현해요.',lack:'감정의 소리가 커서 "떼가 세다"는 말을 듣기 쉬워요',need:'감정이 끓는 중엔 가르치지 말고, 가라앉은 뒤에 짧게 이야기하세요 — 감정이 큰 아이일수록 부모의 좋은 반응에 남들보다 크게 반응한다는 게 여러 연구를 합친 결론이에요'},
-      lo:{tr:'감정 표현이 잔잔하고 조용한 편이에요.',lack:'힘든 걸 크게 내색하지 않아 어른이 놓치고 지나가기 쉬워요',need:'표정 대신 밥·잠·놀이의 변화로 컨디션을 읽어주세요'}},
- thr:{hi:{tr:'소리·촉감·분위기를 남보다 정밀하게 느껴요.',lack:'옷 태그나 소음 같은 작은 자극에도 남들보다 빨리 지치기 쉬워요',need:'예민함을 고치려 하지 말고 주변 자극을 한 단계 낮춰주세요 — 좋은 환경에서 남보다 크게 자라는 기질이에요'},
-      lo:{tr:'웬만한 자극에는 흔들리지 않는 단단함이 있어요.',lack:'아픔이나 추위 같은 몸의 신호를 늦게 알아차릴 수 있어요',need:'"어디 불편한 데 없어?"를 정기적으로 물어 몸의 신호를 같이 읽어주세요'}},
- moo:{hi:{tr:'기본 표정이 밝고 잘 웃는 아이예요.',lack:'속상함까지 웃음으로 덮어버려 진짜 감정을 놓치기 쉬워요',need:'잘 웃는 날에도 "오늘 속상한 건 없었어?" 한 번씩 물어봐 주세요'},
-      lo:{tr:'감정의 온도가 차분하고 진지한 편이에요.',lack:'즐거운 자리에서도 시큰둥해 보여 오해를 받기 쉬워요',need:'텐션을 억지로 끌어올리기보다, 아이가 조용히 좋아하는 것을 함께해 주세요'}},
- dis:{hi:{tr:'관심이 빠르게 옮겨 다니는 아이예요.',lack:'하던 일을 자주 갈아타 마무리가 약해 보일 수 있어요',need:'한 번에 하나만 꺼내주고, "끝냈다"는 경험을 짧게라도 자주 만들어주세요'},
-      lo:{tr:'한 가지에 오래 머무는 몰입이 있어요.',lack:'속상한 일도 오래 붙들어 기분 전환이 느릴 수 있어요',need:'말로 달래기보다 산책·목욕처럼 몸을 움직이는 전환을 써주세요'}},
- per:{hi:{tr:'시작한 건 끝을 봐야 놓는 끈기가 있어요.',lack:'뜻대로 안 되는 날엔 스스로에게 화가 나 무너지기 쉬워요',need:'"오늘은 여기까지"를 어른이 정해주세요 — 끈기는 멈추는 법과 함께 배워야 힘이 됩니다'},
-      lo:{tr:'흥미가 사뿐사뿐 옮겨 다니는 아이예요.',lack:'어려움 앞에서 금방 손을 놓아 "끈기가 없다"는 말을 듣기 쉬워요',need:'과제를 잘게 쪼개 "여기까지만"의 성공을 쌓아주세요 — 끈기는 성공 경험이 만듭니다'}},
- ec: {hi:{tr:'스스로 멈추고 기다리는 힘이 일찍 자란 아이예요.',lack:'참는 게 익숙해 정작 하고 싶은 말을 삼키고 있을 수 있어요',need:'"안 참아도 돼" 하고 마음부터 물어봐 주세요'},
-      lo:{tr:'마음의 브레이크가 아직 자라는 중이에요.',lack:'충동을 못 이겨 던지고 때리는 사고로 이어지는 날이 있어요',need:'참으라는 말 대신 대체 행동을 정해주세요("화나면 이 쿠션 치기") — 이 힘은 유아기 내내 자랍니다'}}
+ act:{hi:{tr:'몸을 움직일 때 세상이 제일 잘 배워지는 아이예요.',lack:'식당·수업처럼 가만히 있어야 하는 자리가 유난히 길게 느껴져 "산만하다"는 말을 듣기 쉬워요',need:'하루 한 번, 실컷 뛰는 시간을 먼저 채워주세요 — 몸이 채워져야 앉는 힘도 생깁니다',exp:'외출·식당 예정인 날, 나가기 전에 15분 몸놀이(계단 오르기·베개 점프)를 먼저 시켜보세요. 앉아 있는 시간이 얼마나 늘어나는지 일주일만 비교해보면 됩니다'},
+      lo:{tr:'에너지를 아껴 쓰며 조용한 놀이에 깊게 잠기는 아이예요.',lack:'활동 제안에 시큰둥해 보여 "왜 안 놀아?" 하는 오해를 받기 쉬워요',need:'움직임을 억지로 늘리기보다, 좋아하는 조용한 놀이에 몰입할 시간을 지켜주세요',exp:'이번 주엔 놀이터 대신 아이가 고른 조용한 놀이에 부모가 15분 합류해보세요. 놀이를 바꾸자는 말 없이 따라만 가면, 아이 쪽에서 먼저 말이 많아지는 걸 보게 될 거예요'}},
+ rhy:{hi:{tr:'먹고 자는 몸속 시계가 정확한 편이에요.',lack:'여행·명절처럼 일정이 흔들리는 날 컨디션이 크게 출렁일 수 있어요',need:'변동이 있는 날은 전날 미리 알려주고, 밥·잠 기본 리듬만은 지켜주세요',exp:'다음 외출·행사 전날 밤, 내일 일정을 그림 그리듯 미리 말해주세요("아침 먹고 → 차 타고 → 할머니 집"). 예고 있는 날과 없는 날의 짜증 횟수를 비교해보면 차이가 보입니다'},
+      lo:{tr:'몸의 리듬이 자유로워 그날그날 파도가 달라요.',lack:'재우기·먹이기가 매일 달라져 양육자가 먼저 지치기 쉬워요',need:'시간을 맞추려 하지 말고 순서를 고정하세요 — "목욕 → 책 → 잠"이면 충분합니다',exp:'이번 주는 잠들 시각을 포기하고 순서만 지켜보세요. 목욕→책→불끄기 순서가 7일 반복되면, 시간은 제각각이어도 잠드는 데 걸리는 시간이 줄어드는 게 보통입니다'}},
+ app:{hi:{tr:'처음 보는 것에 성큼 다가가는 용기가 있어요.',lack:'위험한 것에도 겁 없이 다가가 아찔한 순간을 만들 수 있어요',need:'무조건 막기보다, 안전하게 모험할 거리를 미리 깔아주세요',exp:'"안 돼" 대신 "여기서는 돼"를 일주일 써보세요. 소파에서 뛰면 "매트 위에서 뛰어" — 금지 대신 허용 구역을 주면 실랑이 횟수가 줄어드는지 세어보세요'},
+      lo:{tr:'낯선 것 앞에서는 일단 멈춰 관찰부터 하는 신중파예요.',lack:'새 기관·새 친구에 마음이 데워지는 시간이 길어 "소심하다"는 오해를 받기 쉬워요',need:'첫 만남 전에 사진과 이야기로 미리 보여주고, 다가갈 때까지의 시간을 재촉하지 마세요 — 부모가 먼저 겁내는 표정을 보이면 아이의 겁이 커진다는 게 20여 개 연구의 결론이라, 담담한 표정이 최고의 예방주사예요',exp:'새로운 곳에 가기 전, 그 장소 사진을 아이와 두 번 미리 보세요("여기가 문이야, 여기서 신발 벗어"). 예고편을 본 날 아이가 적응하는 데 걸리는 시간을 재보면, 다음부터는 예고편이 습관이 될 거예요'}},
+ ada:{hi:{tr:'변화를 유연하게 타넘는 힘이 있어요.',lack:'워낙 잘 맞춰줘서 정작 제 속마음은 뒤로 밀리는 날이 있을 수 있어요',need:'순한 날일수록 "오늘 진짜 괜찮았어?" 하고 속마음을 따로 물어봐 주세요',exp:'이번 주 잠자리에서 "오늘 제일 좋았던 것 하나, 별로였던 것 하나"를 매일 물어보세요. 잘 맞춰주는 아이의 "별로였던 것" 대답에 이 아이의 진짜 속마음이 들어 있습니다'},
+      lo:{tr:'익숙한 것에서 힘을 얻는 아이예요.',lack:'놀이 끝내기·장소 옮기기 같은 전환마다 실랑이가 반복되기 쉬워요',need:'"10분 뒤에 끝낼 거야" 예고를 습관으로 만드세요 — 예고 한 번이 실랑이 열 번을 줄입니다',exp:'전환 실랑이가 잦은 장면 하나(놀이 끝내기)를 골라, 일주일 내내 10분 전·5분 전·1분 전 3단계 예고를 해보세요. 첫 이틀은 그대로여도 닷새째부터 달라지는 게 보통입니다'}},
+ int:{hi:{tr:'기쁨도 속상함도 온몸으로 크게 표현해요.',lack:'감정의 소리가 커서 "떼가 세다"는 말을 듣기 쉬워요',need:'감정이 끓는 중엔 가르치지 말고, 가라앉은 뒤에 짧게 이야기하세요 — 감정이 큰 아이일수록 부모의 좋은 반응에 남들보다 크게 반응한다는 게 여러 연구를 합친 결론이에요',exp:'다음 폭발 때 설명·훈계를 전부 참고 "화가 많이 났구나"만 말한 뒤 옆에 있어보세요. 가라앉는 데 걸린 시간을 재고, 일주일 뒤 같은 상황과 비교해보면 — 짧아져 있을 확률이 높습니다'},
+      lo:{tr:'감정 표현이 잔잔하고 조용한 편이에요.',lack:'힘든 걸 크게 내색하지 않아 어른이 놓치고 지나가기 쉬워요',need:'표정 대신 밥·잠·놀이의 변화로 컨디션을 읽어주세요',exp:'이번 주엔 "괜찮아?" 대신 "1점부터 5점까지, 오늘 기분 몇 점이야?"로 물어보세요. 표현이 잔잔한 아이도 숫자로는 의외로 정확하게 알려줍니다'}},
+ thr:{hi:{tr:'소리·촉감·분위기를 남보다 정밀하게 느껴요.',lack:'옷 태그나 소음 같은 작은 자극에도 남들보다 빨리 지치기 쉬워요',need:'예민함을 고치려 하지 말고 주변 자극을 한 단계 낮춰주세요 — 좋은 환경에서 남보다 크게 자라는 기질이에요',exp:'시끌벅적한 외출에서 돌아온 직후, 매번 "조용한 20분"(불 낮추고 좋아하는 조용한 놀이)을 붙여보세요. 이 회복 루틴이 있는 날과 없는 날의 저녁 짜증을 일주일 비교해보면 답이 나옵니다'},
+      lo:{tr:'웬만한 자극에는 흔들리지 않는 단단함이 있어요.',lack:'아픔이나 추위 같은 몸의 신호를 늦게 알아차릴 수 있어요',need:'"어디 불편한 데 없어?"를 정기적으로 물어 몸의 신호를 같이 읽어주세요',exp:'목욕 시간마다 "오늘 몸 점검" 놀이를 해보세요 — 무릎·팔꿈치를 같이 살피며 "아야 한 데 있나 찾아보자". 일주일이면 아이가 먼저 제 몸의 상처를 알려오기 시작합니다'}},
+ moo:{hi:{tr:'기본 표정이 밝고 잘 웃는 아이예요.',lack:'속상함까지 웃음으로 덮어버려 진짜 감정을 놓치기 쉬워요',need:'잘 웃는 날에도 "오늘 속상한 건 없었어?" 한 번씩 물어봐 주세요',exp:'이번 주 자기 전마다 "오늘 웃겼던 일 하나, 속상했던 일 하나"를 묻고, 속상 쪽 대답만 조용히 메모해보세요. 일주일치가 모이면 밝은 얼굴 뒤의 패턴이 보입니다'},
+      lo:{tr:'감정의 온도가 차분하고 진지한 편이에요.',lack:'즐거운 자리에서도 시큰둥해 보여 오해를 받기 쉬워요',need:'텐션을 억지로 끌어올리기보다, 아이가 조용히 좋아하는 것을 함께해 주세요',exp:'"재밌었어?" 대신 "뭐가 제일 기억에 남아?"로 일주일 물어보세요. 표정은 시큰둥해도 대답이 길어지는 주제 — 그게 이 아이의 진짜 즐거움입니다'}},
+ dis:{hi:{tr:'관심이 빠르게 옮겨 다니는 아이예요.',lack:'하던 일을 자주 갈아타 마무리가 약해 보일 수 있어요',need:'한 번에 하나만 꺼내주고, "끝냈다"는 경험을 짧게라도 자주 만들어주세요',exp:'이번 주엔 장난감을 한 번에 한 통만 꺼내는 규칙을 시험해보세요. 놀이 하나에 머무는 시간이 늘어나는지, 통을 바꾸는 횟수가 줄어드는지 눈으로 확인해보면 됩니다'},
+      lo:{tr:'한 가지에 오래 머무는 몰입이 있어요.',lack:'속상한 일도 오래 붙들어 기분 전환이 느릴 수 있어요',need:'말로 달래기보다 산책·목욕처럼 몸을 움직이는 전환을 써주세요',exp:'다음에 속상함이 오래 갈 때, 말로 달래는 대신 "물 마시러 가자" 하고 자리부터 옮겨보세요. 몸이 이동하면 마음도 따라 옮겨지는지 — 이 아이에겐 대개 그게 더 빠릅니다'}},
+ per:{hi:{tr:'시작한 건 끝을 봐야 놓는 끈기가 있어요.',lack:'뜻대로 안 되는 날엔 스스로에게 화가 나 무너지기 쉬워요',need:'"오늘은 여기까지"를 어른이 정해주세요 — 끈기는 멈추는 법과 함께 배워야 힘이 됩니다',exp:'어려운 놀이를 시작하기 전에 "안 되면 세 번까지만 하고 내일 또 하자"를 미리 약속해보세요. 무너지기 전에 멈추는 경험을 일주일 쌓으면, 우는 대신 "내일 또 할래"가 나오기 시작합니다'},
+      lo:{tr:'흥미가 사뿐사뿐 옮겨 다니는 아이예요.',lack:'어려움 앞에서 금방 손을 놓아 "끈기가 없다"는 말을 듣기 쉬워요',need:'과제를 잘게 쪼개 "여기까지만"의 성공을 쌓아주세요 — 끈기는 성공 경험이 만듭니다',exp:'퍼즐이든 블록이든 "딱 세 조각만 같이 하자"로 시작해보세요. 끝냈다는 기분이 들면 아이가 "더 할래"라고 하는 날이 옵니다 — 그 말이 나온 날짜를 기록해두세요'}},
+ ec: {hi:{tr:'스스로 멈추고 기다리는 힘이 일찍 자란 아이예요.',lack:'참는 게 익숙해 정작 하고 싶은 말을 삼키고 있을 수 있어요',need:'"안 참아도 돼" 하고 마음부터 물어봐 주세요',exp:'이번 주에 한 번, 아이가 양보하거나 참았을 때 "참아줘서 고마워. 근데 싫으면 싫다고 해도 돼"라고 말해보세요. 그 뒤 며칠 사이 아이가 처음으로 꺼내는 "싫어"를 놓치지 말고 반겨주세요'},
+      lo:{tr:'마음의 브레이크가 아직 자라는 중이에요.',lack:'충동을 못 이겨 던지고 때리는 사고로 이어지는 날이 있어요',need:'참으라는 말 대신 대체 행동을 정해주세요("화나면 이 쿠션 치기") — 이 힘은 유아기 내내 자랍니다',exp:'아이와 함께 "화날 때 하는 것"을 하나 정하고(쿠션 치기·꾹꾹이 인형) 잘 보이는 곳에 두세요. 일주일간 던지기 사고가 몇 번에서 몇 번으로 줄었는지만 세어보면, 이 방법이 우리 아이에게 맞는지 답이 나옵니다'}}
 };
 /* mid 추가 (2026-08-14): 10개 축이 같은 문장 하나를 돌려쓰던 것 → 축별 세분화 */
 const DIM_TEXT={
@@ -2108,7 +2110,7 @@ function renderScene(){
     box.appendChild(b);
   });
 }
-/* ===== js/render/parent.js (98) ===== */
+/* ===== js/render/parent.js (109) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -2176,6 +2178,17 @@ function renderParentReport(){
   if((PX.plan||3)>=4)cautions.push('계획이 틀어진 날의 잔열이 저녁 아이에게 새는지 체크');
   if(!cautions.length)cautions.push('지친 날 내가 어느 축으로 기우는지 관찰하기 — 카멜레온형의 유일한 숙제');
   /* 🔒 심화 = 다섯 축 등급별 해설 + 무기·살펴볼 지점 (까까 1개, 아이 심화와 동일 구조) */
+  /* 🍰 심화 맛보기 — 일부무료 확대 (2026-08-15 사장님 확정): 가장 극단 축 1개를 심화 포맷 그대로 무료 공개 */
+  const ptasteEl=document.getElementById('p-taste');
+  if(ptasteEl){
+    const tk=['E','A','C','N','O'].sort((a,b)=>Math.abs(avg[b]-3)-Math.abs(avg[a]-3))[0];
+    const tv=avg[tk];const tlv=plv(tv);
+    ptasteEl.style.display='block';
+    ptasteEl.innerHTML=`<h3 style="font-size:1rem;margin-bottom:6px">🍰 심화 풀이 맛보기 — 나의 가장 뚜렷한 축</h3>
+      <p style="font-size:.92rem"><b>${P_LABEL[tk]} ${tv.toFixed(1)} · ${tlv==='hi'?'높음':tlv==='lo'?'낮음':'중간'}</b></p>
+      <p style="font-size:.88rem;margin-top:3px;line-height:1.8">${PAR_TEXT[tk][tlv]}</p>
+      <p class="small mt8" style="color:var(--sub)">이런 해설이 <b>다섯 축 전부</b> + 나의 무기 · 살펴볼 지점까지 아래에 준비돼 있어요.</p>`;
+  }
   const dp=document.getElementById('p-deep');
   if(dp){
     let deepHtml='';
@@ -2197,7 +2210,7 @@ function renderParentReport(){
   const pu=(UNLOCKS[pkey]||{}).p;
   const pcover=document.getElementById('p-cover'),pinner=document.getElementById('p-lock-inner');
   if(pcover&&pinner){
-    if(pu){pcover.style.display='none';pinner.classList.remove('locked-peek');}
+    if(pu){pcover.style.display='none';pinner.classList.remove('locked-peek');if(ptasteEl)ptasteEl.style.display='none';}   /* 열리면 맛보기는 중복이라 숨김 */
     else{pcover.style.display='flex';pinner.classList.add('locked-peek');}
   }
   /* 츄비·칸쵸 한마디 쌍 — 부모 유형(myPT) 기준 (캐릭터_메인화 8장 1단계) */
@@ -2207,7 +2220,7 @@ function renderParentReport(){
   inviteReward();
 
 }
-/* ===== js/render/child.js (167) ===== */
+/* ===== js/render/child.js (185) ===== */
 function renderChildReport(){
   const avg=(S.kids[S.activeK]&&S.kids[S.activeK].score)||S.cScore;
   // Thomas & Chess 군집 — 연속체로 계산 (rhy, app, ada, int, moo 5개 결정 차원)
@@ -2291,9 +2304,12 @@ function renderChildReport(){
   for(const k in C_DIMS){
     const v=avg[k];const d=DIM_TEXT[k];
     const line=v>=3.6&&d?d.hi:v<=2.4&&d?d.lo:(d&&d.mid?d.mid:'중간 — 상황에 따라 양쪽을 오가는 유연한 구간이에요.');
+    /* 💡 이번 주 실험 — 뚜렷한 축엔 일주일짜리 실행 과제까지 (2026-08-15 심화 증량, 사장님 "돈 안 아깝게") */
+    const ex=(v>=3.6||v<=2.4)&&typeof C_DEEP_SYN!=='undefined'&&C_DEEP_SYN[k]?C_DEEP_SYN[k][v>=3?'hi':'lo'].exp:null;
     bars.insertAdjacentHTML('beforeend',`<div style="margin-bottom:10px">
       <div class="bar-row"><div class="label">${C_DIMS[k]}</div><div class="bar-track"><div class="bar-fill" data-w="${(v-1)/4*100}"></div></div><div class="val">${v.toFixed(1)}</div></div>
       <p class="small" style="margin-top:1px">${gradeTag(v)} · ${line}</p>
+      ${ex?`<p class="small" style="margin-top:3px;background:var(--amber-soft);border-radius:8px;padding:6px 9px">💡 <b>이번 주 실험</b> · ${ex}</p>`:''}
     </div>`);
   }
   /* 🔍 종합 풀이 — 그래프가 다가 아니게: 튀는 축들을 종합해 "이런 아이 → 힘든 순간 → 필요한 것"
@@ -2352,11 +2368,26 @@ function renderChildReport(){
                     :`<button class="btn pri mt8" onclick="goParentTest()">나는 어떤 부모일까? 보러가기</button>`;
     fpEl.innerHTML=body+btn;   /* 제목은 아코디언 summary 로 이동 (2026-08-12) */
   }
+  /* 🍰 심화 맛보기 — 일부무료 확대 (2026-08-15 사장님 확정, 사주아이식 "첫 항목만 펼침").
+     가장 또렷한 축 1개를 심화와 똑같은 포맷으로 무료 공개 → 품질을 증명하고 나머지 9축을 잠근다. */
+  const tasteEl=document.getElementById('c-taste');
+  if(tasteEl){
+    const tk=Object.keys(C_DIMS).sort((a,b)=>Math.abs(avg[b]-3)-Math.abs(avg[a]-3))[0];
+    const tv=avg[tk];const td=DIM_TEXT[tk]||{};
+    const tline=tv>=3.6&&td.hi?td.hi:tv<=2.4&&td.lo?td.lo:(td.mid||'상황에 따라 양쪽을 오가는 유연한 구간이에요.');
+    const tsyn=(typeof C_DEEP_SYN!=='undefined'&&C_DEEP_SYN[tk])?C_DEEP_SYN[tk][tv>=3?'hi':'lo']:null;
+    tasteEl.style.display='block';
+    tasteEl.innerHTML=`<h3 style="font-size:1rem;margin-bottom:6px">🍰 심화 풀이 맛보기 — ${josa(nm,'의')} 가장 또렷한 온도</h3>
+      <div class="bar-row"><div class="label">${C_DIMS[tk]}</div><div class="bar-track"><div class="bar-fill" data-w="${(tv-1)/4*100}"></div></div><div class="val">${tv.toFixed(1)}</div></div>
+      <p style="font-size:.9rem;line-height:1.8;margin-top:4px">${gradeTag(tv)} · ${tline}</p>
+      ${tsyn?`<p style="font-size:.88rem;line-height:1.8;margin-top:6px">${tsyn.tr} ${tsyn.need}</p>`:''}
+      <p class="small mt8" style="color:var(--sub)">이런 풀이가 <b>나머지 9가지 온도 전부</b> + 조합 종합 풀이 + 우리 집 장면 메모로 아래에 준비돼 있어요.</p>`;
+  }
   // 일부무료: 상세 해설 잠금 (아이별)
   const ckey='아이상세×'+(kid?kid.name:'아이');
   const cu=(UNLOCKS[ckey]||{}).c;
   const ccover=document.getElementById('c-cover'),cinner=document.getElementById('c-lock-inner');
-  if(cu){ccover.style.display='none';cinner.classList.remove('locked-peek');}
+  if(cu){ccover.style.display='none';cinner.classList.remove('locked-peek');if(tasteEl)tasteEl.style.display='none';}   /* 열리면 맛보기는 중복이라 숨김 */
   else{ccover.style.display='flex';cinner.classList.add('locked-peek');}
   const cta=document.getElementById('c-cta');
   const hasPr=Object.values(S.parents).some(x=>x&&x.score);
@@ -3903,7 +3934,7 @@ function maybeAskLogin(){
     if(h.scrollHeight<=window.innerHeight*1.15)onScroll();
   },2500);
 }
-/* ===== js/wallet.js (211) ===== */
+/* ===== js/wallet.js (212) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -3951,9 +3982,9 @@ function renderWallet(){
 /* 잔액 리마인드 — "남은 까까로 열 수 있는 것" (수익구조_가격 3-③) */
 function walletRemindHTML(){
   if(!(KKA>0))return '';
-  const tip = KKA>=5 ? '온가족 종합 리포트를 열 수 있어요'
-    : KKA>=3 ? '우리 가족 궁합 지도를 열 수 있어요'
-    : KKA>=2 ? '심층 코칭 하나를 딱 열 수 있어요'
+  const tip = KKA>=5 ? '온가족 종합 「우리 집 이야기」를 열 수 있어요'
+    : KKA>=3 ? '심층 코칭이나 가족 궁합 지도를 딱 열 수 있어요'
+    : KKA>=2 ? '심화 풀이 두 개를 열 수 있어요'
     : '아이 미래직업이나 심화 풀이를 열 수 있어요';
   return `<div class="card" style="text-align:center;background:var(--amber-soft);border-color:var(--amber)">
     <p style="font-size:.9rem">까까 <b style="font-family:'Jua'">${KKA}개</b> 남았어요 — ${tip}</p>
@@ -4105,8 +4136,9 @@ async function unlockFit(){
   if(!(await spendKkaSrv(1,'fit')))return;
   FIT_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).fit=true;applyFitLock();save();
 }
+/* 심층코칭 2→3까까 (2026-08-15 사장님 확정 — 부모+아이 완주자 대상 프리미엄) */
 async function unlockDeep(){
-  if(!(await spendKkaSrv(2,'fit-deep')))return;
+  if(!(await spendKkaSrv(3,'fit-deep')))return;
   DEEP_UNLOCKED=true;const uk=pairKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).deep=true;applyDeepLock();save();
 }
 /* 온가족 종합 리포트 「우리 집 이야기」 — 5까까 프리미엄 앵커 (2026-08-15 본편) */
