@@ -3123,7 +3123,7 @@ function applyMapLock(){
   if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (287) ===== */
+/* ===== js/render/home.js (289) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -3138,7 +3138,9 @@ function updateHome(){
   renderHomeGreet();
   renderWorryChips();
   if(typeof renderTalkPeek==='function')renderTalkPeek();   /* 대나무숲 미리보기 (첫 1회만 서버 호출) */
-  renderHeroTalk();
+  /* 🔴 2026-08-17 사장님 지시로 진입 토스트 제거 — "들어가자마자 위에서 밑으로 뜨는 배너 이상해 빼".
+     renderHeroTalk() 호출하지 않는다. 함수는 남겨두되(다른 곳에서 안 쓰임) 홈 진입 시 아무것도 뜨지 않는다.
+     ⚠️ 되살릴 일이 있으면 이 줄만 복구하면 된다. toast() 자체는 결제·처방권 안내에 계속 쓰이므로 건드리지 말 것. */
 }
 
 /* ── 🗨 말 거는 연구소 → 상단 토스트 (2026-08-15 개편) ──────────────────
