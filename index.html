@@ -384,6 +384,15 @@ details.acc>*:not(summary){margin-top:10px}
 .chat-meter{display:flex;gap:8px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--sub);flex-wrap:wrap}
 .chat-meter span{background:var(--bg);border-radius:99px;padding:4px 10px}
 .chat-meter b{font-family:'Jua';color:var(--ink)}
+
+/* ── 🌳 홈 대나무숲 미리보기 (2026-08-17) ── */
+.talk-peek{background:var(--card);border:1.5px solid var(--line);border-left:4px solid #E2708A;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer}
+.talk-peek:active{transform:scale(.995)}
+.tp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.tp-tag{font-family:'Jua';font-size:.78rem;color:#E2708A}
+.tp-text{font-size:.88rem;line-height:1.6}
+.tp-ai{font-size:.83rem;line-height:1.6;color:var(--sub);background:var(--bg);border-radius:10px;padding:7px 10px;margin-top:7px}
+.tp-ai b{font-family:'Jua';color:var(--ink)}
 </style>
 </head>
 <body>
@@ -494,6 +503,10 @@ details.acc>*:not(summary){margin-top:10px}
        · 발바닥 이모지가 제목·소개문에 겹쳐 제목은 💬 로
        · 항목명은 '츄비' '칸쵸' 만 (면담 글자 제거), 소개문은 제목 바로 밑에
        · 특징 설명이 한 줄로 잘리던 것 → .pretalk p 를 여러 줄 허용으로 -->
+  <!-- 🌳 대나무숲 미리보기 (2026-08-17) — 홈에 진입점이 없어 커뮤니티가 죽어 있던 것.
+       마인드카페 실측 패턴: 사연 + 답변 미리보기가 한 카드에 있어야 그 자체가 콘텐츠이자 상담 광고가 된다. -->
+  <div id="talk-peek"></div>
+
   <p class="sec-label">💬 냥구원 냥쪽상담실</p>
   <p class="sec-sub">우리 아이 검사 결과를 아는 <b>두 연구원</b>과 상담해보세요</p>
   <!-- 고민을 구체 상황어로 부른다 (기질아이 실측 패턴 — "기질 분석" 같은 추상어보다 클릭이 잘 된다).
@@ -1272,7 +1285,7 @@ const C_SCENE={
    {t:'자기 계획을 제시하며 협상해요',note:'자기주장형이에요. 협상 자체가 자율성 연습이라 나쁜 신호가 아니에요.'},
    {t:'스스로 조절하는 편이에요',note:'자기조절형이에요. 신뢰를 말로 표현해 주면 더 단단해져요.'}]}]
 };
-/* ===== js/data/texts.js (447) ===== */
+/* ===== js/data/texts.js (461) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
   gain:["실패를 두려워하지 않는 도전 감각","감정을 말로 꺼내는 게 자연스러움","'집=쉬는 곳'이라는 안정감"],
@@ -1338,6 +1351,20 @@ const PAR_TEXT={
   exp:{hi:'이번 주엔 새 육아법을 <b>하나만 골라 일주일 내내</b> 써보세요. 탐험형의 함정은 방법이 자주 바뀌는 것이라, 효과를 보려면 한 가지를 끝까지 밀어보는 연습이 필요합니다.',
        mid:'이번 주엔 늘 하던 방식 하나를 골라 <b>아이 반응을 관찰</b>해보세요. 잘 통하면 원칙으로 굳히고, 안 통하면 그때 새 방법을 찾으면 됩니다.',
        lo:'이번 주에 딱 한 번, <b>아이가 만든 놀이 규칙에 그대로 따라</b> 보세요. 익숙한 방식이 편한 부모에게도, 아이가 이끄는 10분은 안정감 위에 얹는 새 경험이 됩니다.'}}
+};
+/* ══ 부모 심화 종합 풀이 (2026-08-17 증량 2차) — 아이 쪽 C_DEEP_SYN 과 대칭.
+   축을 따로 읽는 대신 "그래서 어떤 부모냐면" 으로 조립한다. tr=특징 / lack=힘든 순간 / need=필요한 것 ══ */
+const P_DEEP_SYN={
+ E:{hi:{tr:'사람과 활동에서 힘을 얻는 부모예요.',lack:'아이가 집에만 있고 싶어 하는 날 답답함이 먼저 올라올 수 있어요',need:'바깥 일정은 내 배터리용, 집콕은 아이 배터리용으로 나눠 생각해보세요'},
+     lo:{tr:'조용한 시간에 충전되는 부모예요.',lack:'키즈카페처럼 소리가 큰 곳에서 유난히 빨리 지쳐요',need:'외출 뒤에는 반드시 혼자 회복하는 15분을 일정에 넣으세요 — 이건 사치가 아니라 정비입니다'}},
+ A:{hi:{tr:'아이 마음을 먼저 읽는 따뜻한 부모예요.',lack:'단호해야 할 순간에 마음이 약해져 규칙이 흐려지기 쉬워요',need:'“마음은 받아주되 결정은 그대로” 한 문장을 미리 준비해두세요'},
+     lo:{tr:'감정보다 사실과 해결이 먼저 보이는 부모예요.',lack:'아이가 원한 건 해결책이 아니라 알아줌이었던 순간이 쌓일 수 있어요',need:'조언 전에 “속상했겠다” 한 문장만 앞에 붙이면 됩니다'}},
+ C:{hi:{tr:'계획과 약속을 지켜 예측 가능한 하루를 만드는 부모예요.',lack:'계획이 어긋난 날의 스트레스가 아이에게 전달되기 쉬워요',need:'계획 B를 미리 품어두세요 — 여유는 성격이 아니라 준비물입니다'},
+     lo:{tr:'상황에 맞춰 유연하게 움직이는 부모예요.',lack:'매일 달라지는 리듬에 아이가 다음을 예측하기 어려울 수 있어요',need:'시간표 말고 순서표를 만드세요 — 몇 시인지는 몰라도 다음이 뭔지는 알게'}},
+ N:{hi:{tr:'아이의 작은 신호까지 잡아내는 섬세한 안테나를 가졌어요.',lack:'아이의 감정이 그대로 옮겨붙어 함께 끓어오르기 쉬워요',need:'끓기 시작하면 대응하지 말고 3초만 숨을 쉬세요 — 그 3초가 두 사람을 분리합니다'},
+     lo:{tr:'웬만한 상황에 흔들리지 않는 단단한 부모예요.',lack:'아이가 조용히 힘들어할 때 지나칠 수 있어요',need:'하루 한 번 “오늘 마음 몇 점?” 을 숫자로 물어봐 주세요'}},
+ O:{hi:{tr:'새로운 방식과 경험을 시도하는 부모예요.',lack:'방법이 자주 바뀌면 아이는 무엇이 원칙인지 헷갈립니다',need:'실험은 많이, 원칙은 하나 — 바꾸지 않을 것 한 가지만 정해두세요'},
+     lo:{tr:'검증된 방식으로 안정감을 주는 부모예요.',lack:'아이가 이끄는 낯선 놀이 앞에서 재미를 못 느낄 수 있어요',need:'일주일에 한 번은 아이가 정한 규칙으로만 놀아보세요'}}
 };
 const PAR_QUAD_MSG={
  E:"햇살", A:"온기", C:"등대", N:"이슬", O:"바람"};
@@ -2278,7 +2305,7 @@ function renderScene(){
     box.appendChild(b);
   });
 }
-/* ===== js/render/parent.js (112) ===== */
+/* ===== js/render/parent.js (131) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -2369,6 +2396,25 @@ function renderParentReport(){
         <p style="font-size:.88rem;margin-top:3px">${t[lv]}</p>
         ${ex?`<p class="small" style="margin-top:5px;background:var(--amber-soft);border-radius:8px;padding:7px 10px;line-height:1.7">💡 <b>이번 주 실험</b> · ${ex}</p>`:''}
       </div>`;
+    }
+    /* 🔍 종합 풀이 — 축을 따로 읽지 말고 조합으로 (2026-08-17 증량 2차, 아이 쪽과 대칭) */
+    if(typeof P_DEEP_SYN!=='undefined'){
+      const ext=['E','A','C','N','O'].map(k=>({k,v:avg[k]}))
+        .filter(x=>x.v>=3.4||x.v<=2.6).sort((a,b)=>Math.abs(b.v-3)-Math.abs(a.v-3)).slice(0,3);
+      let syn='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">🔍 종합 풀이 — 그래서 어떤 부모냐면요</h3>';
+      if(ext.length){
+        const conn=['','그러면서도 ','거기에 '];
+        const pick=ext.map(x=>({s:P_DEEP_SYN[x.k][x.v>=3?'hi':'lo'],k:x.k}));
+        syn+=`<p style="font-size:.92rem;line-height:1.8">${pick.map((p,i)=>conn[Math.min(i,2)]+p.s.tr).join(' ')} 이 조합은 흔하지 않아요 — 아래는 이런 조합에서 자주 생기는 일이에요.</p>
+          <p class="mt8" style="font-size:.92rem"><b>😮‍💨 이런 순간이 힘들 수 있어요</b></p>`
+          +pick.map(p=>`<p style="font-size:.88rem;margin:4px 0">· ${p.s.lack}</p>`).join('')
+          +`<p class="mt8" style="font-size:.92rem"><b>🌱 그래서 이게 필요해요</b></p>`
+          +pick.map(p=>`<p style="font-size:.88rem;margin:4px 0">· ${p.s.need}</p>`).join('')
+          +`<p class="mt8" style="font-size:.9rem">부족한 부모라서가 아니라 조합이 그런 것뿐이에요. 위의 것 중 하나만 이번 주에 해보세요.</p>`;
+      }else{
+        syn+='<p style="font-size:.92rem;line-height:1.8">다섯 에너지가 크게 치우친 곳 없이 고르게 중간이에요. 밋밋한 게 아니라 <b>상황에 맞춰 여러 방식을 꺼내 쓰는 폭</b>이 넓다는 뜻입니다. 이런 부모는 아이 기질이 무엇이든 맞춰줄 수 있는 대신, 내 기준이 흐려지기 쉬우니 “우리 집에서 이것만은” 하는 원칙 하나는 분명히 정해두세요.</p>';
+      }
+      deepHtml+=syn;
     }
     deepHtml+='<h3 style="font-size:1rem;margin:18px 0 8px">이런 양육자예요</h3>'
      +'<p style="font-size:.9rem"><b>💪 나의 무기</b></p>'+gains.map(g=>`<p style="font-size:.87rem;margin:3px 0">· ${g}</p>`).join('')
@@ -3034,7 +3080,7 @@ function applyMapLock(){
   if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (258) ===== */
+/* ===== js/render/home.js (259) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -3048,6 +3094,7 @@ function updateHome(){
   renderDaily();
   renderHomeGreet();
   renderWorryChips();
+  if(typeof renderTalkPeek==='function')renderTalkPeek();   /* 대나무숲 미리보기 (첫 1회만 서버 호출) */
   renderHeroTalk();
 }
 
@@ -4640,7 +4687,7 @@ async function unlockBook(){
   BOOK_UNLOCKED=true;const uk=bookKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).book=true;applyBookLock();save();
   toast('📕 <b>우리 집 이야기</b> 전체가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">마지막 장의 인쇄용 한 장까지 꼭 챙겨가세요</span>');
 }
-/* ===== js/talk.js (175) ===== */
+/* ===== js/talk.js (197) ===== */
 /* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
    사장님 확정 스펙: 사연 + 투표("어떻게 했어야 할까") + 발바닥 공감 + 연구원 한마디.
    댓글 없음(운영 부담) · 보상 없음(참여 붙으면 이벤트로) · 누적 피드.
@@ -4669,6 +4716,28 @@ function cleanCheck(t){
 }
 
 function goTalk(){show('s-talk');talkLoad(false);}
+
+/* ── 홈 대나무숲 미리보기 (2026-08-17) ────────────────────────────────
+   최신 사연 1건 + 츄비/칸쵸 한마디를 홈에 띄운다. 커뮤니티 진입 + 상담 광고 겸용.
+   실패해도 홈은 멀쩡해야 하므로 전부 try 로 감싸고, 없으면 조용히 비운다. */
+let TALK_PEEK_DONE=false;
+async function renderTalkPeek(force){
+  const el=document.getElementById('talk-peek');if(!el)return;
+  if(TALK_PEEK_DONE&&!force)return;   /* 홈에 올 때마다 서버를 부르지 않는다 */
+  TALK_PEEK_DONE=true;
+  try{
+    const rows=await rpc('talk_feed',{p_voter:deviceId(),p_before:null,p_limit:3});
+    if(!Array.isArray(rows)||!rows.length){el.innerHTML='';return;}
+    const p=rows.find(r=>r&&r.ai)||rows[0];
+    const ai=(typeof tidyAi==='function')?tidyAi(p.ai):(p.ai||'');
+    el.innerHTML=`<div class="talk-peek" onclick="goTalk()">
+      <div class="tp-head"><span class="tp-tag">🌳 대나무숲</span><span class="small">다른 집은 어떨까요 ›</span></div>
+      <p class="tp-text">"${esc((p.text||'').slice(0,80))}${(p.text||'').length>80?'…':''}"</p>
+      ${ai?`<p class="tp-ai"><b>${p.ai_cat==='kancho'?'칸쵸':'츄비'}</b> · ${esc(ai.slice(0,70))}${ai.length>70?'…':''}</p>`:''}
+      <p class="small" style="margin-top:6px">🐾 공감 ${p.hearts||0}${p.poll?' · 🗳 투표 참여 중':''}</p>
+    </div>`;
+  }catch(e){el.innerHTML='';}
+}
 
 async function talkLoad(more){
   const box=document.getElementById('talk-list');
