@@ -465,7 +465,7 @@ details.acc>*:not(summary){margin-top:10px}
     </details>
   </div>
 
-  <!-- 🐱 30초 닮은꼴 테스트 — 첫 접속 후킹 (2026-08-16 사장님 지시로 히어로 바로 아래로 승격).
+  <!-- 🐾 30초 궁합 미리보기 — 첫 접속 후킹 (2026-08-16 사장님 지시로 히어로 바로 아래로 승격).
        검사 안 한 사람이 제일 먼저 만나는 것이 '부담 없는 30초'여야 한다. -->
   <div class="mimic-card hook" role="button" tabindex="0" onclick="startMimic()">
     <span class="price free" style="position:static;float:right;margin-left:8px">무료</span>
@@ -567,7 +567,7 @@ details.acc>*:not(summary){margin-top:10px}
   
 </section>
 
-<!-- ═══════════ 닮은꼴 테스트 (무료 입구, 2026-08-15) ═══════════ -->
+<!-- ═══════════ 30초 궁합 미리보기 (무료 입구) ═══════════ -->
 <section class="screen" id="s-mimic">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="result-hero"><span class="tag">30초 무료 테스트</span><div class="typename">부모 × 아이 궁합 미리보기</div><div class="typedesc">6문항이면 우리 집 궁합 점수가 나와요</div></div>
@@ -3615,7 +3615,7 @@ function inviteReward(){
 /* ── 공유 시트 ── */
 const SHARE_TITLES={
   career:'미래 직업', child:'아이 기질', parent:'부모 성향', fit:'우리 궁합', family:'원가족', app:'기질냥구소',
-  book:'우리 집 이야기', mimic:'닮은꼴 테스트', map:'가족 궁합 지도'
+  book:'우리 집 이야기', mimic:'30초 궁합', map:'가족 궁합 지도'
 };
 function shareCardText(kind){
   const kid=S.kids[S.activeK]||{};
@@ -3665,7 +3665,7 @@ function shareHashtag(kind){
     const mm=(typeof FITMAT!=='undefined'&&FITMAT[pt])?FITMAT[pt][kk]:null;
     return (mm&&mm[2])?'#'+mm[2]:(kind==='book'?'#우리집이야기':'#부모아이궁합');
   }
-  if(kind==='mimic')return '#츄비상칸쵸상';
+  if(kind==='mimic')return '#우리집궁합점수';
   if(kind==='map')return '#우리가족궁합지도';
   return '#기질냥구소';
 }
@@ -3677,7 +3677,7 @@ function shareCompareCTA(kind){
   if(kind==='career')return '너네 애는 뭐 나왔어? 👉 미래직업 뽑기';
   if(kind==='family')return '내 육아는 어디서 왔을까? 👉 원가족 리포트';
   if(kind==='book')return '우리 집 사용설명서, 한 권으로 👉 온가족 종합 리포트';
-  if(kind==='mimic')return '너희 애는 츄비상? 칸쵸상? 👉 30초 테스트';
+  if(kind==='mimic')return '너희 집 궁합은 몇 점? 👉 30초 테스트';
   if(kind==='map')return '너희 집 조합은 어때? 👉 가족 궁합 지도';
   return '우리 애는 어떤 기질일까? 👉 3분 검사';
 }
