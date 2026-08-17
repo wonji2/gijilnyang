@@ -393,6 +393,16 @@ details.acc>*:not(summary){margin-top:10px}
 .tp-text{font-size:.88rem;line-height:1.6}
 .tp-ai{font-size:.83rem;line-height:1.6;color:var(--sub);background:var(--bg);border-radius:10px;padding:7px 10px;margin-top:7px}
 .tp-ai b{font-family:'Jua';color:var(--ink)}
+
+/* ── 🌏 글로벌 대비 히어로 (2026-08-17) — 문장 대신 숫자·아이콘으로 말한다 ── */
+.hero-en{font-family:'Jua';font-size:.74rem;letter-spacing:.08em;color:var(--pri);opacity:.75;margin:2px 0 8px;text-transform:uppercase}
+.hero-proof{display:flex;justify-content:center;gap:8px;margin:14px auto 2px;max-width:360px}
+.hp-item{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:9px 4px;text-align:center}
+.hp-item b{display:block;font-family:'Jua';font-size:1.18rem;color:var(--ink);line-height:1.15;font-variant-numeric:tabular-nums}
+.hp-item span{font-size:.7rem;color:var(--sub)}
+.hp-item .hp-u{font-size:.8rem;color:var(--sub)}
+/* 타일 아이콘 — 글자를 줄이고 아이콘으로 인지시킨다(언어 의존도↓) */
+.t-ico{font-size:1.7rem;line-height:1;margin-bottom:auto}
 </style>
 </head>
 <body>
@@ -423,11 +433,18 @@ details.acc>*:not(summary){margin-top:10px}
       <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
     </div>
     <h1>기질냥구소</h1>
-    <!-- 훅 = 손님의 고민 한 줄 (2026-08-12 확정 문구, 유지)
-         🔴 2026-08-15 정리: 홈에 문단 3개를 나열하니 정신없다는 지적 → 훅 1줄 + 결론 1줄만 남기고
-         나머지 설명(오퍼·근거)은 접기로. 사주아이·MBTI 앱 모두 홈엔 설명문이 거의 없다. -->
+    <!-- 🌏 글로벌 대비 재설계 (2026-08-17 사장님 지시): 한글 문장 의존을 줄이고 숫자·아이콘으로 말한다.
+         해외에서 우리 자리는 '사주·MBTI 류 재미'가 아니라 **연구 기반 부모-자녀 궁합**이므로,
+         근거 숫자(문헌 수)를 히어로에 세워 그 포지션을 첫 화면에서 못 박는다.
+         영문 서브라벨은 브랜드용 최소 노출 — 번역이 아니라 로고 타이포에 가깝게. -->
+    <p class="hero-en">Parent × Child Temperament Match</p>
     <p class="hero-hook">애한테 소리지르고<br>재우고 나서 후회한 밤이 있다면</p>
     <p class="hero-story"><b>부모가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
+    <div class="hero-proof" id="hero-proof">
+      <div class="hp-item"><b id="hp-lit">6,000+</b><span>학습 문헌</span></div>
+      <div class="hp-item"><b>10</b><span>기질 축</span></div>
+      <div class="hp-item"><b>3<span class="hp-u">분</span></b><span>검사 시간</span></div>
+    </div>
     <details class="hero-more">
       <summary>어떻게 알려주나요?</summary>
       <p><b>우리 아이 기질</b>과 <b>내 성향</b>, 둘이 <b>부딪히는 정확한 지점</b>과 <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요. 공개된 연구와 검증된 척도를 학습해 분석합니다.</p>
@@ -463,38 +480,50 @@ details.acc>*:not(summary){margin-top:10px}
          뭐가 공짜인지 한눈에 보여야 진입장벽이 낮아진다. (2026-08-15) -->
     <div class="tile" style="background:var(--amber-soft)" role="button" tabindex="0" onclick="startTest('child')">
       <span class="price free">일부무료</span>
+      <div class="t-ico">🐣</div>
       <div class="big">아이 기질</div>
-      <div class="sub">0세~중·고등 · 연령 맞춤 <span id="st-child"></span></div>
+      <div class="sub">0세~중·고등 <span id="st-child"></span></div>
     </div>
     <div class="tile" style="background:var(--moss-soft)" role="button" tabindex="0" onclick="startTest('parent')">
       <span class="price free">일부무료</span>
+      <div class="t-ico">🌷</div>
       <div class="big">부모 성향</div>
-      <div class="sub">예비부모도 · 3분 <span id="st-parent"></span></div>
+      <div class="sub">예비부모도 <span id="st-parent"></span></div>
     </div>
-    <div class="tile" style="background:var(--pink-soft)" role="button" tabindex="0" onclick="goFit()">
+    <div class="tile" style="background:var(--pink-soft);grid-column:1/-1;min-height:96px" role="button" tabindex="0" onclick="goFit()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
-      <div class="big">궁합</div>
-      <div class="sub">부모×아이 마찰 지점<br><span id="st-fit">두 검사 완료 후</span></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="t-ico" style="margin:0;font-size:1.9rem">💞</div>
+        <div style="flex:1">
+          <div class="big" style="font-size:1.15rem">부모 × 아이 궁합</div>
+          <div class="sub">우리가 부딪히는 정확한 지점 <span id="st-fit">두 검사 완료 후</span></div>
+        </div>
+        <span class="small">›</span>
+      </div>
     </div>
     <div class="tile" style="background:var(--lav-soft)" role="button" tabindex="0" onclick="startTest('family')">
       <span class="price free">일부무료</span>
+      <div class="t-ico">🏡</div>
       <div class="big">원가족</div>
-      <div class="sub">내 육아는 어디서 왔을까 <span id="st-fam"></span></div>
+      <div class="sub">내 육아의 뿌리 <span id="st-fam"></span></div>
     </div>
-    <div class="tile" style="background:#FDF0F6;grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="startCareer()">
+    <div class="tile" style="background:#FDF0F6" role="button" tabindex="0" onclick="startCareer()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">🔮 미래 직업</div><div class="sub">기질에 맞는 일 5가지</div></div>
-      <span class="small">›</span>
+      <div class="t-ico">🔮</div>
+      <div class="big">미래 직업</div>
+      <div class="sub">기질에 맞는 일 5가지</div>
     </div>
     <div class="tile" style="background:var(--moss-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="goMap()">
       <span class="price"><i class="ddeok-i"></i> 3</span>
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">🗺 가족 궁합 지도</div><div class="sub">누가 누구와 잘 맞는지 <span id="st-map">가족 3명부터</span></div></div>
+      <div class="t-ico" style="margin:0;font-size:1.8rem">🗺</div>
+      <div style="flex:1"><div class="big" style="font-size:1.15rem">가족 궁합 지도</div><div class="sub">누가 누구와 잘 맞는지 <span id="st-map">가족 3명부터</span></div></div>
       <span class="small">›</span>
     </div>
     <!-- 프리미엄 앵커 — 이게 있어야 1,000원이 싸 보인다 (수익구조_가격 2장) -->
     <div class="tile" style="background:var(--pri-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px;border:1.5px solid var(--pri)" role="button" tabindex="0" onclick="goBook()">
       <span class="price"><i class="ddeok-i"></i> 5</span>
-      <div style="flex:1"><div class="big" style="font-size:1.2rem">📕 우리 집 이야기</div><div class="sub">전부 한 권으로 · 인쇄용 한 장 <span id="st-book">두 검사 완료 후</span></div></div>
+      <div class="t-ico" style="margin:0;font-size:1.8rem">📕</div>
+      <div style="flex:1"><div class="big" style="font-size:1.15rem">우리 집 이야기</div><div class="sub">전부 한 권으로 · 인쇄본 <span id="st-book">두 검사 완료 후</span></div></div>
       <span class="small">›</span>
     </div>
   </div>
@@ -3080,7 +3109,7 @@ function applyMapLock(){
   if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (259) ===== */
+/* ===== js/render/home.js (257) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -3256,11 +3285,9 @@ const WORRIES=[
  ['🏫 등원거부','어린이집 갈 때마다 울면서 안 가려고 해요.'],
  ['👧👦 형제 다툼','아이들끼리 자꾸 싸워요. 어떻게 중재해야 할지 모르겠어요.'],
  ['😴 잠','밤에 잘 안 자려고 하고 재우는 데 너무 오래 걸려요.'],
- ['🍽 편식','먹는 게 너무 편식이 심해요.'],
  ['📱 스마트폰','폰만 보려고 하고 그만하라고 하면 화를 내요. 주로 게임이나 영상을 봐요.'],   /* 콘텐츠 종류를 함께 말하게 유도 — 국내 종단연구상 교육용/놀이용에 따라 영향이 갈린다 (2026-08-16) */
- ['😢 예민함','작은 일에도 크게 울고 예민해요.'],
- ['🙅 말대꾸','말대꾸가 늘고 하라는 걸 안 하려고 해요.']
-];
+ ['😢 예민함','작은 일에도 크게 울고 예민해요.']
+];   /* 8→6종으로 정리 (2026-08-17 심플화) — 말대꾸·편식은 상담에서 자연히 다룬다 */
 function renderWorryChips(){
   const el=document.getElementById('worry-chips');if(!el)return;
   el.innerHTML=WORRIES.map((w,i)=>`<button class="chip" onclick="askWorry(${i})">${w[0]}</button>`).join('');
@@ -4732,8 +4759,8 @@ async function renderTalkPeek(force){
     const ai=(typeof tidyAi==='function')?tidyAi(p.ai):(p.ai||'');
     el.innerHTML=`<div class="talk-peek" onclick="goTalk()">
       <div class="tp-head"><span class="tp-tag">🌳 대나무숲</span><span class="small">다른 집은 어떨까요 ›</span></div>
-      <p class="tp-text">"${esc((p.text||'').slice(0,80))}${(p.text||'').length>80?'…':''}"</p>
-      ${ai?`<p class="tp-ai"><b>${p.ai_cat==='kancho'?'칸쵸':'츄비'}</b> · ${esc(ai.slice(0,70))}${ai.length>70?'…':''}</p>`:''}
+      <p class="tp-text">"${esc((p.text||'').slice(0,52))}${(p.text||'').length>52?'…':''}"</p>
+      ${ai?`<p class="tp-ai"><b>${p.ai_cat==='kancho'?'칸쵸':'츄비'}</b> · ${esc(ai.slice(0,46))}${ai.length>46?'…':''}</p>`:''}
       <p class="small" style="margin-top:6px">🐾 공감 ${p.hearts||0}${p.poll?' · 🗳 투표 참여 중':''}</p>
     </div>`;
   }catch(e){el.innerHTML='';}
@@ -5061,7 +5088,7 @@ function startCountdown(){
   };
   tick();CD_TIMER=setInterval(tick,1000);
 }
-/* ===== js/main.js (54) ===== */
+/* ===== js/main.js (60) ===== */
 /* ══════════════ 부팅 ══════════════ */
 const _restored=load();          // 새로고침해도 결과가 남아 있게
 /* 온보딩 화면 제거로 불필요 (2026-08-12) */
@@ -5105,6 +5132,12 @@ try{if(_restored)restoreView();}catch(e){}
       const d=new Date(rows[0].added_at);
       const ds=d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
       el.textContent='문헌 반영 '+ds+(total&&total!=='*'?' · 누적 '+total+'건':'');
+    }
+    /* 히어로 근거 숫자도 같은 실측값으로 (2026-08-17) — 과장 금지 원칙에 따라 내림해서 "N,000+" 로만 */
+    const hp=document.getElementById('hp-lit');
+    if(hp&&total&&total!=='*'){
+      const n=parseInt(total,10);
+      if(n>0)hp.textContent=(n>=1000?(Math.floor(n/1000)+',000+'):(n+'+'));
     }
   }catch(e){}
 })();
