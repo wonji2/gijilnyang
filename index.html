@@ -403,6 +403,20 @@ details.acc>*:not(summary){margin-top:10px}
 .hp-item .hp-u{font-size:.8rem;color:var(--sub)}
 /* 타일 아이콘 — 글자를 줄이고 아이콘으로 인지시킨다(언어 의존도↓) */
 .t-ico{font-size:1.7rem;line-height:1;margin-bottom:auto}
+
+/* ── 🐾 30초 궁합 점수 게이지 (2026-08-17) — 레퍼런스(MBTI 궁합 사이트) 패턴: 숫자를 크게, 링으로 한눈에 ── */
+.score-ring{position:relative;width:150px;height:150px;margin:12px auto 0;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:conic-gradient(var(--c) calc(var(--pct)*1%), var(--line) 0);transition:background .6s ease}
+.score-ring::before{content:'';position:absolute;width:118px;height:118px;border-radius:50%;background:var(--card)}
+.score-num{position:relative;text-align:center;line-height:1}
+.score-num b{font-family:'Jua';font-size:2.6rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.score-num span{font-size:.9rem;color:var(--sub);margin-left:2px}
+
+/* ── 국내 집중 히어로 (2026-08-17) — 정체성 한 줄 + 근거 한 줄 ── */
+.hero-tagline{font-family:'Jua';font-size:1.02rem;color:var(--pri);margin:2px 0 10px}
+.hero-tagline b{font-size:1.12rem;color:var(--ink)}
+.hero-basis{font-size:.78rem;color:var(--sub);line-height:1.6;margin:10px auto 0;max-width:360px}
+.hero-basis b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -433,18 +447,18 @@ details.acc>*:not(summary){margin-top:10px}
       <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
     </div>
     <h1>기질냥구소</h1>
-    <!-- 🌏 글로벌 대비 재설계 (2026-08-17 사장님 지시): 한글 문장 의존을 줄이고 숫자·아이콘으로 말한다.
-         해외에서 우리 자리는 '사주·MBTI 류 재미'가 아니라 **연구 기반 부모-자녀 궁합**이므로,
-         근거 숫자(문헌 수)를 히어로에 세워 그 포지션을 첫 화면에서 못 박는다.
-         영문 서브라벨은 브랜드용 최소 노출 — 번역이 아니라 로고 타이포에 가깝게. -->
-    <p class="hero-en">Parent × Child Temperament Match</p>
+    <!-- 🇰🇷 국내 집중 확정 (2026-08-17 사장님): 글로벌 접음. 대신 한국에서도 **심플하게**,
+         그리고 정체성을 첫 줄에 못 박는다 — "부모·자녀 기질 성향 궁합, 근거 있는".
+         사주·MBTI 와 갈리는 지점이 '근거' 이므로 숫자 배지를 바로 아래 붙인다. -->
+    <p class="hero-tagline">부모 × 자녀 <b>기질·성향 궁합</b></p>
     <p class="hero-hook">애한테 소리지르고<br>재우고 나서 후회한 밤이 있다면</p>
     <p class="hero-story"><b>부모가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
     <div class="hero-proof" id="hero-proof">
-      <div class="hp-item"><b id="hp-lit">6,000+</b><span>학습 문헌</span></div>
+      <div class="hp-item"><b id="hp-lit">6,000+</b><span>논문·전문자료</span></div>
       <div class="hp-item"><b>10</b><span>기질 축</span></div>
       <div class="hp-item"><b>3<span class="hp-u">분</span></b><span>검사 시간</span></div>
     </div>
+    <p class="hero-basis">📚 발표된 논문과 검증된 척도를 학습해 분석해요 — <b>느낌이 아니라 근거로</b></p>
     <details class="hero-more">
       <summary>어떻게 알려주나요?</summary>
       <p><b>우리 아이 기질</b>과 <b>내 성향</b>, 둘이 <b>부딪히는 정확한 지점</b>과 <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요. 공개된 연구와 검증된 척도를 학습해 분석합니다.</p>
@@ -459,8 +473,8 @@ details.acc>*:not(summary){margin-top:10px}
       <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="44" height="44" style="margin-right:-18px;z-index:1">
       <img class="pho md kancho" src="assets/kancho.png" alt="" width="44" height="44">
       <div style="flex:1;margin-left:6px">
-        <div style="font-family:'Jua';font-size:1.12rem">우리 애는 츄비상? 칸쵸상?</div>
-        <div class="small">6문항 · <b>30초면 끝</b> · 가입 없이 바로</div>
+        <div style="font-family:'Jua';font-size:1.12rem">우리 집 궁합, 30초면 점수가 나와요</div>
+        <div class="small">6문항 · <b>100점 만점</b> · 가입 없이 바로</div>
       </div>
       <span class="mimic-go">시작 ›</span>
     </div>
@@ -556,7 +570,7 @@ details.acc>*:not(summary){margin-top:10px}
 <!-- ═══════════ 닮은꼴 테스트 (무료 입구, 2026-08-15) ═══════════ -->
 <section class="screen" id="s-mimic">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
-  <div class="result-hero"><span class="tag">30초 무료 테스트</span><div class="typename">우리 애는 츄비상? 칸쵸상?</div></div>
+  <div class="result-hero"><span class="tag">30초 무료 테스트</span><div class="typename">부모 × 아이 궁합 미리보기</div><div class="typedesc">6문항이면 우리 집 궁합 점수가 나와요</div></div>
   <div id="mimic-body"></div>
 </section>
 
@@ -3109,7 +3123,7 @@ function applyMapLock(){
   if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (257) ===== */
+/* ===== js/render/home.js (287) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -3184,13 +3198,18 @@ function renderHeroTalk(){
 
 /* ── 🐱 닮은꼴 테스트 (2026-08-15 C안) — 무료 재미 입구 → 공유 → 본검사 유도 ──
    점수 저장 없음(재미 전용). 결과 문구에 진단 냄새 금지, 본검사와 다른 것임을 명시. */
+/* 🔴 2026-08-17 전면 개편 (사장님 지시): 닮은꼴 → **30초 궁합 점수 미리보기**.
+   설계 근거 = 레퍼런스 실측(MBTI 궁합 사이트 TypeMatchy): ①기본 점수에서 지표별 가감
+   ②점수 범위를 극단까지 두지 않음(35~95) ③"정답이 아니라 대화의 출발점" 프레임.
+   우리는 본검사 궁합 공식(72 + 강점×7 − 마찰×8, 42~97)과 **같은 구조**로 맞춰 일관되게 한다.
+   문항 = 아이 3(감정·접근·리듬) × 부모 3(민감·에너지·계획) — 우리 FRICTIONS 상위 3쌍과 대응. */
 const MIMIC_Q=[
- {q:'아이가 넘어져서 울 때, 먼저 필요한 건?',a:'안아주면 눈물이 뚝',b:'"왜 넘어졌지?" 현장 검증'},
- {q:'새 장난감을 받으면?',a:'일단 끌어안고 같이 잔다',b:'일단 분해부터 한다'},
- {q:'우리 애 말버릇에 더 가까운 쪽은?',a:'"엄마 사랑해~" 수시 발사',b:'"왜요? 그건 왜요?" 수시 발사'},
- {q:'친구가 울고 있으면?',a:'옆에서 같이 운다',b:'휴지를 가져다준다'},
- {q:'혼날 것 같은 순간에는?',a:'눈물부터 그렁그렁',b:'논리로 항변을 시작한다'},
- {q:'더 좋아하는 놀이는?',a:'역할놀이 · 인형극',b:'블록 · 퍼즐 · 줄 세우기'}
+ {who:'child',k:'int',q:'속상한 일이 생겼을 때 우리 아이는?',a:'온몸으로 크게 표현해요',b:'조용히 삭이는 편이에요'},
+ {who:'child',k:'app',q:'처음 가는 곳이나 낯선 사람 앞에서는?',a:'거침없이 먼저 다가가요',b:'일단 멈춰서 지켜봐요'},
+ {who:'child',k:'rhy',q:'먹고 자는 시간이 매일 비슷한가요?',a:'거의 일정한 편이에요',b:'그날그날 달라요'},
+ {who:'parent',k:'N',q:'아이가 울며 떼쓸 때 나는?',a:'같이 마음이 요동쳐요',b:'비교적 담담한 편이에요'},
+ {who:'parent',k:'E',q:'주말에 더 끌리는 쪽은?',a:'나가서 뭐라도 하기',b:'집에서 조용히 쉬기'},
+ {who:'parent',k:'C',q:'하루 일정이 틀어지면 나는?',a:'계획대로 안 되면 신경 쓰여요',b:'그때그때 맞추면 되죠'}
 ];
 let MIMIC_I=0,MIMIC_ANS=[];
 function startMimic(){MIMIC_I=0;MIMIC_ANS=[];renderMimicQ();show('s-mimic');}
@@ -3199,7 +3218,8 @@ function renderMimicQ(){
   const q=MIMIC_Q[MIMIC_I];
   el.innerHTML=`
     <div class="card">
-      <p class="small" style="text-align:center">${MIMIC_I+1} / ${MIMIC_Q.length}</p>
+      <div class="progress" style="margin:2px 0 12px"><i style="width:${(MIMIC_I)/MIMIC_Q.length*100}%"></i></div>
+      <p class="small" style="text-align:center">${MIMIC_I+1} / ${MIMIC_Q.length} · ${q.who==='child'?'🐣 아이에 대해':'🌷 나에 대해'}</p>
       <p style="font-family:'Jua';font-size:1.1rem;text-align:center;margin:10px 0 14px">${q.q}</p>
       <button class="btn" style="background:var(--amber)" onclick="mimicPick(1)">${q.a}</button>
       <button class="btn mt8" style="background:var(--moss)" onclick="mimicPick(0)">${q.b}</button>
@@ -3208,34 +3228,58 @@ function renderMimicQ(){
 }
 function mimicPick(isA){MIMIC_ANS[MIMIC_I]=isA?1:0;MIMIC_I++;if(MIMIC_I>=MIMIC_Q.length)renderMimicResult();else renderMimicQ();}
 function mimicBack(){if(MIMIC_I<1)return;MIMIC_I--;renderMimicQ();}   /* 답은 배열이라 다시 고르면 덮어써짐 */
+/* 궁합 점수 산출 — 본검사와 같은 뼈대(기본점수 ± 마찰/강점), 미리보기라 진폭만 완만하게.
+   A=1(앞 보기) / B=0(뒤 보기). 마찰 3쌍은 우리 FRICTIONS 상위 조합과 1:1로 대응한다. */
+function mimicScore(){
+  const A=MIMIC_ANS;                      // [int, app, rhy, N, E, C]
+  const kidBig=A[0]===1, kidFast=A[1]===1, kidRegular=A[2]===1;
+  const parSensitive=A[3]===1, parOutgoing=A[4]===1, parPlanned=A[5]===1;
+  const frictions=[],strengths=[];
+  /* ① 감정 증폭 — 감정 큰 아이 × 같이 흔들리는 부모 */
+  if(kidBig&&parSensitive)frictions.push({t:'감정 증폭 구간',d:'둘 다 감정이 크게 움직여서, 아이가 터지면 부모 마음도 같이 끓어요.'});
+  else if(kidBig&&!parSensitive)strengths.push({t:'폭풍 속의 닻',d:'아이 감정이 커도 부모가 흔들리지 않아, 아이가 기댈 중심이 됩니다.'});
+  /* ② 속도 차이 — 신중한 아이 × 활동적인 부모 */
+  if(!kidFast&&parOutgoing)frictions.push({t:'속도 차이 구간',d:'부모는 나가서 하고 싶은데 아이는 데워질 시간이 필요해, 출발선에서 자주 부딪혀요.'});
+  else if(!kidFast&&!parOutgoing)strengths.push({t:'같은 속도',d:'둘 다 천천히 데워지는 편이라, 서로를 재촉하지 않는 편안한 조합이에요.'});
+  else if(kidFast&&parOutgoing)strengths.push({t:'함께 달리는 에너지',d:'둘 다 밖에서 힘을 얻어, 주말이 즐거운 조합이에요.'});
+  /* ③ 루틴 대 즉흥 — 리듬 불규칙한 아이 × 계획적인 부모 */
+  if(!kidRegular&&parPlanned)frictions.push({t:'루틴 대 즉흥 구간',d:'부모의 계획과 아이의 리듬이 매일 어긋나서, 부모가 먼저 지치기 쉬워요.'});
+  else if(kidRegular&&parPlanned)strengths.push({t:'맞물리는 리듬',d:'아이의 몸시계와 부모의 계획이 잘 맞아, 하루가 순하게 굴러갑니다.'});
+  /* 본검사와 같은 형태: 기본 + 강점 − 마찰, 범위 제한 */
+  const score=Math.max(48,Math.min(95,80+strengths.length*5-frictions.length*11));
+  return {score,frictions,strengths};
+}
 function renderMimicResult(){
   const el=document.getElementById('mimic-body');if(!el)return;
-  const a=MIMIC_ANS.reduce((s,x)=>s+x,0),b=MIMIC_Q.length-a;
-  const r=a>=5?{img:'chuvi',name:'완전 츄비상 🤍',d:'마음이 먼저 도착하는 아이예요. 안아주는 품이 세상에서 제일 좋은 해결책이고, 감정을 알아주면 금방 풀립니다.'}
-        :a===4?{img:'chuvi',name:'츄비상 🤍',d:'감정 표현이 풍부한 편이에요. 공감 한 스푼이면 대화가 두 배로 잘 통합니다.'}
-        :a===3?{img:'both',name:'츄비 반, 칸쵸 반 🌈',d:'마음도 쓰고 머리도 쓰는 아이예요. 그날그날 필요한 쪽을 꺼내 씁니다 — 그래서 더 궁금해지는 타입이죠.'}
-        :a===2?{img:'kancho',name:'칸쵸상 🩶',d:'이유가 궁금한 아이예요. "안 돼"보다 "왜냐하면"이 열 배 잘 통합니다.'}
-        :{img:'kancho',name:'완전 칸쵸상 🩶',d:'관찰과 분석이 먼저인 아이예요. 감정보다 팩트로 다가가면 마음이 열립니다.'};
-  const imgs=r.img==='both'
-    ?`<img class="pho lg chuvi" src="assets/chuvi.png" alt="" width="72" height="72" style="margin-right:-14px"><img class="pho lg kancho" src="assets/kancho.png" alt="" width="72" height="72">`
-    :`<img class="pho lg ${r.img}" src="assets/${r.img}.png" alt="" width="88" height="88">`;
+  const r=mimicScore();
+  const grade=r.score>=85?{t:'잘 맞는 편',c:'var(--moss)',i:'💞'}
+            :r.score>=70?{t:'무난한 편',c:'var(--amber)',i:'🌿'}
+            :{t:'연습이 필요한 편',c:'#C2544E',i:'🔧'};
+  const lead=r.frictions.length===0
+    ?'지금 조합에서는 구조적으로 부딪히는 지점이 잘 보이지 않아요. 힘든 날이 있다면 기질보다 컨디션(잠·일정)을 먼저 살펴보세요.'
+    :`부딪히는 지점이 ${r.frictions.length}곳 보여요. 누구의 잘못도 아니고, 서로 다른 기질이 만나는 자리일 뿐이에요.`;
   el.innerHTML=`
     <div class="card" style="text-align:center">
-      <div style="margin:6px 0 10px">${imgs}</div>
-      <p style="font-family:'Jua';font-size:1.3rem;color:var(--pri)">${r.name}</p>
-      <p class="small" style="margin-top:2px">츄비 성향 ${a} · 칸쵸 성향 ${b}</p>
-      <p style="font-size:.92rem;line-height:1.8;margin-top:10px">${r.d}</p>
-      <button class="btn mt16" onclick="shareMimic(${a},${b})">🔗 결과 공유하고 자랑하기</button>
+      <p class="small">30초 궁합 미리보기</p>
+      <div class="score-ring" style="--pct:${r.score};--c:${grade.c}">
+        <div class="score-num"><b>${r.score}</b><span>점</span></div>
+      </div>
+      <p style="font-family:'Jua';font-size:1.15rem;margin-top:8px;color:${grade.c}">${grade.i} ${grade.t}</p>
+      <p style="font-size:.9rem;line-height:1.8;margin-top:8px">${lead}</p>
+      ${r.strengths.length?`<div class="fit-item good" style="text-align:left;margin-top:12px"><h4>🌿 ${r.strengths[0].t}</h4><p>${r.strengths[0].d}</p></div>`:''}
+      ${r.frictions.length?`<div class="fit-item" style="text-align:left"><h4>🔧 ${r.frictions[0].t}</h4><p>${r.frictions[0].d}</p></div>`:''}
+      <button class="btn mt16" onclick="shareMimic()">🔗 결과 공유하기</button>
     </div>
     <div class="card" style="background:var(--pri-soft);border-color:var(--pri);text-align:center">
-      <p style="font-size:.9rem"><b>닮은꼴은 재미로!</b> 진짜 기질은 10가지 온도로 잽니다.</p>
-      <p class="small mt8">연령별 맞춤 22문항 · 3분 · 무료</p>
-      <button class="btn pri mt8" style="width:auto;padding:12px 24px" onclick="startTest('child')">우리 아이 진짜 기질 보러가기</button>
+      <p style="font-size:.92rem"><b>이건 6문항 미리보기예요.</b></p>
+      <p class="small mt8">진짜 궁합은 <b>기질 10축 × 부모 5축</b>으로 재고,<br>부딪히는 장면마다 처방까지 나와요 · 검사는 무료</p>
+      <button class="btn pri mt8" style="width:auto;padding:12px 24px" onclick="startTest('child')">정식 검사로 정확히 보기</button>
+      <p class="small mt8" style="color:var(--sub)">※ 점수는 정답이 아니라 대화의 출발점이에요</p>
     </div>`;
 }
-async function shareMimic(a,b){
-  const name=a>=5?'완전 츄비상':a===4?'츄비상':a===3?'츄비 반 칸쵸 반':a===2?'칸쵸상':'완전 칸쵸상';
-  const txt=`우리 애 닮은꼴 테스트 결과: ${name}\n(츄비 성향 ${a} · 칸쵸 성향 ${b})\n너희 애는? → ${location.origin+location.pathname}`;
+async function shareMimic(){
+  const r=mimicScore();
+  const txt=`우리 집 궁합 점수: ${r.score}점 🐾\n(부모 × 아이 기질 궁합 30초 테스트)\n너희 집은 몇 점? → ${location.origin+location.pathname}`;
   try{
     if(navigator.share){await navigator.share({text:txt});return;}
     await navigator.clipboard.writeText(txt);
@@ -3535,7 +3579,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (264) ===== */
+/* ===== js/share.js (263) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -3601,10 +3645,9 @@ function shareCardText(kind){
   if(kind==='mimic'){
     /* 🔴 문항을 푸는 도중에도 공유 FAB 이 떠서 미완성 결과가 나가던 것 방지 (2026-08-15 재검토) */
     const done=(typeof MIMIC_ANS!=='undefined')&&(typeof MIMIC_Q!=='undefined')&&MIMIC_ANS.filter(x=>x!=null).length===MIMIC_Q.length;
-    if(!done)return '🐱 우리 애는 츄비상? 칸쵸상?\n30초 6문항 · 무료 테스트';
-    const a=MIMIC_ANS.reduce((s,x)=>s+x,0);
-    const nm=a>=5?'완전 츄비상':a===4?'츄비상':a===3?'츄비 반 칸쵸 반':a===2?'칸쵸상':'완전 칸쵸상';
-    return `🐱 우리 애 닮은꼴 · ${nm}\n츄비 성향 ${a} · 칸쵸 성향 ${MIMIC_Q.length-a}`;
+    if(!done)return '🐾 부모 × 아이 궁합 30초 테스트\n6문항이면 점수가 나와요';
+    const r=(typeof mimicScore==='function')?mimicScore():{score:0};
+    return `🐾 우리 집 궁합 ${r.score}점\n부모 × 아이 기질 궁합 30초 미리보기`;
   }
   return '기질냥구소 — 우리 아이 기질검사';
 }
