@@ -417,10 +417,25 @@ details.acc>*:not(summary){margin-top:10px}
 .hero-tagline b{font-size:1.12rem;color:var(--ink)}
 .hero-basis{font-size:.78rem;color:var(--sub);line-height:1.6;margin:10px auto 0;max-width:360px}
 .hero-basis b{color:var(--ink)}
+
+/* ── 결제 바텀시트 (2026-08-21 라이트 퍼널 §4 — 상품명·가격·간편결제 버튼만) ── */
+#pay-ov{position:fixed;inset:0;background:rgba(46,42,58,.45);z-index:200;display:none}
+#pay-ov.on{display:block}
+.pay-sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;background:var(--card);border-radius:22px 22px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));z-index:201;box-shadow:0 -6px 24px rgba(0,0,0,.15);text-align:center}
+.pay-m{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;background:#fff;font-family:'Gowun Dodum';font-size:.98rem;cursor:pointer;margin-top:8px}
+.pay-m b{font-family:'Jua'}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+<!-- ═══════════ Layer 0 기질 스캐너 (2026-08-21 라이트 퍼널 기획서) ═══════════
+     무기명 7문항 스캐너 — 신규 방문자의 첫 화면. 렌더는 전부 scan.js.
+     ⚠ 7-c 체크리스트 검토 결과: RESTORABLE·renderScreen 제외(40초 무기명 층 — 새로고침 시
+     scanBoot 가 다시 랜딩을 그린다), SHARE_SCREENS 제외(자체 공유카드 보유), nextRoutes 해당 없음(상품 아님). -->
+<section class="screen" id="s-scan">
+  <div id="scan-body"></div>
+</section>
 
 <!-- ═══════════ 홈 ═══════════ -->
 <section class="screen on" id="s-home">
@@ -440,43 +455,31 @@ details.acc>*:not(summary){margin-top:10px}
     </button>
     <button onclick="show('s-info')" aria-label="사이트 정보" class="topbar-menu">☰</button>
   </div>
-  <div id="home-greet"></div>
+  <!-- 🔴 2026-08-21 사장님 "메인 너무 길다 — 사주아이처럼 상품만 한눈에": 홈에서 인사말(home-greet)·
+       츄비칸쵸 큰 사진(cats)·육아날씨 카드(노출)·대나무숲 미리보기·상담실 블록을 전부 제거.
+       큰 사진과 인사는 신규용 스캐너 랜딩(s-scan)에만 남는다. 함수들은 남겨두고 호출만 끊음. -->
   <div class="hero">
-    <div class="cats">
-      <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
-      <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
-    </div>
     <h1>기질냥구소</h1>
     <!-- 🇰🇷 국내 집중 확정 (2026-08-17 사장님): 글로벌 접음. 대신 한국에서도 **심플하게**,
          그리고 정체성을 첫 줄에 못 박는다 — "부모·자녀 기질 성향 궁합, 근거 있는".
          사주·MBTI 와 갈리는 지점이 '근거' 이므로 숫자 배지를 바로 아래 붙인다. -->
     <p class="hero-tagline">부모 × 자녀 <b>기질·성향 궁합</b></p>
+    <!-- 🐾 무료검사 직행 3버튼 (2026-08-21 사장님 지시) — 사주아이처럼 처음부터
+         아이 기질/부모 성향/예비 부모를 골라 본검사(무료)로 바로. 렌더는 home.js renderMainEntry().
+         신규 방문자의 첫 화면은 Layer 0 스캐너(s-scan)이고, 이 카드는 홈에 온 사람의 재진입 입구다. -->
+    <div id="main-entry"></div>
     <p class="hero-hook">애한테 소리지르고<br>재우고 나서 후회한 밤이 있다면</p>
     <p class="hero-story"><b>부모가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
+    <!-- 근거 숫자 (2026-08-21 사장님 지시 "MBTI 4축보다 많게, 과장 없이"):
+         40 = 실제 측정·계산 지표 전체 합산 — 아이 기질 10축 + 아이 장면 2 + 아이 파생 5(C_DERIVED)
+         + 부모 성향 5축 + 양육 장면 6 + 부모 파생 4(P_DERIVED) + 원가족 2축 + 진로 흥미 6성향.
+         새 지표를 만들면 이 숫자도 같이 올린다. (부모 유형은 별도로 6갈래×세부 46유형 — calcPSub)
+         논문 수는 실측 DB를 100단위 내림 자동표기(hp-lit, main.js) — 매일 크론 적재분이 반영된다.
+         "어떻게 알려주나요?" 접기는 홈 축소 지시로 제거. -->
     <div class="hero-proof" id="hero-proof">
-      <div class="hp-item"><b id="hp-lit">6,000+</b><span>논문·전문자료</span></div>
-      <div class="hp-item"><b>10</b><span>기질 축</span></div>
+      <div class="hp-item"><b id="hp-lit">6,300+</b><span>논문·전문자료</span></div>
+      <div class="hp-item"><b>40</b><span>분석 지표</span></div>
       <div class="hp-item"><b>3<span class="hp-u">분</span></b><span>검사 시간</span></div>
-    </div>
-    <p class="hero-basis">📚 발표된 논문과 검증된 척도를 학습해 분석해요 — <b>느낌이 아니라 근거로</b></p>
-    <details class="hero-more">
-      <summary>어떻게 알려주나요?</summary>
-      <p><b>우리 아이 기질</b>과 <b>내 성향</b>, 둘이 <b>부딪히는 정확한 지점</b>과 <b>내일 아침 딱 하나 바꿀 것</b>까지 알려드려요. 공개된 연구와 검증된 척도를 학습해 분석합니다.</p>
-    </details>
-  </div>
-
-  <!-- 🐾 30초 궁합 미리보기 — 첫 접속 후킹 (2026-08-16 사장님 지시로 히어로 바로 아래로 승격).
-       검사 안 한 사람이 제일 먼저 만나는 것이 '부담 없는 30초'여야 한다. -->
-  <div class="mimic-card hook" role="button" tabindex="0" onclick="startMimic()">
-    <span class="price free" style="position:static;float:right;margin-left:8px">무료</span>
-    <div style="display:flex;align-items:center;gap:10px">
-      <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="44" height="44" style="margin-right:-18px;z-index:1">
-      <img class="pho md kancho" src="assets/kancho.png" alt="" width="44" height="44">
-      <div style="flex:1;margin-left:6px">
-        <div style="font-family:'Jua';font-size:1.12rem">우리 집 궁합, 30초면 점수가 나와요</div>
-        <div class="small">6문항 · <b>100점 만점</b> · 가입 없이 바로</div>
-      </div>
-      <span class="mimic-go">시작 ›</span>
     </div>
   </div>
 
@@ -533,6 +536,13 @@ details.acc>*:not(summary){margin-top:10px}
       <div style="flex:1"><div class="big" style="font-size:1.15rem">가족 궁합 지도</div><div class="sub">누가 누구와 잘 맞는지 <span id="st-map">가족 3명부터</span></div></div>
       <span class="small">›</span>
     </div>
+    <!-- 우리 집 사용설명서 — 형제 비교 (2026-08-21 기획서) -->
+    <div class="tile" style="background:var(--amber-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="goSibling()">
+      <span class="price free">일부무료</span>
+      <div class="t-ico" style="margin:0;font-size:1.8rem">📖</div>
+      <div style="flex:1"><div class="big" style="font-size:1.15rem">우리 집 사용설명서</div><div class="sub">같은 상황, 아이마다 다른 대사 <span id="st-sib">아이 2명부터</span></div></div>
+      <span class="small">›</span>
+    </div>
     <!-- 프리미엄 앵커 — 이게 있어야 1,000원이 싸 보인다 (수익구조_가격 2장) -->
     <div class="tile" style="background:var(--pri-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px;border:1.5px solid var(--pri)" role="button" tabindex="0" onclick="goBook()">
       <span class="price"><i class="ddeok-i"></i> 5</span>
@@ -546,25 +556,9 @@ details.acc>*:not(summary){margin-top:10px}
        · 발바닥 이모지가 제목·소개문에 겹쳐 제목은 💬 로
        · 항목명은 '츄비' '칸쵸' 만 (면담 글자 제거), 소개문은 제목 바로 밑에
        · 특징 설명이 한 줄로 잘리던 것 → .pretalk p 를 여러 줄 허용으로 -->
-  <!-- 🌳 대나무숲 미리보기 (2026-08-17) — 홈에 진입점이 없어 커뮤니티가 죽어 있던 것.
-       마인드카페 실측 패턴: 사연 + 답변 미리보기가 한 카드에 있어야 그 자체가 콘텐츠이자 상담 광고가 된다. -->
-  <div id="talk-peek"></div>
+  <!-- 대나무숲 미리보기·상담실 블록은 2026-08-21 홈 축소로 제거 — 진입은 탭바(대나무숲·상담실)로.
+       상황어 칩(worry-chips)은 상담실 목록 화면으로 이사(s-chat-list). -->
 
-  <p class="sec-label">💬 냥구원 냥쪽상담실</p>
-  <p class="sec-sub">우리 아이 검사 결과를 아는 <b>두 연구원</b>과 상담해보세요</p>
-  <!-- 고민을 구체 상황어로 부른다 (기질아이 실측 패턴 — "기질 분석" 같은 추상어보다 클릭이 잘 된다).
-       누르면 그 고민을 들고 상담실로 직행. (2026-08-16) -->
-  <div class="chips" id="worry-chips"></div>
-  <div class="pretalk" onclick="openChat('chuvi')">
-    <img class="pho md chuvi" src="assets/chuvi.png" alt="츄비" width="46" height="46">
-    <p><b>츄비</b> 마음부터 들어주는 공감 담당</p><span class="small">›</span>
-  </div>
-  <div class="pretalk" onclick="openChat('kancho')">
-    <img class="pho md kancho" src="assets/kancho.png" alt="칸쵸" width="46" height="46">
-    <p><b>칸쵸</b> 원인부터 짚고 처방 하나 주는 팩트 담당</p><span class="small">›</span>
-  </div>
-
-  
 </section>
 
 <!-- ═══════════ 30초 궁합 미리보기 (무료 입구) ═══════════ -->
@@ -593,7 +587,7 @@ details.acc>*:not(summary){margin-top:10px}
   <div class="result-hero">
     <span class="tag amber">부모 성향 리포트</span>
     <div class="typename" id="p-typename"></div>
-    <div class="typedesc">5가지 성향 축으로 본 나의 양육 에너지</div>
+    <div class="typedesc" id="p-typedesc">5가지 성향 축으로 본 나의 양육 에너지</div>
   </div>
   <div class="card" id="p-bars"></div>
   <div id="p-voice"></div>
@@ -720,6 +714,43 @@ details.acc>*:not(summary){margin-top:10px}
 </section>
 
 <!-- ═══════════ 우리 가족 궁합 지도 (3까까) ═══════════ -->
+<!-- ═══════════ 우리 집 사용설명서 — 형제 비교 리포트 (2026-08-21 기획서) ═══════════ -->
+<section class="screen" id="s-sibling">
+  <button class="back" onclick="show('s-home')">← 홈으로</button>
+  <div class="result-hero">
+    <span class="tag">형제 비교 리포트</span>
+    <div class="typename">우리 집 사용설명서</div>
+    <div class="typedesc">같은 상황, 아이마다 다른 대사</div>
+  </div>
+  <div class="card" id="sib-graph"></div>
+  <div id="sib-taste"></div>
+  <div class="card locked" id="sib-lock-wrap" style="padding:0;border:none;background:none;margin-top:14px">
+    <div id="sib-lock-inner"><div id="sib-body"></div></div>
+    <div class="lock-cover" id="sib-cover">
+      <div style="font-size:1.6rem">📖</div>
+      <p style="font-family:'Jua'">나머지 8가지 상황이 잠겨 있어요</p>
+      <p class="small">떼쓰기·등원거부·형제다툼·잠·편식·스마트폰·예민한 날·말대꾸<br>아이마다 다른 대사 + 연구 근거 한 줄씩</p>
+      <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockSibling()"><i class="ddeok-i"></i>×1 까까 1개로 상황 전체 열기</button>
+    </div>
+  </div>
+  <div class="card" id="sibp-invite" style="display:none;text-align:center">
+    <p style="font-family:'Jua';font-size:1rem">🌷 내 성향까지 대조하면 완성이에요</p>
+    <p class="small mt8">"이 대사가 유독 나한테 어려운 이유"까지 알려드려요 — 부모 검사는 무료</p>
+    <button class="btn moss mt8" onclick="goParentTest()">부모 성향 검사하기 (무료)</button>
+  </div>
+  <div class="card locked" id="sibp-wrap" style="padding:0;border:none;background:none;margin-top:14px">
+    <div id="sibp-lock-inner"><div id="sibp-body"></div></div>
+    <div class="lock-cover" id="sibp-cover">
+      <div style="font-size:1.6rem">🌷</div>
+      <p style="font-family:'Jua'">이 대사가 유독 어려운 이유</p>
+      <p class="small">내 성향과 대조해 처방 기법 5가지의<br>"왜 나는 힘든가 + 실행 보조팁"을 드려요</p>
+      <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockSibP()"><i class="ddeok-i"></i>×1 까까 1개로 부모 대조 열기</button>
+    </div>
+  </div>
+  <button class="btn ghost mt8" onclick="openShare('sibling')">🔗 결과 카드 만들기 · 공유</button>
+  <div class="card mt16" id="sib-routes"></div>
+</section>
+
 <section class="screen" id="s-map">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
   <div class="result-hero">
@@ -853,7 +884,7 @@ details.acc>*:not(summary){margin-top:10px}
   <div class="result-hero"><span class="tag" style="background:#E2708A">대나무숲</span><div class="typename">부모들의 대나무숲</div><div class="typedesc">판정도 재판도 없어요. 공감과 투표만.</div></div>
   <div class="daily" style="padding:12px 16px"><span class="d-label">🌿 우리 숲의 약속</span><div class="d-text" style="font-size:.83rem;margin-top:4px">여긴 긍정적인 대나무숲이에요. 비난·저속한 표현, 특정인 저격 글은 발견 즉시 사라집니다. 실명·기관명은 가려주세요.</div></div>
   <div class="card" style="padding:14px">
-    <textarea id="talk-input" placeholder="오늘 이런 일이 있었어요… 자유롭게 적어주세요" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:vertical"></textarea>
+    <textarea id="talk-input" maxlength="1200" placeholder="오늘 이런 일이 있었어요… 자유롭게 적어주세요" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:vertical"></textarea>
     <button class="btn ghost mt8" style="padding:11px" onclick="aiPoll()">🗳 투표 받아보기</button>
     <p class="small mt8">🗳 투표 항목 (직접 쓰거나, AI가 채운 걸 고쳐도 돼요)</p>
     <input id="poll-1" placeholder="투표 항목 1" style="display:block;width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:'Gowun Dodum';font-size:.87rem;margin-top:6px">
@@ -990,6 +1021,9 @@ details.acc>*:not(summary){margin-top:10px}
   <button class="btn ghost mt8" onclick="openShare('app')">🔗 친구 초대하고 까까 받기</button>
 </section>
 
+<!-- 결제 바텀시트 컨테이너 (2026-08-21) — 내용은 wallet.js openPaySheet 가 그린다 -->
+<div id="pay-ov"></div>
+
 <nav class="tabbar" aria-label="주요 메뉴">
   <button class="on" id="tab-home" onclick="show('s-home');tabOn('home')"><span class="ico">🏠</span>기질냥구소</button>
   <button id="tab-chat" onclick="goChat();tabOn('chat')"><span class="ico">💬</span>상담실</button>
@@ -1010,6 +1044,8 @@ details.acc>*:not(summary){margin-top:10px}
   </div>
   <!-- 첫 상담 게이트 — 검사 0개면 여기에 츄비 안내 + 검사 유도 버튼이 뜨고 아래 카드는 흐려진다 (HANDOFF 다음할일 2) -->
   <div id="chat-gate" style="display:none;margin-bottom:14px"></div>
+  <!-- 고민 상황어 칩 — 홈 축소(2026-08-21)로 홈에서 이사. 누르면 그 고민을 들고 상담 직행 -->
+  <div class="chips" id="worry-chips" style="margin-bottom:12px"></div>
   <div class="card chat-cat-card" role="button" tabindex="0" onclick="openChat('chuvi')" style="display:flex;gap:12px;align-items:center;cursor:pointer">
     <img class="pho lg chuvi" src="assets/chuvi.png" alt="츄비 연구원" width="60" height="60">
     <div style="flex:1"><h3 style="font-size:1.02rem">츄비 연구원 <span class="tag amber" style="font-size:.6rem;vertical-align:2px;margin:0">공감분석</span></h3><p class="small">어떤 얘기든 공감이 필요하면 · 마음부터 듣습니다</p></div>
@@ -1079,7 +1115,7 @@ details.acc>*:not(summary){margin-top:10px}
   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
 </button>
 <script>
-/* ===== js/data/items.js (248) ===== */
+/* ===== js/data/items.js (250) ===== */
 /* ══════════════ 데이터 ══════════════ */
 // 부모: Mini-IPIP 20문항 한국어 번안 (Donnellan et al., 2006 / IPIP 퍼블릭 도메인)
 // f: E외향 A우호 C성실 N정서 O개방  |  r: 역채점
@@ -1264,8 +1300,10 @@ const P_EXTRA=[
  {t:"세운 계획이 틀어지면 하루 종일 신경이 쓰인다",k:"plan"},
  {t:"아이가 울면 달래기보다 원인부터 찾게 된다",k:"comfort"},
 ];
-const PARENT_ROLES=[['엄마','🌷'],['아빠','🌲'],['할머니·할아버지','🌼'],['이모·고모','🌸'],['삼촌·외삼촌','🌿'],['예비부모','🌱'],['보호자','🍀']];
+/* 이모·고모/삼촌·외삼촌은 검사 내용이 동일해 통합 (2026-08-21 사장님 "의미 없으면 합쳐") */
+const PARENT_ROLES=[['엄마','🌷'],['아빠','🌲'],['할머니·할아버지','🌼'],['이모·삼촌','🌸'],['예비부모','🌱'],['보호자','🍀']];
 const ROLE_EMOJI=Object.fromEntries(PARENT_ROLES);
+ROLE_EMOJI['이모·고모']='🌸';ROLE_EMOJI['삼촌·외삼촌']='🌿';   /* 옛 저장분 하위호환 — 목록엔 없어도 표시·이모지는 유지 */
 const AGE_OPTS=[['t','만 3세 미만 (개월수 입력)'],['3','만 3세'],['4','만 4세'],['5','만 5세'],['6','만 6세'],['7','만 7세'],['s','초등학생'],['a','중·고등학생']];
 
 /* ── 아이 장면 보조 문항 (2026-08-14 사장님 승인: "문항 추가·구체화 디벨롭")
@@ -1328,7 +1366,7 @@ const C_SCENE={
    {t:'자기 계획을 제시하며 협상해요',note:'자기주장형이에요. 협상 자체가 자율성 연습이라 나쁜 신호가 아니에요.'},
    {t:'스스로 조절하는 편이에요',note:'자기조절형이에요. 신뢰를 말로 표현해 주면 더 단단해져요.'}]}]
 };
-/* ===== js/data/texts.js (461) ===== */
+/* ===== js/data/texts.js (516) ===== */
 const FAM_QUAD={
  warm_free:{n:"안전기지형 가정",d:"따뜻하고 자율을 존중하는 집에서 자랐어요. 실패해도 돌아갈 곳이 있다는 감각 — 그게 당신이 물려받은 가장 큰 자산이에요.",
   gain:["실패를 두려워하지 않는 도전 감각","감정을 말로 꺼내는 게 자연스러움","'집=쉬는 곳'이라는 안정감"],
@@ -1518,6 +1556,61 @@ const FITMAT={
 };
 const P_HIGH={E:"에너지를 밖에서 얻는 활동파",A:"아이 마음을 먼저 읽는 공감파",C:"루틴과 계획이 편안한 관리파",N:"감정 신호에 섬세한 안테나파",O:"새로운 놀이를 벌이는 탐험파"};
 const P_LOW={E:"조용한 몰입이 편한 차분파",A:"객관적으로 상황을 보는 이성파",C:"즉흥과 유연함이 강점인 자유파",N:"웬만해선 흔들리지 않는 뚝심파",O:"검증된 방식이 편안한 안정파"};
+
+/* ── 부모 세부 유형 (2026-08-21 사장님 "5개로 퉁치지 말고 MBTI보다 많게") ──────────
+   아이의 kbase/ktype 이원화와 같은 구조: 큰 갈래 6종(calcPType, 궁합 매트릭스 키)은 그대로 두고,
+   두 번째로 뚜렷한 축의 방향을 수식어로 붙여 세부 이름을 만든다 — 5갈래 × 보조극 8 + 단독 5 + 카멜레온 = 46유형.
+   판정 엔진은 calcPType 단일 소스 유지 — 세부 이름은 표시·공유용(psub). */
+const PSUB_WORD={
+ E:{hi:['활발','아이와 몸으로 놀아주는 에너지가 함께 있는'],lo:['차분','고요하게 아이 곁을 지키는 힘이 함께 있는']},
+ A:{hi:['포근','아이 마음을 먼저 안아주는 온기가 함께 있는'],lo:['쿨','감정에 휩쓸리지 않고 상황을 보는 눈이 함께 있는']},
+ C:{hi:['꼼꼼','하루를 예측 가능하게 만드는 계획력이 함께 있는'],lo:['자유','틀에 매이지 않는 즉흥 대응력이 함께 있는']},
+ N:{hi:['섬세','아이의 작은 신호를 놓치지 않는 감도가 함께 있는'],lo:['뚝심','웬만한 소동에 흔들리지 않는 중심이 함께 있는']},
+ O:{hi:['호기심','새로운 시도를 겁내지 않는 탐구심이 함께 있는'],lo:['한결','검증된 방식을 꾸준히 지키는 안정감이 함께 있는']}
+};
+
+/* ── 파생 지표 (2026-08-21 A안) — 새 문항 없이 기존 답의 조합으로 계산하는 2차 지표.
+   아이 5종 + 부모 4종. 심화(유료) 구간에 표시. 조합 근거는 문헌 학습분(각 지표 주석). */
+const C_DERIVED=[
+ {k:'warm',name:'🔥 워밍업 속도',calc:a=>(a.app+a.ada)/2,what:'낯선 것에 시동이 걸리기까지의 시간이에요. 접근성과 적응력을 합쳐 계산해요.',
+  hi:'예열이 거의 필요 없는 아이예요. 새 환경에 바로 뛰어드는 만큼, 위험 판단은 어른이 반 박자 먼저 해주세요.',
+  mid:'상황에 따라 빠르게도, 천천히도 데워져요. 아이가 멈칫하면 재촉 대신 30초만 기다려주세요.',
+  lo:'시동이 천천히 걸리는 아이예요. 미리 예고하고 관찰할 시간을 주면 제 속도로 반드시 들어갑니다 — 느린 게 아니라 신중한 거예요.'},
+ {k:'rec',name:'🌈 회복 탄력',calc:a=>(a.dis+a.moo)/2,what:'속상한 기분에서 제자리로 돌아오는 힘이에요. 주의 전환과 긍정 정서를 합쳐 계산해요.',
+  hi:'기분이 상해도 금방 회복하는 아이예요. 다만 회복이 빠르다고 감정이 작았던 건 아니니, 지나간 뒤 한 번은 마음을 물어봐 주세요.',
+  mid:'회복에 시간이 조금 필요한 날도 있어요. 다른 활동으로 부드럽게 전환해주면 빨라져요.',
+  lo:'속상함이 오래 머무는 아이예요. "빨리 털어"보다 감정에 이름을 붙여주는 것("많이 억울했구나")이 회복의 지름길이에요.'},
+ {k:'imm',name:'🎯 몰입 엔진',calc:a=>(a.per+a.int)/2,what:'좋아하는 것에 파고드는 힘이에요. 지속성과 반응 강도를 합쳐 계산해요.',
+  hi:'한번 꽂히면 깊게 파고드는 아이예요. 몰입을 끊어야 할 땐 "5분 뒤에 끝"처럼 예고가 필수입니다.',
+  mid:'관심사에 따라 몰입의 깊이가 달라져요. 아이가 오래 붙드는 놀이가 곧 재능의 힌트예요.',
+  lo:'여러 가지를 옮겨 다니며 넓게 탐색하는 스타일이에요. 산만한 게 아니라 표본을 모으는 중 — 좁히는 건 나중이어도 됩니다.'},
+ {k:'sens',name:'🍃 감각 여유',calc:a=>((6-a.thr)+a.dis)/2,what:'소리·빛·감촉 같은 자극을 받아넘기는 여유예요. 감각 민감성(역방향)과 주의 전환을 합쳐 계산해요.',
+  hi:'자극에 여유가 큰 아이라 어디서든 무던하게 지내요. 대신 불편을 늦게 말하는 편이니 컨디션은 어른이 먼저 챙겨주세요.',
+  mid:'자극이 쌓이는 날엔 여유가 줄어요. 시끄러운 일정 뒤엔 조용한 회복 시간을 끼워주세요.',
+  lo:'센서가 촘촘한 아이예요. 예민한 게 아니라 남보다 많은 정보가 들어오는 것 — 자극 총량을 관리해주면 그 감각이 재능이 됩니다.'},
+ {k:'rhythm',name:'⏰ 리듬 안정',calc:a=>(a.rhy+a.ec)/2,what:'하루를 일정하게 굴리는 몸시계와 브레이크의 합이에요. 규칙성과 의도적 통제를 합쳐 계산해요.',
+  hi:'루틴이 이 아이의 무기예요. 순서만 지켜주면 스스로 굴러갑니다 — 예외를 자주 만들지 않는 게 최고의 지원이에요.',
+  mid:'리듬이 잡히는 중이에요. 시간보다 "순서"를 고정해주면 안정이 빨라져요.',
+  lo:'그날그날 파도가 있는 아이예요. 틀을 강요하기보다 잠·식사 두 가지만 뼈대로 잡고 나머지는 유연하게 가주세요.'}
+];
+const P_DERIVED=[
+ {k:'calm',name:'🫧 차분 온기',calc:a=>((6-a.N)+a.A)/2,what:'흔들리지 않으면서 따뜻하게 반응하는 힘 — 아이의 안전기지가 되는 조합이에요.',
+  hi:'아이 감정이 폭풍일 때도 함께 요동치지 않는 품이에요. 큰 감정의 아이일수록 이 힘의 덕을 크게 봅니다.',
+  mid:'평소엔 든든한 품이지만 지친 날엔 같이 흔들릴 수 있어요. 내 컨디션 관리가 곧 육아 기술이에요.',
+  lo:'아이 감정에 마음이 크게 같이 움직이는 타입이에요. 나쁜 게 아니라 공명이 큰 것 — 반응하기 전 한 호흡 고르는 루틴 하나면 충분해요.'},
+ {k:'cons',name:'🧭 일관 엔진',calc:a=>(a.C+(6-a.N))/2,what:'기분에 좌우되지 않고 같은 기준을 유지하는 힘이에요. 아이에게 예측 가능한 세상을 만들어줘요.',
+  hi:'어제와 오늘의 기준이 같은 부모예요. 규칙이 흔들리지 않아 아이가 세상을 안전하게 느낍니다.',
+  mid:'기준이 대체로 유지되지만 피곤한 날 흔들릴 수 있어요. 규칙을 줄여서(대원칙 3개) 지키기 쉽게 만드세요.',
+  lo:'그날 상황에 따라 기준이 움직이기 쉬운 타입이에요. 유연함은 강점이니, 안 되는 것 딱 하나만 고정해보세요.'},
+ {k:'play',name:'🎈 놀이 연료',calc:a=>(a.E+a.O)/2,what:'아이와 새로운 놀이를 벌이고 함께 뛰는 에너지예요.',
+  hi:'아이 입장에서 최고의 놀이 친구예요. 대신 조용히 쉬어야 하는 아이의 날도 존중해주세요.',
+  mid:'놀이 에너지가 상황을 타요. 하루 15분 전력 놀이가 3시간 건성 놀이보다 낫다는 걸 기억하세요.',
+  lo:'몸으로 노는 게 힘든 타입이에요. 괜찮아요 — 책·역할놀이·대화 같은 조용한 놀이도 똑같이 훌륭한 놀이입니다.'},
+ {k:'flex',name:'🪄 전환 유연',calc:a=>(a.O+(6-a.C))/2,what:'계획이 틀어졌을 때 새 방법으로 갈아타는 순발력이에요.',
+  hi:'돌발 상황에 강한 부모예요. 아이의 갑작스러운 변수에도 대안이 바로 나옵니다.',
+  mid:'예상 밖 상황에서 잠깐 멈칫할 수 있어요. "계획 B를 미리 하나" 품어두면 여유가 생겨요.',
+  lo:'계획이 어긋나면 스트레스가 큰 타입이에요. 약점이 아니라 계획력의 뒷면 — 일정에 여백 20%만 미리 넣어두세요.'}
+];
 
 // 츄비(F·공감형)와 칸쵸(T·분석형)의 검사 중 멘트 — 문항마다 순환하며 서로 다른 말을 한다
 const CHUVI_LINES=[
@@ -1929,7 +2022,211 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/state.js (188) ===== */
+/* ===== js/data/sibling.js (203) ===== */
+/* ══════════ 「우리 집 사용설명서」 데이터 — 상황 × 아이 유형 × 3단 처방 (2026-08-21 기획서) ══════════
+   발단: Threads 세쌍둥이 글(조회 12만) — 같은 상황 × 아이마다 다른 대사. 텍스트가 본체, 코드는 얇게.
+   3단 구조는 원글에서 검증된 전달 형식: ①하지 말 것(no) ②대신 할 말·행동(say) ③마친 후 메시지(after).
+   ev = 근거 1줄(유료 구간에서만 노출). 낙인 금지 — "~형이라 ~다" 단정 대신 "이런 모습이 진할 때".
+   우열 비교 금지 — 다름만 서술. 유형 키는 kbase 계열 4종(햇살형/불꽃형/새벽형/무지개형). */
+
+const SIB_SITS=[
+ {k:'morning', label:'🪥 아침 준비'},
+ {k:'tantrum', label:'😤 떼쓰기'},
+ {k:'refuse',  label:'🏫 등원·등교 거부'},
+ {k:'fight',   label:'🥊 형제 다툼'},
+ {k:'sleep',   label:'🌙 잠들기'},
+ {k:'eat',     label:'🥦 편식'},
+ {k:'phone',   label:'📱 스마트폰'},
+ {k:'sensitive',label:'🌧 예민한 날'},
+ {k:'backtalk',label:'🗯 말대꾸'}
+];
+
+const SIB_RX={
+ morning:{
+  '햇살형':{no:'부르면 잘 오는 아이에게 "착하다" "역시 우리 1등"처럼 사람을 칭찬하는 말로 시작하지 않기 — 엄마 기쁘라고 움직이는 아이가 되기 쉬워요.',
+    say:'"먼저 끝내면 그만큼 먼저 놀 수 있겠네" — 준비가 엄마를 위한 일이 아니라 자기한테 이로운 일이라는 걸 알려주는 말이에요.',
+    after:'"네 덕분에 편했어" 대신 "먼저 끝내니까 여유 있지?" — 아이 자신의 이득으로 마무리해주세요.',
+    ev:'사람 자체를 칭찬하는 말보다 과정·이유를 짚는 말이 스스로 하는 힘을 지킨다는 게 보상·칭찬 연구들의 일관된 결론이에요.'},
+  '불꽃형':{no:'"빨리빨리!" 재촉과 언성 — 이 아이는 재촉을 도전으로 받아서 아침이 힘겨루기가 돼요.',
+    say:'선택지 2개로 주도권을 넘기기 — "양치 먼저 할래, 옷 먼저 입을래?" 고르는 순간 아이 일이 됩니다.',
+    after:'큰 소리 없이 끝난 아침이면 그 자체를 짚어주세요 — "오늘은 우리 안 싸우고 나왔다!"'},
+  '새벽형':{no:'같은 잔소리 반복 — 이 아이의 느린 시작은 반항이 아니라 시동이 늦게 걸리는 거예요.',
+    say:'잔소리 대신 유쾌한 쇼 — 좋아하는 캐릭터·노래로 놀이처럼 시작하면 진입 문턱이 낮아져요. "치카 기차 출발합니다~"',
+    after:'"거봐, 하면 되잖아" 대신 "끝내니까 마음껏 놀 수 있어서 좋다" — 다음 아침의 연료가 되는 말이에요.'},
+  '무지개형':{no:'어제 통한 방법이 오늘도 통할 거라 단정하기 — 이 아이는 그날의 모드가 달라요.',
+    say:'오늘 모드를 먼저 확인 — "오늘은 기차놀이로 갈까, 시합으로 갈까?" 아이가 고른 방식이 그날의 정답이에요.',
+    after:'오늘 통한 방법을 한 줄 기억해두세요 — 이 아이 육아는 데이터가 쌓일수록 쉬워집니다.'}
+ },
+ tantrum:{
+  '햇살형':{no:'"너답지 않게 왜 그래" — 평소 순한 아이의 떼를 이상 신호 취급하면 감정을 숨기게 돼요.',
+    say:'드물게 터진 떼일수록 마음부터 — "오늘은 정말 하고 싶었구나." 순한 아이의 떼는 그만큼 컸다는 뜻이에요.',
+    after:'가라앉은 뒤에 물어보세요 — "요즘 뭐가 제일 속상했어?" 쌓인 게 있는지 이때 나옵니다.'},
+  '불꽃형':{no:'터진 감정 위에 설득·훈계 얹기, 그리고 부모도 같이 커지기 — 불에 바람 넣는 격이에요.',
+    say:'안전만 확보하고 짧게 — "기다릴게. 진정되면 얘기하자." 폭풍 중엔 어떤 좋은 말도 안 들려요.',
+    after:'가라앉으면 안아주고 한 문장만 복기 — "아까 뭐가 제일 화났어?" 길게 하지 않는 게 요령이에요.',
+    ev:'감정이 큰 기질일수록 부모가 어떻게 반응하느냐에 따라 결과가 크게 갈린다는 것이 수십 개 연구의 종합 결론이에요.'},
+  '새벽형':{no:'"별것도 아닌데 왜 울어" — 이 아이의 떼 뒤에는 겁나거나 낯선 무언가가 있을 때가 많아요.',
+    say:'원인부터 확인 — "혹시 무서웠어? 처음이라 그래?" 이유를 말로 풀어주면 떼가 절반으로 줄어요.',
+    after:'"울지 않고 말로 해줘서 고마워" — 말로 표현한 순간을 크게 인정해주세요.'},
+  '무지개형':{no:'모든 떼에 같은 반응 — 관심을 끌려는 떼와 진짜 속상한 떼를 한 방법으로 다루면 둘 다 놓쳐요.',
+    say:'구분이 먼저 — 관심용 장난 떼면 반응을 잠시 끄고(무반응), 진짜 속상함이면 마음을 읽어주세요.',
+    after:'무반응으로 지나간 장난은 끝난 뒤에 받아주세요 — "아까 그 개그 다시 해봐!" 관심은 좋은 행동 뒤에 몰아줍니다.',
+    ev:'잘못된 행동엔 반응을 줄이고 좋은 행동에 관심을 몰아주는 방식은 부모 훈련 프로그램들에서 오래 검증된 기법이에요.'}
+ },
+ refuse:{
+  '햇살형':{no:'"평소엔 잘 갔잖아" — 오늘의 이유를 건너뛰는 말이에요. 잘 가던 아이가 안 가는 데엔 이유가 있어요.',
+    say:'달라진 것 하나만 묻기 — "오늘 뭐가 걱정돼?" 선생님·친구·행사, 구체적인 게 나올 때가 많아요.',
+    after:'다녀온 뒤 그 걱정의 결말을 확인 — "아까 걱정했던 거 어떻게 됐어?" 다음 아침이 편해져요.'},
+  '불꽃형':{no:'현관 앞 힘겨루기 — 끌고 가면 이기는 게 아니라 내일 더 큰 저항으로 돌아와요.',
+    say:'감정 먼저, 절차는 그다음 — "가기 싫구나. 그래도 가는 날이야. 문까지는 안고 갈까, 걸어갈까?"',
+    after:'잘 다녀온 날 과정을 짚어주세요 — "가기 싫었는데 갔다 온 거, 그게 진짜 대단한 거야."'},
+  '새벽형':{no:'등 떠밀기·서두르기 — 이 아이는 밀수록 두 배로 느려져요.',
+    say:'미리 예고 + 반 걸음 동행 — "밥 먹고 나면 갈 거야" 예고하고, 교실 문까지는 함께. 워밍업이 이 아이의 방식이에요.',
+    after:'"천천히 준비하고도 잘 갔네" — 속도가 아니라 도착을 인정해주세요.',
+    ev:'겁이 많은 기질의 아이는 큰소리보다 이유를 설명해주는 방식에서 행동이 좋아진다는 국내 유아 250명 연구가 있어요.'},
+  '무지개형':{no:'어제 기준으로 오늘을 판단하기 — 잘 가던 날과 안 가는 날이 섞이는 게 이 아이의 정상이에요.',
+    say:'오늘 컨디션부터 — "오늘은 몸이 무거운 날이야?" 그날에 맞춰 예고형·놀이형 중 골라 쓰세요.',
+    after:'통한 방법을 기억해두고, 안 통한 날은 방법 탓이 아니라 그날의 날씨였다고 생각하세요.'}
+ },
+ fight:{
+  '햇살형':{no:'"네가 형이니까(언니니까) 참아" — 순한 아이에게 양보를 몰아주면 집에서 손해 보는 법을 배워요.',
+    say:'"참지 않고 말해도 돼" — 이 아이에게 필요한 건 중재보다 자기 몫을 말할 허락이에요.',
+    after:'참은 기색이 보인 날은 따로 물어보세요 — "아까 정말 괜찮았어?" 둘만의 시간에 진심이 나와요.'},
+  '불꽃형':{no:'심판 되기 — "누가 먼저 그랬어!"는 재판을 열 뿐 싸움을 줄이지 못해요.',
+    say:'일단 분리 — 각자 진정할 자리로. 가라앉은 뒤에 한 명씩 자기 말로 하게 하세요.',
+    after:'억지 화해 시키지 않기 — "미안해 해!" 대신 각자 회복됐는지만 확인해도 충분해요.',
+    ev:'형제 사이를 가르는 건 출생 순서가 아니라 두 아이의 기질 조합과 부모의 개입 방식이라는 국내 30년 문헌 정리가 있어요.'},
+  '새벽형':{no:'그 자리에서 바로 해명 요구 — 이 아이는 억울해도 말이 늦게 나와서 늘 지는 쪽이 돼요.',
+    say:'시간을 주고 따로 듣기 — "이따가 네 얘기 들려줘." 생각을 정리한 뒤의 말이 진짜예요.',
+    after:'"말해줘서 고마워" — 느리게라도 말한 것을 인정하면 다음엔 더 빨리 말해요.'},
+  '무지개형':{no:'한 명을 문제아로 지목하기 — 싸움은 언제나 조합의 문제예요.',
+    say:'각자 버전을 다 듣기 — "네 얘기, 그리고 네 얘기." 순서만 지켜도 절반은 풀립니다.',
+    after:'둘 다 잘한 지점을 하나씩 — "너는 멈췄고, 너는 말로 했네." 비교 없이 각자 따로.'}
+ },
+ sleep:{
+  '햇살형':{no:'"오늘만 늦게 자자" 예외를 자주 만들기 — 규칙적인 아이의 무기인 몸시계를 부모가 흔드는 셈이에요.',
+    say:'순서 고정 — "씻고, 책 한 권, 불 끄기." 시간이 조금 밀려도 순서만 같으면 이 아이는 잠에 듭니다.',
+    after:'아침에 확인해주세요 — "푹 자니까 몸이 가볍지?" 잠의 이득을 아이 것으로 만들어요.',
+    ev:'잠들기 순서를 고정하는 것만으로 아이 수면과 부모 기분이 며칠 안에 좋아진다는 405가정 실험이 있어요.'},
+  '불꽃형':{no:'자기 직전 몸놀이·영상 같은 큰 자극 — 엔진이 뜨거운 채로는 못 잡니다.',
+    say:'30분 전 워밍다운 — 불 줄이고 조용한 놀이로 전환. 대신 에너지는 낮에 실컷 빼주세요.',
+    after:'잘 잔 다음 날의 차이를 아이 입으로 — "어제 푹 자니까 오늘 기분 어때?"'},
+  '새벽형':{no:'"빨리 자!" 재촉 — 이 아이가 못 자는 건 안 자는 게 아니라 마음이 아직 안 놓인 거예요.',
+    say:'예고 + 안심 확인 — "10분 뒤에 불 끌 거야. 무서운 거 있으면 말해줘." 어둠·소리 걱정을 먼저 걷어내요.',
+    after:'"무서운 걸 말해줘서 고마워" — 걱정을 말하면 해결된다는 경험을 쌓아주세요.'},
+  '무지개형':{no:'매일 다른 방식으로 재우기 — 뼈대까지 바뀌면 아이는 매일 밤이 새 상황이 돼요.',
+    say:'뼈대는 고정, 소품만 선택 — 순서는 같게 두고 "오늘은 어떤 책?"만 아이가 고르게 하세요.',
+    after:'아이가 고른 방식이 통했으면 그대로 인정 — "네가 고른 책이 딱이었네."'}
+ },
+ eat:{
+  '햇살형':{no:'"잘 먹던 애가 왜 이래" — 잘 먹던 기억으로 부담을 주면 식탁이 시험장이 돼요.',
+    say:'강요 없는 한 입 규칙 — "한 입만 시도, 싫으면 안 먹어도 돼." 그리고 그 음식을 식탁에 계속 올려두세요.',
+    after:'먹은 양 말고 자리를 지킨 걸 인정 — "끝까지 같이 앉아 있어줘서 좋았어."',
+    ev:'새 음식은 여러 번 편하게 노출하는 것이 정석이고, 걱정만으로 음식을 미리 제한하지 말라는 게 국내 공식 지침이에요.'},
+  '불꽃형':{no:'식탁 힘겨루기 — "다 먹기 전엔 못 일어나"는 이 아이에게 전쟁 선포예요.',
+    say:'선택권으로 김 빼기 — "브로콜리 두 개 먹을래, 세 개 먹을래?" 싸울 자리를 고르는 자리로 바꿔요.',
+    after:'싸움 없이 끝난 식사 자체를 언급 — "오늘 밥시간 평화로웠다, 그치?"'},
+  '새벽형':{no:'새 음식을 갑자기 입 앞에 들이밀기 — 낯선 건 음식도 사람과 똑같이 경계 대상이에요.',
+    say:'미리 보여주고 만지게 — 장보기·요리에 끼워주면 식탁에 오르기 전에 익숙해져요.',
+    after:'"냄새 맡아본 것도 한 걸음이야" — 먹기 전 단계도 전진으로 세어주세요.'},
+  '무지개형':{no:'"어제는 먹었잖아" — 어제의 입맛으로 오늘을 강요하면 식탁이 말싸움이 돼요.',
+    say:'오늘 컨디션 반영 — 안 먹는 날은 양을 줄여 부담을 빼고, 잘 먹는 날 새 음식을 시도하세요.',
+    after:'오늘 먹은 것 하나만 언급 — "오늘은 당근이랑 친했네."'}
+ },
+ phone:{
+  '햇살형':{no:'말 잘 듣는다고 규칙 없이 두기 — 규칙을 잘 지키는 아이일수록 규칙이 없으면 기준을 밖(영상)에서 찾아요.',
+    say:'함께 시간표 정하기 — "하루 몇 분, 언제 볼지 같이 정하자." 스스로 정한 규칙은 이 아이의 무기가 돼요.',
+    after:'"네가 정한 약속을 네가 지켰네" — 지킨 주체가 아이라는 걸 분명히 해주세요.'},
+  '불꽃형':{no:'보던 중간에 확 뺏기 — 몰입을 끊긴 분노가 폰 자체보다 큰 폭발을 만들어요.',
+    say:'예고 후 종료 — "이번 판 끝나면 끄는 거야." 끝나면 바로 몸 쓰는 대체 활동으로 이어주세요.',
+    after:'스스로 끈 날은 크게 — "네가 직접 껐네? 그게 제일 어려운 건데."'},
+  '새벽형':{no:'"그만 좀 봐" 반복 — 이 아이에게 폰은 자극이 아니라 안식처일 수 있어요.',
+    say:'무엇을 보는지 먼저 — "요즘 뭐 보는 게 제일 재밌어?" 내용을 알아야 대화가 시작돼요.',
+    after:'아이가 좋아한 콘텐츠로 대화를 이어가세요 — 폰 밖에서도 그 얘기를 할 수 있는 사람이 되는 거예요.',
+    ev:'미디어는 총 시간보다 무엇을 보느냐가 아이 집중력·끈기를 좌우한다는 국내 1,352명 추적 연구가 있어요.'},
+  '무지개형':{no:'뺏었다 돌려줬다 반복 — 기준이 흔들리면 아이는 규칙이 아니라 부모 기분을 읽게 돼요.',
+    say:'일관 규칙 하나만 — 요일·기분 따라 바꾸지 말고 "숙제 끝나면 30분" 한 줄로 고정하세요.',
+    after:'규칙이 지켜진 날을 언급 — "우리 약속 오늘도 지켜졌네."'}
+ },
+ sensitive:{
+  '햇살형':{no:'"오늘 왜 이래, 안 그러던 애가" — 순한 아이도 흐린 날이 있어요.',
+    say:'정상화 한마디 — "그런 날도 있지. 엄마도 그래." 고치려 들지 않는 게 이 아이에겐 처방이에요.',
+    after:'회복된 뒤 한 번만 — "아까 뭐가 제일 힘들었어?" 캐묻지 않고 한 번이면 충분해요.'},
+  '불꽃형':{no:'아이 감정에 내 감정으로 답하기 — 예민한 날의 불꽃형은 작은 불씨도 폭죽이 돼요.',
+    say:'내 마음 먼저 가라앉히고 짧게 — 문장을 반으로 줄이는 것이 오늘의 기술이에요.',
+    after:'폭풍이 지나가면 말 대신 스킨십 — 안아주는 게 어떤 말보다 빨리 닿아요.'},
+  '새벽형':{no:'"유난 떨지 마" — 이 아이의 예민함은 유난이 아니라 남보다 촘촘한 센서예요.',
+    say:'자극 줄이기 — 소리·빛·일정을 한 칸씩 낮추고 "오늘은 조용하게 가자"라고 신호를 존중해주세요.',
+    after:'"미리 말해줘서 도움이 됐어" — 신호를 보내면 환경이 바뀐다는 경험이 쌓이게요.',
+    ev:'민감한 기질의 아이는 좋은 반응의 효과를 남들보다 크게 받는다는 105개 연구 종합 결과가 있어요 — 예민함은 잘 자랄 때 재능이 됩니다.'},
+  '무지개형':{no:'원인을 하나로 단정하기 — "졸려서 그래"가 매번 맞지는 않아요.',
+    say:'몸부터 점검 — 잠·배고픔·더위를 순서대로 확인하고, 아니면 마음을 물어보세요.',
+    after:'원인을 찾았으면 아이와 공유 — "배고파서 그랬나 보다, 다음엔 간식 먼저 먹자."'}
+ },
+ backtalk:{
+  '햇살형':{no:'"너 변했다" — 순한 아이의 첫 말대답은 반항이 아니라 자기 목소리의 시작이에요.',
+    say:'의견 연습으로 받기 — "네 생각 말해주는 건 좋아. 말투만 바꿔서 다시 해볼까?"',
+    after:'예의를 갖춘 반박은 크게 인정 — "그렇게 말하니까 엄마가 진지하게 듣게 되네."'},
+  '불꽃형':{no:'말싸움 맞대응 — 톤이 올라간 채로는 누가 이겨도 둘 다 져요.',
+    say:'짧고 단단하게 — "그 말투로는 대화 안 할게. 다시 말해줘." 내용이 아니라 말투만 돌려보내세요.',
+    after:'톤을 바꿔 말한 순간을 인정 — "지금처럼 말하면 뭐든 들어줄 수 있어."',
+    ev:'아이의 멈추는 힘을 키우는 건 엄한 통제가 아니라 애정 바탕의 양육이라는 국내 221명 연구가 있어요.'},
+  '새벽형':{no:'말대꾸를 반항으로 단정 — 오래 생각하는 아이의 말대답은 즉흥 반항이 아니라 준비된 의견일 때가 많아요.',
+    say:'속마음 묻기 — "언제부터 그렇게 생각했어?" 생각의 길이를 알면 대답이 달라 보여요.',
+    after:'"그렇게 생각했구나" — 동의하지 않아도 수용은 해줄 수 있어요.'},
+  '무지개형':{no:'기분 따라 다른 기준 — 같은 말대답이 어제는 웃기고 오늘은 혼나면 아이는 헷갈려요.',
+    say:'안 되는 말투 기준 하나만 고정 — "비꼬는 말투는 안 돼" 처럼 선 하나만 긋고 나머지는 대화로.',
+    after:'기준을 지킨 대화를 인정 — "오늘 우리 대화 어른스러웠다."'}
+ }
+};
+
+/* ── 부모 성향 대조 — "이 처방이 유독 어려운 이유" (기법 5 × 부모 유형 6) ──
+   처방 기법: praise(칭찬 바꾸기) · ignore(무반응) · play(놀이화) · notice(미리 예고) · mirror(감정 먼저 읽기) */
+const RX_TECHS=[
+ {k:'praise',label:'🏅 칭찬 바꾸기',desc:'"착하다" 대신 과정과 아이 자신의 이득을 짚는 말'},
+ {k:'ignore',label:'🤫 무반응',desc:'관심 끌기 행동에 반응을 잠시 끄고, 좋은 행동 뒤에 관심 몰아주기'},
+ {k:'play',label:'🎪 놀이화',desc:'해야 할 일을 유쾌한 쇼로 바꿔 진입 문턱 낮추기'},
+ {k:'notice',label:'📢 미리 예고',desc:'전환·일정을 미리 알려 마음의 준비 시간 주기'},
+ {k:'mirror',label:'🪞 감정 먼저 읽기',desc:'행동 교정 전에 감정에 이름 붙여주기'}
+];
+const RX_PARENT={
+ praise:{
+  '활력형':'칭찬이 크고 빠르게 나가는 타입이라 "최고야!"가 먼저 튀어나와요 — 감탄 뒤에 과정 한 문장("끝까지 하더라")을 붙이는 것부터 시작하세요.',
+  '온기형':'마음이 앞서 사람 칭찬("착해라")이 자연스러운 타입 — 하루 한 번만 "네가 애쓴 거"로 바꿔 말해보세요.',
+  '등대형':'기준이 명확해 결과 칭찬에 기울기 쉬워요 — 결과가 미달이어도 과정이 있었다면 그걸 먼저 짚어주세요.',
+  '안테나형':'아이 반응을 살피느라 칭찬 타이밍을 재다 놓치기 쉬워요 — 타이밍보다 내용, 늦어도 과정을 짚으면 충분해요.',
+  '탐험형':'칭찬 멘트가 매번 달라 아이가 기준을 못 잡을 수 있어요 — "스스로 한 것"을 짚는 한 가지 틀로 고정해보세요.',
+  '카멜레온형':'상대 따라 칭찬 톤이 달라지는 폭이 넓어요 — 아이들마다 칭찬이 달라도, 과정을 짚는 뼈대만은 같게 유지하세요.'},
+ ignore:{
+  '활력형':'반응이 크고 빠른 성향이라 장난에 웃음부터 터지기 쉬워요 — 웃음이 올라오면 자리를 옮기는 걸로 무반응을 대신하세요.',
+  '온기형':'무반응이 아이를 차갑게 두는 것 같아 가장 괴로운 타입 — 무관심이 아니라 "끝난 뒤 크게 반겨주기 위한 준비"라고 스스로에게 말해주세요.',
+  '등대형':'잘못을 그 자리에서 바로잡고 싶어 잔소리가 나가기 쉬워요 — "지금은 교정 시간이 아님"을 계획에 넣으면 지킬 수 있어요.',
+  '안테나형':'아이 신호에 제일 빨리 반응하는 성향이라 무반응이 여섯 유형 중 가장 어려워요 — 3분 타이머를 정해 그 시간만 다른 일을 하세요.',
+  '탐험형':'효과가 바로 안 보이면 새 방법으로 갈아타기 쉬워요 — 이 기법만은 일주일을 채워야 결과가 보입니다.',
+  '카멜레온형':'아이가 세게 나오면 기준이 흔들리기 쉬워요 — 시작 전에 "언제 끝낼지"를 정해두고 그때까지만 버티세요.'},
+ play:{
+  '활력형':'타고난 재능 구간이에요 — 다만 쇼가 너무 커지면 본래 목적(준비 끝내기)이 밀리니 3분 안에 끝나는 미니 쇼로 유지하세요.',
+  '온기형':'분위기를 살피느라 쇼가 조심스러운 타입 — 완성도는 필요 없어요, 목소리 하나 바꾸는 것만으로 충분합니다.',
+  '등대형':'장난이 규칙을 흐릴까 걱정되는 타입 — 놀이화는 규칙을 없애는 게 아니라 규칙으로 들어가는 문을 넓히는 거예요.',
+  '안테나형':'아이 기분이 안 좋아 보이면 쇼를 접게 되는 타입 — 오히려 그 순간이 놀이화가 제일 잘 듣는 순간이에요.',
+  '탐험형':'이 기법의 최강자예요 — 매번 새 쇼를 만들기보다, 아이가 웃었던 쇼를 레퍼토리로 반복하는 게 효과가 커요.',
+  '카멜레온형':'아이마다 다른 쇼를 만들 수 있는 강점이 있어요 — 아이별 대표 쇼 하나씩만 정해두면 아침이 짧아져요.'},
+ notice:{
+  '활력형':'몸이 먼저 움직이는 성향이라 예고를 건너뛰기 쉬워요 — 나갈 준비 "10분 전" 알람을 폰에 걸어 예고를 자동화하세요.',
+  '온기형':'예고했다가 아이가 싫어하면 미루게 되는 타입 — 예고는 협상 시작이 아니라 마음의 준비 시간이라는 걸 기억하세요.',
+  '등대형':'타고난 재능 구간이에요 — 예고가 명령조("5분 뒤에 나갈 거야!")가 되지 않게 톤만 부드럽게 챙기세요.',
+  '안테나형':'아이 반응이 걱정돼 예고를 미루다 갑작스러운 전환이 되기 쉬워요 — 반응과 상관없이 정해진 시점에 예고하는 게 오히려 아이를 돕는 거예요.',
+  '탐험형':'즉흥 변경이 잦아 예고가 무효가 되기 쉬워요 — 계획을 바꿀 땐 "계획이 바뀌었어"라는 예고라도 한 박자 먼저 주세요.',
+  '카멜레온형':'그때그때 맞추는 성향이라 예고 자체를 잊기 쉬워요 — 매일 같은 전환(등원·취침) 두 곳에만 예고를 고정 배치하세요.'},
+ mirror:{
+  '활력형':'해결책이 먼저 나가는 타입 — "그랬구나" 한 박자를 넣고 나서 아이디어를 꺼내세요.',
+  '온기형':'타고난 재능 구간이에요 — 다만 같이 슬퍼지지 않게, 읽어주되 한 발은 밖에 두세요.',
+  '등대형':'상황 정리가 먼저 나가는 타입 — 사실 확인 전에 감정 한 줄("놀랐겠다")부터, 순서만 바꾸면 됩니다.',
+  '안테나형':'감정을 잘 읽지만 같이 흔들리기 쉬워요 — 아이 감정에 이름을 붙이는 순간 내 감정과 분리하는 연습이 함께 됩니다.',
+  '탐험형':'기분 전환 아이디어가 먼저 나가는 타입 — 전환은 감정을 읽은 다음이어야 약이 돼요.',
+  '카멜레온형':'읽어주는 폭은 넓은데 표현이 옅을 수 있어요 — 속으로 아는 것 말고 소리 내어 이름 붙여주세요("속상했구나").'}
+};
+/* ===== js/state.js (189) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -1937,7 +2234,7 @@ const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},
 /* 복원 = 저장 데이터만으로 안전하게 다시 그릴 수 있는 화면만. (2026-08-12 감사)
    s-family-result: 원답(S.fAns) 미저장이라 복원 불가. s-career: career 객체 구조 의존이 커
    복원 시 크래시 위험 → 둘 다 제외(새로고침 시 홈으로 안전 폴백, 내정보에서 다시 열림). */
-const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1,'s-map':1};   /* s-book·s-map 추가 2026-08-15: 유료 화면인데 뒤로가기/새로고침에 홈으로 튕기던 것 */
+const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1,'s-map':1,'s-sibling':1};   /* s-book·s-map 추가 2026-08-15 / s-sibling 2026-08-21: 유료 화면인데 뒤로가기/새로고침에 홈으로 튕기지 않게 */
 let _navLock=false;   // popstate 로 화면을 되돌릴 땐 다시 pushState 하지 않게
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);
   if(window.__booted&&RESTORABLE[id]){try{localStorage.setItem('kn_view',id);}catch(e){}}
@@ -1948,7 +2245,7 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
   /* 공유 플로팅 — 공유 가치 있는 화면에서만 (바이럴_후킹 3-b) */
   try{const sf=document.getElementById('share-fab');if(sf){if(SHARE_SCREENS[id]){sf.classList.add('on');sf.dataset.kind=SHARE_SCREENS[id];}else sf.classList.remove('on');}}catch(e){}}
 /* 🔴 공유 플로팅은 전 상품 필수(결정 2026-08-12). 새 상품 화면을 만들면 여기에 반드시 추가한다. */
-const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app','s-book':'book','s-mimic':'mimic','s-map':'map'};
+const SHARE_SCREENS={'s-child-result':'child','s-parent-result':'parent','s-fit':'fit','s-family-result':'family','s-career':'career','s-talk':'app','s-book':'book','s-mimic':'mimic','s-map':'map','s-sibling':'sibling'};
 /* 저장된 데이터로 특정 화면을 다시 그려 보여준다. 못 그리면 false → 부르는 쪽이 홈. (restoreView·popstate 공용) */
 function renderScreen(id){
   try{
@@ -1958,6 +2255,7 @@ function renderScreen(id){
     else if(id==='s-career'){if(!(S.activeK!=null&&S.kids[S.activeK]&&S.kids[S.activeK].career))return false;renderCareer();show('s-career');animateBars();}
     else if(id==='s-book'){if(!(S.pScore&&S.cScore))return false;renderBook();show('s-book');}
     else if(id==='s-map'){const mp=mapPairs();if(!mp.ps.length||!mp.ks.length)return false;renderMap();show('s-map');}
+    else if(id==='s-sibling'){if(typeof sibKids!=='function'||sibKids().length<2)return false;renderSibling();show('s-sibling');}
     else if(id==='s-library'){goLibrary();}   /* goX 는 자체적으로 show 를 부른다 */
     else if(id==='s-daily'){goDaily();}
     else if(id==='s-talk'){goTalk();}
@@ -2111,14 +2409,14 @@ function load(){
 /* 처음부터 다시 — 검사 결과·잠금·상담 기록을 지우고 첫 접속 상태로 (2026-08-16 UI 버튼 신설).
    ⚠️ 로그인(회원 토큰)은 건드리지 않는다. 첫 화면 재현을 위해 화면 복원·인사 기록도 함께 지운다. */
 function resetAll(){
-  try{localStorage.removeItem(SAVE_KEY);localStorage.removeItem('kn_view');localStorage.removeItem('kn_talk_day');}catch(e){}
+  try{localStorage.removeItem(SAVE_KEY);localStorage.removeItem('kn_view');localStorage.removeItem('kn_talk_day');localStorage.removeItem('kn_scan_done');}catch(e){}   /* kn_scan_done 도 지워 첫 방문(스캐너)을 재현 (2026-08-21) */
   location.href=location.pathname;
 }
 function askReset(){
   if(!confirm('검사 결과와 상담 기록을 모두 지우고 처음 화면으로 돌아갈까요?\n\n· 지워지는 것: 아이·부모·원가족 검사 결과, 열어둔 리포트, 상담 대화\n· 유지되는 것: 로그인, 충전한 까까\n\n되돌릴 수 없어요.'))return;
   resetAll();
 }
-/* ===== js/scoring.js (57) ===== */
+/* ===== js/scoring.js (78) ===== */
 /* 검사→결과 사이 분석 연출 (티저_벤치마크 1). 실제 계산은 즉시지만 일부러 몇 초 태워
    기대를 만든다. 검사 직후 1회만 — 재열람(renderScreen·goLibrary)은 이걸 안 부른다. */
 function runAnalyzeAnim(msgs, done){
@@ -2152,13 +2450,34 @@ function calcPType(avg){
   const top=Object.entries(avg).sort((a,b)=>b[1]-a[1])[0][0];
   return ext.length<=1?'카멜레온형':PTYPE[top];
 }
-function calcKType(avg){
+/* 부모 세부 유형 (2026-08-21) — 큰 갈래는 calcPType 그대로(궁합 매트릭스 키 = 단일 소스),
+   두 번째로 뚜렷한 극단 축을 수식어로 붙여 세부 이름을 만든다. 아이 kbase/ktype 이원화와 동일 구조.
+   경우의 수: 5갈래 × 보조극 8 + 갈래 단독 5 + 카멜레온 = 46유형. */
+function calcPSub(avg){
+  const base=calcPType(avg);
+  if(base==='카멜레온형')return {name:'카멜레온형',base:base,second:null};
+  const entry=Object.entries(PTYPE).find(function(e){return e[1]===base;});
+  const axis=entry?entry[0]:null;
+  const rest=['E','A','C','N','O'].filter(function(k){return k!==axis&&(avg[k]>=3.4||avg[k]<=2.6);})
+    .sort(function(a,b){return Math.abs(avg[b]-3)-Math.abs(avg[a]-3);});
+  if(!rest.length)return {name:base,base:base,second:null};
+  const s=rest[0];const dir=avg[s]>=3.4?'hi':'lo';
+  const w=(typeof PSUB_WORD!=='undefined'&&PSUB_WORD[s])?PSUB_WORD[s][dir]:null;
+  if(!w)return {name:base,base:base,second:null};
+  return {name:base.replace('형','')+'·'+w[0]+'형',base:base,second:s,dir:dir,desc:w[1]};
+}
+/* 군집 비율 — calcKType 과 스캐너(scan.js) 결과 그래프가 같은 수식을 쓰도록 분리 (2026-08-21).
+   수식 자체는 기존 calcKType 내부 그대로 — 동작 변화 없음. */
+function calcKPcts(avg){
   const inv=v=>6-v;
   const easy=avg.rhy+avg.app+avg.ada+inv(avg.int)+avg.moo;
   const diff=inv(avg.rhy)+inv(avg.app)+inv(avg.ada)+avg.int+inv(avg.moo);
   const slow=inv(avg.act)+inv(avg.app)+inv(avg.ada)+inv(avg.int)+3;
   const tot=easy+diff+slow;
-  const pct={"햇살형":easy/tot,"불꽃형":diff/tot,"새벽형":slow/tot};
+  return {"햇살형":easy/tot,"불꽃형":diff/tot,"새벽형":slow/tot};
+}
+function calcKType(avg){
+  const pct=calcKPcts(avg);
   const r=Object.entries(pct).sort((a,b)=>b[1]-a[1]);
   return (r[0][1]-r[1][1])<0.06?'무지개형 (혼합)':r[0][0];
 }
@@ -2176,12 +2495,16 @@ function scoreChild(){
     if(typeof maybeAskLogin==='function')maybeAskLogin();   /* 검사 하나 끝나면 로그인 권유 */
   });
 }
-/* ===== js/render/onboard.js (86) ===== */
+/* ===== js/render/onboard.js (90) ===== */
 function chooseWho(mode){
   const b=document.getElementById('who-body');b.innerHTML='';
   if(mode==='parent'){
     document.getElementById('who-title').textContent='누구의 성향 검사인가요?';
-    const roles=[...PARENT_ROLES].sort((a,z)=>(a[0]===S.myRole?-1:0)-(z[0]===S.myRole?-1:0));
+    /* 옛 저장분 하위호환 (2026-08-21 역할 통합): 목록에서 빠진 옛 역할(이모·고모/삼촌·외삼촌)이라도
+       검사 기록이 있으면 목록에 붙여 재검사·접근이 끊기지 않게 한다 */
+    const legacy=Object.keys(S.parents||{}).filter(n=>S.parents[n]&&S.parents[n].score&&!PARENT_ROLES.some(r=>r[0]===n))
+      .map(n=>[n,ROLE_EMOJI[n]||'🌸']);
+    const roles=[...PARENT_ROLES,...legacy].sort((a,z)=>(a[0]===S.myRole?-1:0)-(z[0]===S.myRole?-1:0));
     roles.forEach(([n,e])=>{
       const done=S.parents[n]&&S.parents[n].score;
       const c=document.createElement('div');c.className='card';c.style.cssText='display:flex;align-items:center;gap:12px;cursor:pointer';
@@ -2348,7 +2671,7 @@ function renderScene(){
     box.appendChild(b);
   });
 }
-/* ===== js/render/parent.js (131) ===== */
+/* ===== js/render/parent.js (146) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -2356,7 +2679,13 @@ function renderParentReport(){
   const ext=['E','A','C','N','O'].filter(k=>avg[k]>=3.4||avg[k]<=2.6);
   const sorted=Object.entries(avg).sort((a,b)=>b[1]-a[1]);
   const myPT=calcPType(avg);rec.ptype=myPT;
-  document.getElementById('p-typename').textContent=myPT+' 양육자';
+  /* 세부 유형 (2026-08-21) — 큰 갈래는 ptype(궁합 키) 그대로, 표시는 세부 이름으로. 아이 ktype 패턴과 동일 */
+  const psub=(typeof calcPSub==='function')?calcPSub(avg):{name:myPT,base:myPT,second:null};
+  rec.psub=psub.name;
+  document.getElementById('p-typename').textContent=psub.name+' 양육자';
+  const pd=document.getElementById('p-typedesc');
+  if(pd)pd.innerHTML=(psub.desc?psub.desc+' <b>'+psub.base+'</b>':'5가지 성향 축으로 본 나의 양육 에너지')
+    +(psub.name!==psub.base?`<br><span class="small">${psub.base} 갈래 · 46가지 세부 유형 중 하나예요</span>`:'');
   // 🔮 풀이 서사 (스포일러)
   const t1=sorted[0][0],t2=sorted[1][0];
   let story;
@@ -2459,6 +2788,15 @@ function renderParentReport(){
       }
       deepHtml+=syn;
     }
+    /* 🧮 파생 지표 4종 (2026-08-21 A안) — 새 문항 없이 축 조합으로 계산한 2차 지표 */
+    if(typeof P_DERIVED!=='undefined'){
+      deepHtml+='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">🧮 조합으로 본 4가지 양육 지표</h3>'
+        +'<p class="small" style="margin-bottom:6px">축 두 개를 합쳐 계산한 2차 지표예요 — 축 하나로는 안 보이던 것이 조합에서 보입니다.</p>'
+        +P_DERIVED.map(d=>{const v=d.calc(avg);const lv=v>=3.4?'hi':v<=2.6?'lo':'mid';
+          return `<div style="margin:12px 0"><p style="font-size:.92rem"><b>${d.name} ${v.toFixed(1)} · ${lv==='hi'?'높음':lv==='lo'?'낮음':'중간'}</b></p>
+            <p class="small" style="opacity:.8;margin-top:2px">${d.what}</p>
+            <p style="font-size:.88rem;margin-top:4px">${d[lv]}</p></div>`;}).join('');
+    }
     deepHtml+='<h3 style="font-size:1rem;margin:18px 0 8px">이런 양육자예요</h3>'
      +'<p style="font-size:.9rem"><b>💪 나의 무기</b></p>'+gains.map(g=>`<p style="font-size:.87rem;margin:3px 0">· ${g}</p>`).join('')
      +'<p style="font-size:.9rem" class="mt8"><b>🔍 살펴볼 지점</b></p>'+cautions.map(g=>`<p style="font-size:.87rem;margin:3px 0">· ${g}</p>`).join('')
@@ -2480,7 +2818,7 @@ function renderParentReport(){
   inviteReward();
 
 }
-/* ===== js/render/child.js (185) ===== */
+/* ===== js/render/child.js (208) ===== */
 function renderChildReport(){
   const avg=(S.kids[S.activeK]&&S.kids[S.activeK].score)||S.cScore;
   // Thomas & Chess 군집 — 연속체로 계산 (rhy, app, ada, int, moo 5개 결정 차원)
@@ -2595,6 +2933,16 @@ function renderChildReport(){
        <p class="mt8" style="font-size:.88rem">· 힘든 날의 첫 신호를 알아두면, 크게 무너지기 전에 받쳐줄 수 있어요.<br>· 잘 지내는 날이 많다고 마음까지 늘 괜찮은 건 아니에요 — 가끔 속마음을 따로 물어봐 주세요.</p>`;
     }
     bars.insertAdjacentHTML('beforeend',synHtml);
+    /* 🧮 파생 지표 5종 (2026-08-21 A안) — 새 문항 없이 축 조합으로 계산한 2차 지표 */
+    if(typeof C_DERIVED!=='undefined'){
+      let dv='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">🧮 조합으로 본 5가지 생활 지표</h3>'
+        +'<p class="small" style="margin-bottom:6px">온도 두 개를 합쳐 계산한 2차 지표예요 — 하나로는 안 보이던 것이 조합에서 보입니다.</p>';
+      C_DERIVED.forEach(d=>{const v=d.calc(avg);const lv=v>=3.6?'hi':v<=2.4?'lo':'mid';
+        dv+=`<div style="margin:12px 0"><p style="font-size:.92rem"><b>${d.name} ${v.toFixed(1)} · ${lv==='hi'?'높음':lv==='lo'?'낮음':'중간'}</b></p>
+          <p class="small" style="opacity:.8;margin-top:2px">${d.what}</p>
+          <p style="font-size:.88rem;margin-top:4px">${d[lv]}</p></div>`;});
+      bars.insertAdjacentHTML('beforeend',dv);
+    }
     /* 📸 우리 집 장면 메모 — 장면 보조 문항 답변 인용 (2026-08-14, 점수 미반영·해설 전용) */
     if(kid&&kid.scene&&Object.keys(kid.scene).length){
       let sc='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">📸 우리 집 장면 메모</h3>'
@@ -2663,6 +3011,19 @@ function renderChildReport(){
     paintVoice('c-voice',KID_VOICE[vk],kid?kid.name:null);
   }
   const R2=document.getElementById('c-routes');if(R2)R2.innerHTML=nextRoutes('child');
+  /* 형제 티저 (2026-08-21 기획서 태스크3) — 검사한 아이가 1명이면 비교 리포트 예고, 2명부터는 바로 입구 */
+  if(R2&&typeof sibKids==='function'){
+    const n=sibKids().length;
+    R2.insertAdjacentHTML('afterbegin', n>=2
+      ?`<div class="book" style="align-items:center;cursor:pointer;border:1.5px solid var(--amber);background:var(--amber-soft);margin-bottom:10px" onclick="goSibling()">
+          <div class="bicon">📖</div>
+          <div style="flex:1"><b style="font-family:'Jua'">우리 집 사용설명서</b><p class="small">같은 상황, 아이마다 다른 대사 — 나란히 보기</p></div>
+          <span class="small" style="color:var(--pri);white-space:nowrap">일부무료 ›</span></div>`
+      :`<div class="book" style="align-items:center;cursor:pointer;border:1.5px solid var(--amber);background:var(--amber-soft);margin-bottom:10px" onclick="chooseWho('child')">
+          <div class="bicon">👶</div>
+          <div style="flex:1"><b style="font-family:'Jua'">동생·형제도 검사하면</b><p class="small">"같은 상황, 아이마다 다른 대사" 비교 리포트가 열려요</p></div>
+          <span class="small" style="color:var(--pri);white-space:nowrap">무료 ›</span></div>`);
+  }
   inviteReward();
 }
 function animateBars(){requestAnimationFrame(()=>{document.querySelectorAll('.screen.on .bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});});}
@@ -2802,7 +3163,7 @@ function computeFit(){
       <div class="say"><div class="mini k"></div><div><b style="font-family:'Jua'">칸쵸</b> · ${f.kancho}</div></div></div>`);
   });
   /* 후킹 문단 — 아이 리포트와 같은 패턴: 공감 → 처방(아래 잠금)·원가족 은근 유도 (HANDOFF 다음할일 1) */
-  bb.insertAdjacentHTML('beforeend',`<p class="mt8" style="font-size:.9rem;line-height:1.8">같은 장면에서 자꾸 부딪힌다면, 그건 아이 탓도 내 탓도 아니라 조합의 문제예요. 그리고 그 순간 내 입에서 나오는 말은, 사실 내가 자란 집에서 듣던 말일 때가 많습니다. 마찰마다 준비된 처방을 열어보시고, 내 반응의 뿌리가 궁금해지면 원가족 리포트로 이어 보세요.</p>`);
+  bb.insertAdjacentHTML('beforeend',`<p class="mt8" style="font-size:.9rem;line-height:1.8">같은 장면에서 자꾸 부딪힌다면, 그건 아이 탓도 내 탓도 아니라 조합의 문제예요. 실제로 한국 392가정을 조사한 연구에서, 같은 기질의 아이라도 부모 기질과 어떤 짝이 되느냐에 따라 양육 스트레스와 아이의 정서·행동 문제가 크게 갈렸어요. 부딪힘이 쌓이면 아이의 하루 스트레스도 함께 올라가고요. 그리고 그 순간 내 입에서 나오는 말은, 사실 내가 자란 집에서 듣던 말일 때가 많습니다. 마찰마다 준비된 처방을 열어보시고, 내 반응의 뿌리가 궁금해지면 원가족 리포트로 이어 보세요.</p>`);
   /* 잠금 커버 무료 티저 — 마찰 개수·대표 제목은 공개, 내용은 잠금 (무료도 내용 있게, 2026-08-15) */
   const fcv=document.getElementById('fit-cover');
   if(fcv){const p1=fcv.querySelector('p');
@@ -3006,7 +3367,7 @@ function printBook(){
   window.print();
   setTimeout(()=>document.body.classList.remove('print-book'),800);
 }
-/* ===== js/render/map.js (116) ===== */
+/* ===== js/render/map.js (117) ===== */
 /* ══════════ 우리 가족 궁합 지도 — 3까까 (2026-08-15 본편) ══════════
    양육자 전원 × 아이 전원 매트릭스. 궁합(1:1)의 상위 상품 = 가족 단위 업셀.
    무료: 격자와 등급(찰떡/무난/연습)까지 — "우리 집 지도"를 보여주고
@@ -3072,6 +3433,7 @@ function renderMap(){
     : '잘 맞는 짝과 연습이 필요한 짝이 섞여 있어요. 이런 집은 "누가 누구와 무엇을 하느냐"를 나누면 하루가 편해집니다.';
   document.getElementById('map-lead').innerHTML=
     `<p style="font-size:.92rem;line-height:1.8">${lead}</p>
+     <p style="font-size:.85rem;line-height:1.7;margin-top:6px;color:var(--sub)">같은 아이라도 누구와 짝이 되느냐에 따라 스트레스가 갈린다는 게 한국 392가정 연구의 결론이에요 — 이 지도를 보는 이유입니다.</p>
      <p class="small mt8">조합 ${cells.length}개 · 💞 ${cnt.찰떡} · 🌿 ${cnt.무난} · 🔧 ${cnt.연습}</p>`;
 
   /* ── 잠금 영역 ── */
@@ -3123,7 +3485,126 @@ function applyMapLock(){
   if(MAP_UNLOCKED){cover.style.display='none';inner.classList.remove('locked-peek');}
   else{cover.style.display='flex';inner.classList.add('locked-peek');}
 }
-/* ===== js/render/home.js (289) ===== */
+/* ===== js/render/sibling.js (118) ===== */
+/* ══════════ 「우리 집 사용설명서」 — 형제 비교 리포트 (2026-08-21 기획서 §4) ══════════
+   같은 상황 × 아이마다 다른 대사. 무료: 나란히 그래프 + 아침 준비 맛보기(원글 1편 역할).
+   잠금1(1까까 'sibling'): 상황 9종 전체 × 아이별 3단 처방(+근거 1줄).
+   잠금2(1까까 'sibling-parent'): 부모 성향 대조 — 기법별 "왜 나에게 어려운가" + 실행 보조팁.
+   데이터: data/sibling.js (SIB_SITS·SIB_RX·RX_TECHS·RX_PARENT). 유형 엔진 calcKType/calcKPcts 재사용.
+   🔴 가드레일: 아이끼리 우열 비교 금지(다름만) · 나란히 화면엔 비율 그래프만 · 유형 낙인 금지. */
+
+let SIB_UNLOCKED=false,SIBP_UNLOCKED=false;
+const SIB_KEY='형제';
+let SIB_SIT='morning';   /* 잠금 구간에서 선택된 상황 */
+
+function sibKids(){return (S.kids||[]).map((k,i)=>(k&&k.score)?i:-1).filter(i=>i>=0);}
+function sibType(kid){
+  const base=kid.kbase||kid.ktype||(kid.score?calcKType(kid.score):'무지개형');
+  return base.indexOf('무지개')===0?'무지개형':base;
+}
+function goSibling(){
+  const ks=sibKids();
+  if(ks.length<2){
+    /* 1명이면 티저 역할 — 둘째 등록으로 유도 (기획서 진입 조건) */
+    alert('우리 집 사용설명서는 아이 2명부터 열려요!\n동생·형제 검사를 하나만 더 하면 "같은 상황, 아이마다 다른 대사"가 나란히 나옵니다.');
+    chooseWho('child');return;
+  }
+  renderSibling();show('s-sibling');
+}
+function renderSibling(){
+  const u=UNLOCKS[SIB_KEY]||{};SIB_UNLOCKED=!!u.sib;SIBP_UNLOCKED=!!u.sibp;
+  const ks=sibKids();
+  const p100=v=>Math.round(v*100);
+  const COLS={"햇살형":"var(--amber)","불꽃형":"#C2544E","새벽형":"var(--pri)"};
+  const EMO={"햇살형":"🌞","불꽃형":"🔥","새벽형":"🌙","무지개형":"🌈"};
+
+  /* ── 무료 1: 나란히 그래프 — 비율만, 우열 없음 ── */
+  document.getElementById('sib-graph').innerHTML=
+   `<p style="font-family:'Jua';font-size:1.15rem;text-align:center">같은 집에서 태어나도<br>이렇게 다릅니다</p>
+    ${ks.map(i=>{const k=S.kids[i];const pct=calcKPcts(k.score);const t=sibType(k);
+      return `<div style="margin-top:14px">
+        <p style="font-family:'Jua';font-size:.98rem">🐣 ${k.name} <span class="small">${EMO[t]||''} ${k.ktype||t}</span></p>
+        ${Object.entries(pct).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`
+          <div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+            <span class="small" style="flex:0 0 52px">${n}</span>
+            <div style="flex:1;height:12px;background:var(--line);border-radius:99px;overflow:hidden">
+              <i style="display:block;height:100%;width:${p100(v)}%;background:${COLS[n]||'var(--pri)'};border-radius:99px"></i>
+            </div>
+            <b style="font-size:.8rem;flex:0 0 34px;text-align:right">${p100(v)}%</b>
+          </div>`).join('')}
+      </div>`;}).join('')}
+    <p class="small mt8" style="text-align:center">누가 더 낫고의 문제가 아니라, 필요한 말이 다르다는 뜻이에요</p>`;
+
+  /* ── 무료 2: 아침 준비 맛보기 — 아이 전원, 3단 구조 (근거줄은 잠금 구간에서만) ── */
+  document.getElementById('sib-taste').innerHTML=
+   `<p class="sec-label" style="margin-top:4px">🪥 아침 준비 — 오늘 아침에 바로 쓰는 대사</p>
+    ${ks.map(i=>sibKidRxHTML(i,'morning',false)).join('')}
+    <p class="small" style="text-align:center;margin-top:6px">입은 하나인데 아이는 여럿이죠 — 나머지 8가지 상황은 아래에 있어요</p>`;
+
+  /* ── 잠금 1: 상황 전체 ── */
+  renderSibSits();
+  /* ── 잠금 2: 부모 대조 ── */
+  renderSibParent();
+  applySibLock();
+  const R=document.getElementById('sib-routes');if(R&&typeof nextRoutes==='function')R.innerHTML=nextRoutes('sib');
+}
+/* 아이 1명 × 상황 1개의 3단 처방 카드. withEv=근거 1줄 노출 여부(유료 구간만) */
+function sibKidRxHTML(kIdx,sitKey,withEv){
+  const k=S.kids[kIdx];const t=sibType(k);
+  const rx=(SIB_RX[sitKey]||{})[t];if(!rx)return '';
+  const EMO={"햇살형":"🌞","불꽃형":"🔥","새벽형":"🌙","무지개형":"🌈"};
+  return `<div class="fit-item" style="margin-top:10px">
+    <h4>${EMO[t]||''} ${k.name} <span class="small" style="font-weight:400">지금 ${t.replace('형','')} 기운이 진한 모습</span></h4>
+    <p style="margin-top:6px"><b>🚫 하지 말 것</b> · ${rx.no}</p>
+    <p style="margin-top:6px"><b>💬 대신 이렇게</b> · ${rx.say}</p>
+    <p style="margin-top:6px"><b>🌟 마친 후</b> · ${rx.after}</p>
+    ${withEv&&rx.ev?`<p class="small" style="margin-top:6px;opacity:.75">📚 ${rx.ev}</p>`:''}
+  </div>`;
+}
+function renderSibSits(){
+  const body=document.getElementById('sib-body');if(!body)return;
+  const ks=sibKids();
+  body.innerHTML=
+   `<div class="chips" style="justify-content:center">${SIB_SITS.map(s=>
+      `<button class="chip${SIB_SIT===s.k?' sel':''}" onclick="sibPickSit('${s.k}')">${s.label}</button>`).join('')}</div>
+    <div id="sib-sit-body">${ks.map(i=>sibKidRxHTML(i,SIB_SIT,true)).join('')}</div>`;
+}
+function sibPickSit(k){SIB_SIT=k;renderSibSits();}
+/* 부모 대조 — 검사한 양육자마다: 기법 5종 × "왜 나에게 어려운가 + 보조팁" + 아이별 궁합 배지 병렬 */
+function renderSibParent(){
+  const body=document.getElementById('sibp-body');if(!body)return;
+  const ps=Object.keys(S.parents||{}).filter(n=>S.parents[n]&&S.parents[n].score);
+  const ks=sibKids();
+  if(!ps.length){
+    body.innerHTML='';
+    document.getElementById('sibp-wrap').style.display='none';
+    document.getElementById('sibp-invite').style.display='block';
+    return;
+  }
+  document.getElementById('sibp-wrap').style.display='';
+  document.getElementById('sibp-invite').style.display='none';
+  body.innerHTML=ps.map(pn=>{
+    const prec=S.parents[pn];const pt=prec.ptype||calcPType(prec.score);
+    const badges=ks.map(i=>{const k=S.kids[i];const kk=sibType(k);
+      const mm=(FITMAT[pt]||{})[kk];return `<span class="small" style="white-space:nowrap">${k.name} ${(mm&&mm[0])?mm[0].split(' ')[0]:''}</span>`;}).join(' · ');
+    return `<div style="margin-top:12px">
+      <p style="font-family:'Jua';font-size:1rem">${pn} — ${pt}</p>
+      <p class="small" style="margin-top:2px">아이별 합: ${badges}</p>
+      ${RX_TECHS.map(t=>{const tip=(RX_PARENT[t.k]||{})[pt];if(!tip)return '';
+        return `<div class="fit-item good" style="margin-top:8px"><h4>${t.label}</h4>
+          <p class="small" style="opacity:.8">${t.desc}</p>
+          <p style="margin-top:4px">${tip}</p></div>`;}).join('')}
+    </div>`;}).join('');
+}
+function applySibLock(){
+  const c1=document.getElementById('sib-cover'),i1=document.getElementById('sib-lock-inner');
+  if(c1){if(SIB_UNLOCKED){c1.style.display='none';i1.classList.remove('locked-peek');}
+         else{c1.style.display='flex';i1.classList.add('locked-peek');}}
+  const c2=document.getElementById('sibp-cover'),i2=document.getElementById('sibp-lock-inner');
+  if(c2){if(SIBP_UNLOCKED){c2.style.display='none';i2.classList.remove('locked-peek');}
+         else{c2.style.display='flex';i2.classList.add('locked-peek');}}
+}
+/* ===== js/render/home.js (317) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -3133,11 +3614,12 @@ function updateHome(){
   if(S.cScore)_st('st-child','완료 ✓');
   if(S.pScore&&S.cScore){_st('st-fit','열기');_st('st-book','열기');}
   if(typeof mapPairs==='function'){const mp=mapPairs();if(mp.ps.length&&mp.ks.length&&(mp.ps.length+mp.ks.length>=3))_st('st-map','열기');}
+  if(typeof sibKids==='function'&&sibKids().length>=2)_st('st-sib','열기');   /* 우리 집 사용설명서 (2026-08-21) */
   if(S.pScore||S.cScore)_st('st-chat','열기');
-  renderDaily();
-  renderHomeGreet();
-  renderWorryChips();
-  if(typeof renderTalkPeek==='function')renderTalkPeek();   /* 대나무숲 미리보기 (첫 1회만 서버 호출) */
+  renderDaily();   /* 홈 카드는 상시 숨김(2026-08-21) — s-daily 가 문장을 재사용하므로 계산만 유지 */
+  renderMainEntry();   /* 무료검사 직행 3버튼 (2026-08-21) */
+  /* 🔴 2026-08-21 홈 축소(사장님 "사주아이처럼 상품만 한눈에"): renderHomeGreet()·renderTalkPeek()
+     호출 제거, 상황어 칩은 상담실 목록(s-chat-list)으로 이사. 함수들은 남겨둠(복구 시 호출만 살리면 됨). */
   /* 🔴 2026-08-17 사장님 지시로 진입 토스트 제거 — "들어가자마자 위에서 밑으로 뜨는 배너 이상해 빼".
      renderHeroTalk() 호출하지 않는다. 함수는 남겨두되(다른 곳에서 안 쓰임) 홈 진입 시 아무것도 뜨지 않는다.
      ⚠️ 되살릴 일이 있으면 이 줄만 복구하면 된다. toast() 자체는 결제·처방권 안내에 계속 쓰이므로 건드리지 말 것. */
@@ -3215,6 +3697,31 @@ const MIMIC_Q=[
 ];
 let MIMIC_I=0,MIMIC_ANS=[];
 function startMimic(){MIMIC_I=0;MIMIC_ANS=[];renderMimicQ();show('s-mimic');}
+/* ── 메인 무료검사 직행 3버튼 (2026-08-21 사장님 지시) ─────────────────────
+   "6문항 미리보기는 메인 훅으로 허접 — 사주아이처럼 처음부터 아이 기질/부모 성향/예비 부모
+   선택해서 본검사(무료)로 바로 들어가게". 본검사 = 검증 척도 22~26문항이라 MBTI급 밀도.
+   버튼은 기존 입구 재사용(chooseWho/beginTest) — 새 화면·새 로직 없음.
+   30초 미리보기는 폐기하지 않고 카드 하단 작은 링크로 강등(공유 링크 유입 대비). */
+function renderMainEntry(){
+  const el=document.getElementById('main-entry');if(!el)return;
+  el.innerHTML=`<div class="mimic-card hook" style="cursor:default">
+    <span class="price free" style="position:static;float:right;margin-left:8px">무료</span>
+    <div style="display:flex;align-items:center;gap:10px">
+      <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="40" height="40" style="margin-right:-16px;z-index:1">
+      <img class="pho md kancho" src="assets/kancho.png" alt="" width="40" height="40">
+      <div style="flex:1;margin-left:6px">
+        <div style="font-family:'Jua';font-size:1.08rem">무료 검사, 바로 시작해요</div>
+        <div class="small">검증된 척도 <b>20~26문항</b> · 약 3분 · 가입 없음</div>
+      </div>
+    </div>
+    <button class="btn mt8" style="background:var(--amber)" onclick="startTest('child')">🐣 아이 기질 검사</button>
+    <button class="btn mt8" style="background:var(--moss)" onclick="startTest('parent')">🌷 부모 성향 검사</button>
+    <button class="btn mt8" style="background:var(--pri)" onclick="startPreParent()">🌱 예비 부모 검사</button>
+    <p class="small" style="text-align:center;margin-top:10px;cursor:pointer" onclick="startMimic()">⚡ 30초 궁합 점수만 먼저 볼래요 ›</p>
+  </div>`;
+}
+/* 예비 부모 = 역할 선택 없이 바로 검사 (items()가 예비부모면 장면 보조문항을 뺀다) */
+function startPreParent(){S.activeP='예비부모';beginTest('parent');}
 function renderMimicQ(){
   const el=document.getElementById('mimic-body');if(!el)return;
   const q=MIMIC_Q[MIMIC_I];
@@ -3327,6 +3834,7 @@ function renderHomeGreet(){
    누르면 그 문장을 들고 상담실로 직행 — 빈 입력창 앞에서 뭘 물을지 몰라 나가는 걸 막는다.
    문구는 부모가 실제로 쓰는 말 그대로(추상어 금지). */
 const WORRIES=[
+ ['🪥 아침 준비','아침마다 양치·옷입기·나갈 준비가 전쟁이에요. 어떻게 해야 순조로울까요?'],   /* 형제 비교 기획서의 원글 상황 (2026-08-21) */
  ['😤 떼쓰기','마트나 집에서 원하는 걸 못 하게 하면 크게 떼를 써요. 어떻게 해야 할까요?'],
  ['🏫 등원거부','어린이집 갈 때마다 울면서 안 가려고 해요.'],
  ['👧👦 형제 다툼','아이들끼리 자꾸 싸워요. 어떻게 중재해야 할지 모르겠어요.'],
@@ -3387,7 +3895,8 @@ function renderDaily(){
   if(!el||!card)return;
   const kid=S.kids&&S.activeK!=null?S.kids[S.activeK]:null;
   if(!S.cScore){card.style.display='none';return;}   // 근거 없으면 아예 안 띄운다
-  card.style.display='';
+  /* card.style.display=''; — 홈 노출 폐기 (2026-08-21 사장님 홈 축소). 아래 계산은 s-daily(오늘의 한마디)가
+     dailyText()로 재사용하므로 유지. 홈에 되살리려면 이 줄만 복구. */
 
   const c=S.cScore;
   /* 제일 튀는 축을 찾아 그 축에 맞는 처방을 고른다 */
@@ -3413,6 +3922,364 @@ function renderDaily(){
   const dc=document.getElementById('daily-cta');if(dc)dc.style.display='none';
 }
 
+/* ===== js/render/scan.js (357) ===== */
+/* ══════════════ Layer 0 기질 스캐너 (2026-08-21 사장님 기획서 「라이트 퍼널」) ══════════════
+   친일파스캐너 × 사주아이 — 무기명 · 7문항 · 40초 · 즉시 결과 + 공유카드.
+   첫 화면 = 스캐너 랜딩. 사장님 재지시(2026-08-21): 대상이 육아 부모/예비 부모/내 기질이 먼저인
+   사람으로 갈리므로 **사주아이처럼 선택 타일 여러 개**를 띄운다 — 아이 스캔 / 내 성향 스캔 / 예비 부모.
+   판정 엔진은 본검사와 동일(calcKType·calcKPcts·calcPType) — 스캐너와 본검사 결과가 안 뒤집힌다.
+   무기명 층에서는 아무것도 묻지 않는다(애칭·생년월은 '정밀 리포트 받기'에서 처음).
+   도서 제휴(쿠팡 파트너스)는 사장님 지시로 뺐다(2026-08-21 "우리는 일단 빼"). */
+
+/* 아이 문항 7개 — 군집 판별 6차원(rhy·app·ada·int·moo·act) + 7번은 int 보조. 연령 중립, 5점 SCALE. */
+const SCAN_Q=[
+ {d:'rhy',t:'먹고 자는 시간이 매일 비슷한 편이다'},
+ {d:'app',t:'처음 보는 사람이나 장소에도 스스럼없이 다가간다'},
+ {d:'ada',t:'계획이 바뀌거나 환경이 달라져도 금방 적응한다'},
+ {d:'int',t:'좋고 싫음을 크고 강하게 표현한다'},
+ {d:'moo',t:'하루 중 웃고 기분 좋은 시간이 많다'},
+ {d:'act',t:'몸을 쓰는 활동을 좋아하고 에너지가 넘친다'},
+ {d:'int2',t:'속상하면 오래가고 쉽게 잊지 않는다'}
+];
+/* 부모 문항 7개 — 본검사 P_ITEMS(Mini-IPIP)에서 그대로 발췌(문구 단일 소스, 전부 정채점 문항).
+   E·N 은 2문항(유형 체감이 가장 큰 축), C·A·O 는 1문항. */
+const SCAN_PQ_IDX=[0,3,2,1,4,10,13];   /* P_ITEMS 인덱스: E,N,C,A,O,E,N */
+const SCAN_AGES=[['아기 (0~3)','i'],['유아 (4~7)','p'],['초등','s'],['청소년+','a']];
+let SCAN={who:null,age:null,i:0,ans:[],from:null};   /* who: child|parent|pre / from: 딥링크 친구 유형 */
+let SCAN_SIBS=[];   /* 이번 세션에서 스캔한 형제 결과 [{type}] — 무기명 형제 비교 맛보기 (2026-08-21 형제 기획서 태스크5) */
+
+/* 결과 훅 — child.js HOOK 과 같은 문장(바꿀 땐 양쪽 함께) */
+const SCAN_HOOK={"햇살형":"순한 게 아니라, 안정된 겁니다","불꽃형":"떼가 센 게 아니라, 화력이 큰 겁니다","새벽형":"느린 게 아니라, 신중한 겁니다","무지개형 (혼합)":"한 가지 색으로는 설명이 안 되는 아이"};
+const SCAN_EMO={"햇살형":"🌞","불꽃형":"🔥","새벽형":"🌙","무지개형 (혼합)":"🌈"};
+const SCAN_COL={"햇살형":"var(--amber)","불꽃형":"#C2544E","새벽형":"var(--pri)"};
+/* 부모 유형 배지·한 줄 — 설명은 P_HIGH(본검사와 같은 워딩) 재사용 */
+const SCAN_PEMO={"활력형":"⚡","온기형":"🌷","등대형":"🗼","안테나형":"📡","탐험형":"🧭","카멜레온형":"🦎"};
+const SCAN_PAXIS={"활력형":"E","온기형":"A","등대형":"C","안테나형":"N","탐험형":"O"};
+const SCAN_PHOOK={"활력형":"기운 넘치는 게 아니라, 아이의 놀이 엔진입니다","온기형":"무른 게 아니라, 아이 마음의 안전기지입니다","등대형":"딱딱한 게 아니라, 예측 가능한 세상을 주는 겁니다","안테나형":"예민한 게 아니라, 신호를 빨리 읽는 겁니다","탐험형":"산만한 게 아니라, 아이 세계를 넓히는 겁니다","카멜레온형":"이도저도 아닌 게 아니라, 맞춰주는 폭이 넓은 겁니다"};
+
+/* ── 랜딩: 사주아이식 선택 타일 ── */
+function renderScanLanding(){
+  const el=document.getElementById('scan-body');if(!el)return;
+  const from=SCAN.from;
+  el.innerHTML=`
+   <div style="text-align:center;padding-top:26px">
+     <div class="cats" style="justify-content:center">
+       <img class="hero-pho" src="assets/chuvi_full.png" alt="츄비 연구원" width="320" height="480">
+       <img class="hero-pho" src="assets/kancho_full.png" alt="칸쵸 연구원" width="320" height="480">
+     </div>
+     <h1 style="font-family:'Jua';font-size:1.9rem;margin-top:12px">기질냥구소</h1>
+     <p class="small" style="margin-top:4px">부모 × 자녀 기질·성향 궁합</p>
+     ${from?`<div class="card" style="margin:14px 0 2px;background:var(--pri-soft);border-color:var(--pri)">
+        <p style="font-family:'Jua';font-size:1.02rem">친구네 아이는 <b>${SCAN_EMO[from]||''} ${from}</b>이래요.<br>우리 아이는 어떤 기질일까요?</p></div>`
+      :`<p style="font-family:'Jua';font-size:1.2rem;margin-top:8px">40초 스캔, 질문 7개 <span class="small">(가입·이름 없음)</span></p>`}
+     <div class="card" style="margin-top:12px;text-align:left;cursor:pointer" onclick="scanPick('child')">
+       <span class="price free">무료</span>
+       <div style="display:flex;align-items:center;gap:12px">
+         <div style="font-size:1.7rem">🐣</div>
+         <div style="flex:1"><b style="font-family:'Jua';font-size:1.08rem">우리 아이 기질 스캔</b>
+           <p class="small">햇살·불꽃·새벽, 어느 기운이 진할까</p></div>
+         <span class="small">›</span>
+       </div>
+     </div>
+     <div class="card" style="margin-top:10px;text-align:left;cursor:pointer" onclick="scanPick('parent')">
+       <span class="price free">무료</span>
+       <div style="display:flex;align-items:center;gap:12px">
+         <div style="font-size:1.7rem">🌷</div>
+         <div style="flex:1"><b style="font-family:'Jua';font-size:1.08rem">내 성향 스캔</b>
+           <p class="small">나는 어떤 부모일까 — 6가지 유형</p></div>
+         <span class="small">›</span>
+       </div>
+     </div>
+     <div class="card" style="margin-top:10px;text-align:left;cursor:pointer" onclick="scanPick('pre')">
+       <span class="price free">무료</span>
+       <div style="display:flex;align-items:center;gap:12px">
+         <div style="font-size:1.7rem">🌱</div>
+         <div style="flex:1"><b style="font-family:'Jua';font-size:1.08rem">예비 부모 스캔</b>
+           <p class="small">아이가 아직 없어도 — 양육 에너지 예보</p></div>
+         <span class="small">›</span>
+       </div>
+     </div>
+     <p class="small" style="margin-top:14px;cursor:pointer;opacity:.75" onclick="scanSkip()">그냥 둘러볼래요 ›</p>
+     <p class="small" style="margin-top:16px;opacity:.6;line-height:1.6">기질에 좋고 나쁨은 없으며, 이 결과는 전문 심리검사·진단이 아닌<br>공개 연구 기반 참고 콘텐츠입니다.</p>
+   </div>`;
+  window.scrollTo(0,0);
+}
+function scanPick(who){
+  SCAN.who=who;SCAN.i=0;SCAN.ans=[];
+  if(who==='child'){renderScanAge();return;}
+  renderScanQ();
+}
+function renderScanAge(){
+  const el=document.getElementById('scan-body');if(!el)return;
+  el.innerHTML=`
+   <div style="text-align:center;padding-top:26px">
+     <button class="back" style="float:left" onclick="renderScanLanding()">← 뒤로</button>
+     <div style="clear:both"></div>
+     <p style="font-family:'Jua';font-size:1.15rem;margin-top:10px">아이 나이만 고르면 바로 시작해요</p>
+     <p class="small" style="margin-top:4px">이름은 안 물어봐요</p>
+     <div class="chips" style="justify-content:center;margin-top:14px">
+       ${SCAN_AGES.map(([n,b])=>`<button class="chip" style="font-size:.95rem;padding:11px 15px" onclick="scanStart('${b}')">${n}</button>`).join('')}
+     </div>
+   </div>`;
+}
+function scanStart(band){SCAN.age=band;SCAN.i=0;SCAN.ans=[];renderScanQ();}
+function scanSkip(){   /* 스캐너를 건너뛰는 사람도 손님 — 탭바 잠금 해제하고 홈으로 */
+  try{localStorage.setItem('kn_scan_done','1');}catch(e){}
+  scanTabbar(true);updateHome();show('s-home');
+}
+function scanQList(){return SCAN.who==='child'?SCAN_Q:SCAN_PQ_IDX.map(i=>P_ITEMS[i]);}
+function renderScanQ(){
+  const el=document.getElementById('scan-body');if(!el)return;
+  const list=scanQList();const q=list[SCAN.i];const isC=SCAN.i%2===0;
+  const prefix=SCAN.who==='child'?'우리 아이는 ':'나는 ';
+  el.innerHTML=`
+   <div style="padding-top:20px">
+     <div class="duo"><img class="pho md ${isC?'chuvi':'kancho'}" src="assets/${isC?'chuvi':'kancho'}.png" alt="" width="46" height="46">
+       <div class="bubble ${isC?'amber':'moss'}"><span class="who">${isC?'츄비 연구원':'칸쵸 연구원'}</span>${isC?'평소 모습 그대로 골라주세요. 정답은 없어요!':'요즘 한 달 기준으로 보면 된다냥.'}</div></div>
+     <div class="progress"><i style="width:${SCAN.i/list.length*100}%"></i></div>
+     <div style="display:flex;justify-content:space-between;align-items:center">
+       <div class="qnum">${SCAN.i+1} / ${list.length}</div>
+       <button class="back" style="margin:0" onclick="scanPrev()">↩ ${SCAN.i>0?'이전 문항':'처음으로'}</button>
+     </div>
+     <div class="qtext">${prefix}${q.t}</div>
+     <div class="opts">${SCALE.map((s,i)=>`<button class="opt${SCAN.ans[SCAN.i]===i+1?' sel':''}" onclick="scanAnswer(${i+1})">${s}</button>`).join('')}</div>
+   </div>`;
+  window.scrollTo(0,0);
+}
+function scanPrev(){
+  if(SCAN.i>0){SCAN.i--;renderScanQ();}
+  else if(SCAN.who==='child'){renderScanAge();}
+  else renderScanLanding();
+}
+function scanAnswer(v){
+  SCAN.ans[SCAN.i]=v;SCAN.i++;
+  if(SCAN.i<scanQList().length){renderScanQ();return;}
+  if(SCAN.who==='child')renderScanResult();else renderScanPResult();
+}
+function scanAvg(){
+  const a=SCAN.ans;
+  return {rhy:a[0],app:a[1],ada:a[2],int:(a[3]+a[6])/2,moo:a[4],act:a[5]};
+}
+function scanPAvg(){
+  const a=SCAN.ans;   /* SCAN_PQ_IDX 순서 = E,N,C,A,O,E,N (전부 정채점) */
+  return {E:(a[0]+a[5])/2,N:(a[1]+a[6])/2,C:a[2],A:a[3],O:a[4]};
+}
+/* 3문장 요약(§3-3) — 여기서 다 주면 본검사 갈 이유가 없다. */
+function scanSents(t){return (t||'').replace(/<[^>]+>/g,'').split(/(?<=\.)\s+/).filter(s=>s.trim());}
+function scanDone(){try{localStorage.setItem('kn_scan_done','1');}catch(e){}scanTabbar(true);}
+
+/* ── 아이 결과 ── */
+function renderScanResult(){
+  const el=document.getElementById('scan-body');if(!el)return;
+  const avg=scanAvg();
+  const type=calcKType(avg);
+  const pct=calcKPcts(avg);
+  const sorted=Object.entries(pct).sort((a,b)=>b[1]-a[1]);
+  const isMix=type.indexOf('무지개')===0;
+  const aN=sorted[0][0],bN=sorted[1][0];
+  const mixKey=[aN,bN].sort().join('|');
+  const ms=scanSents(CLUSTER_MAIN[aN]);
+  const xs=scanSents(CLUSTER_MIX[mixKey]);
+  const summary=[ms[0]||'',(xs[0]||''),(ms[ms.length-1]||'')].filter(Boolean).join(' ');
+  const p100=v=>Math.round(v*100);
+  scanDone();
+  el.innerHTML=`
+   <div style="text-align:center;padding-top:20px">
+     <p class="small">기질 스캐너 · 7문항 결과</p>
+     <p style="font-family:'Jua';font-size:1.6rem;margin-top:8px">${SCAN_EMO[type]||''} ${isMix?'무지개형 기운의 아이':type+' 기운이 가장 진한 아이'}</p>
+     <p style="font-family:'Jua';font-size:1.05rem;color:var(--pri);margin-top:6px">${SCAN_HOOK[type]||''}</p>
+     <div class="card" style="margin-top:14px;text-align:left">
+       ${sorted.map(([n,v])=>`
+         <div style="display:flex;align-items:center;gap:8px;margin:7px 0">
+           <span style="font-family:'Jua';font-size:.88rem;flex:0 0 62px">${SCAN_EMO[n]} ${n}</span>
+           <div style="flex:1;height:14px;background:var(--line);border-radius:99px;overflow:hidden">
+             <i style="display:block;height:100%;width:${p100(v)}%;background:${SCAN_COL[n]||'var(--pri)'};border-radius:99px"></i>
+           </div>
+           <b style="font-size:.85rem;flex:0 0 38px;text-align:right">${p100(v)}%</b>
+         </div>`).join('')}
+       <p class="small" style="margin-top:4px">균등선 33% 기준 — 어느 기운이 진한지의 비율이에요</p>
+       <p style="font-size:.9rem;line-height:1.8;margin-top:10px">${summary}</p>
+     </div>
+     ${SCAN_SIBS.length?`<p class="small" style="margin-top:10px">우리 아이들: <b>${SCAN_SIBS.map(s=>s.type.replace(' (혼합)','')).concat([type.replace(' (혼합)','')]).join(' × ')}</b> — 같은 집인데 이렇게 달라요</p>`:''}
+     <div style="display:flex;gap:8px;margin-top:12px">
+       <button class="btn" style="flex:1;background:var(--amber)" onclick="scanSaveCard()">📥 결과 카드 저장</button>
+       <button class="btn" style="flex:1" onclick="scanShare()">🔗 공유하기</button>
+     </div>
+     <button class="btn moss mt8" onclick="scanAddSib()">👶 다른 아이도 스캔해보기 (40초)</button>
+     <div class="card" style="margin-top:14px;border:2px solid var(--pri);background:var(--pri-soft);text-align:left">
+       <p style="font-family:'Jua';font-size:1.05rem">이건 7문항 맛보기예요</p>
+       <p style="font-size:.88rem;margin-top:4px">연령 맞춤 <b>22문항 정밀 리포트</b>는 무료 — 10가지 온도계와 잘 맞는 부모 유형까지 나와요${SCAN_SIBS.length?'. 아이별로 저장하면 <b>형제 비교 리포트</b>로 이어져요':''}</p>
+       <button class="btn pri mt8" onclick="scanToPrecise()">정밀 리포트 받기 (무료) →</button>
+     </div>
+     <p class="small" style="margin-top:14px;opacity:.6">기질에 좋고 나쁨은 없으며, 전문 심리검사·진단이 아닌 공개 연구 기반 참고 콘텐츠입니다.</p>
+     <p class="small" style="margin-top:8px;cursor:pointer" onclick="updateHome();show('s-home')">기질냥구소 둘러보기 ›</p>
+   </div>`;
+  window.scrollTo(0,0);
+}
+/* ── 부모/예비 결과 — 판정은 본검사와 같은 calcPType ── */
+function renderScanPResult(){
+  const el=document.getElementById('scan-body');if(!el)return;
+  const avg=scanPAvg();
+  const type=calcPType(avg);
+  const isPre=SCAN.who==='pre';
+  const axisNames={E:'활력',A:'온기',C:'계획',N:'감정 안테나',O:'탐험'};
+  const sorted=Object.entries(avg).sort((a,b)=>b[1]-a[1]);
+  /* 설명 2문장 — 가장 높은 축과 가장 낮은 축을 본검사 워딩(P_HIGH/P_LOW)으로 */
+  const hiK=sorted[0][0],loK=sorted[4][0];
+  const desc=(type!=='카멜레온형'
+    ?`${P_HIGH[SCAN_PAXIS[type]]||''} 쪽이 가장 진해요.`
+    :'뚜렷한 극단 없이 상황 따라 유연하게 움직이는 타입이에요.')
+   +` 그리고 ${avg[loK]<=2.6?(P_LOW[loK]||''):(P_HIGH[sorted[1][0]]||'')} 기운도 함께 갖고 있어요.`;
+  const p100=v=>Math.round(v/5*100);
+  scanDone();
+  el.innerHTML=`
+   <div style="text-align:center;padding-top:20px">
+     <p class="small">${isPre?'예비 부모':'내'} 성향 스캐너 · 7문항 결과</p>
+     <p style="font-family:'Jua';font-size:1.6rem;margin-top:8px">${SCAN_PEMO[type]||''} 나는 ${type} 부모</p>
+     <p style="font-family:'Jua';font-size:1.02rem;color:var(--pri);margin-top:6px">${SCAN_PHOOK[type]||''}</p>
+     <div class="card" style="margin-top:14px;text-align:left">
+       ${sorted.map(([k,v])=>`
+         <div style="display:flex;align-items:center;gap:8px;margin:7px 0">
+           <span style="font-family:'Jua';font-size:.88rem;flex:0 0 84px">${axisNames[k]||k}</span>
+           <div style="flex:1;height:14px;background:var(--line);border-radius:99px;overflow:hidden">
+             <i style="display:block;height:100%;width:${p100(v)}%;background:var(--pri);border-radius:99px"></i>
+           </div>
+           <b style="font-size:.85rem;flex:0 0 38px;text-align:right">${v.toFixed(1)}</b>
+         </div>`).join('')}
+       <p class="small" style="margin-top:4px">5점 척도 — 중간값 3.0 기준이에요</p>
+       <p style="font-size:.9rem;line-height:1.8;margin-top:10px">${desc}</p>
+     </div>
+     <div style="display:flex;gap:8px;margin-top:12px">
+       <button class="btn" style="flex:1;background:var(--amber)" onclick="scanSaveCard()">📥 결과 카드 저장</button>
+       <button class="btn" style="flex:1" onclick="scanShare()">🔗 공유하기</button>
+     </div>
+     <div class="card" style="margin-top:14px;border:2px solid var(--pri);background:var(--pri-soft);text-align:left">
+       <p style="font-family:'Jua';font-size:1.05rem">이건 7문항 맛보기예요</p>
+       <p style="font-size:.88rem;margin-top:4px">${isPre
+         ?'<b>예비 부모 정밀 리포트</b>는 무료 — 5가지 축 전체와 <b>세부 46유형</b>, 양육 에너지 예보까지 나와요'
+         :'<b>26문항 정밀 리포트</b>는 무료 — 5가지 축 전체와 <b>세부 46유형</b>, 우리 아이와의 궁합까지 이어져요'}</p>
+       <button class="btn pri mt8" onclick="${isPre?'startPreParent()':'goParentTest()'}">정밀 리포트 받기 (무료) →</button>
+     </div>
+     <p class="small" style="margin-top:14px;opacity:.6">기질에 좋고 나쁨은 없으며, 전문 심리검사·진단이 아닌 공개 연구 기반 참고 콘텐츠입니다.</p>
+     <p class="small" style="margin-top:8px;cursor:pointer" onclick="updateHome();show('s-home')">기질냥구소 둘러보기 ›</p>
+   </div>`;
+  window.scrollTo(0,0);
+}
+function scanToPrecise(){
+  /* 여기서 처음으로 애칭+생년월 입력(§3-3-5) — 기존 아이 선택/추가 화면 재사용 */
+  chooseWho('child');
+}
+/* 형제 이어 스캔 — 방금 결과를 담아두고 다음 아이 시작 (무기명 유지) */
+function scanAddSib(){
+  try{SCAN_SIBS.push({type:calcKType(scanAvg())});}catch(e){}
+  renderScanAge();
+}
+
+/* ── 공유 카드 (§3-4 바이럴 코어) — canvas 1080×1080, 무기명(유형만) ── */
+function scanCardData(){
+  if(SCAN.who==='child'){
+    const avg=scanAvg(),type=calcKType(avg),pct=calcKPcts(avg);
+    const cols={"햇살형":'#E0A23C',"불꽃형":'#C2544E',"새벽형":'#7C5CC9'};
+    /* 형제를 이어 스캔했으면 유형 배지를 나란히 — "우리 삼남매: 햇살·무지개·새벽" (기획서 태스크5) */
+    const sibs=SCAN_SIBS.map(s=>s.type.replace(' (혼합)','')).concat([type.replace(' (혼합)','')]);
+    return {emo:SCAN_EMO[type]||'🐾',
+      title:type.indexOf('무지개')===0?'무지개형 기운의 아이':type+' 기운이 진한 아이',
+      hook:SCAN_HOOK[type]||'',
+      sibLine:sibs.length>1?'우리 아이들: '+sibs.join(' × '):null,
+      bars:Object.entries(pct).sort((a,b)=>b[1]-a[1]).map(([n,v])=>({label:n,pct:v,col:cols[n]||'#7C5CC9',txt:Math.round(v*100)+'%'})),
+      link:'https://gijilnyang.com/?t='+encodeURIComponent(type)+'&p='+['햇살형','불꽃형','새벽형'].map(k=>Math.round(pct[k]*100)).join(','),
+      shareText:sibs.length>1
+        ?'우리 아이들 기질 스캔: '+sibs.join(' × ')+' — 같은 집인데 이렇게 달라요. 너네 집은?'
+        :'우리 아이 기질 스캔 결과: '+type+' — '+(SCAN_HOOK[type]||'')+' 너네 아이는?'};
+  }
+  const avg=scanPAvg(),type=calcPType(avg);
+  const axisNames={E:'활력',A:'온기',C:'계획',N:'안테나',O:'탐험'};
+  return {emo:SCAN_PEMO[type]||'🐾',
+    title:'나는 '+type+' 부모',
+    hook:SCAN_PHOOK[type]||'',
+    bars:Object.entries(avg).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>({label:axisNames[k]||k,pct:v/5,col:'#7C5CC9',txt:v.toFixed(1)})),
+    link:'https://gijilnyang.com/',
+    shareText:'내 부모 성향 스캔 결과: '+type+' — '+(SCAN_PHOOK[type]||'')+' 너는 어떤 부모야?'};
+}
+function scanCardCanvas(){
+  const d=scanCardData();
+  const cv=document.createElement('canvas');cv.width=1080;cv.height=1080;
+  const x=cv.getContext('2d');
+  if(!x.roundRect)x.roundRect=function(a,b,c,dd){this.rect(a,b,c,dd);};   /* 옛 웹뷰 폴백 */
+  x.fillStyle='#FCFBFE';x.fillRect(0,0,1080,1080);
+  x.fillStyle='#7C5CC9';x.font="700 64px 'Jua',sans-serif";x.textAlign='center';
+  x.fillText('기질냥구소',540,140);
+  x.fillStyle='#8B85A0';x.font="400 34px 'Gowun Dodum',sans-serif";
+  x.fillText('츄비와 칸쵸의 기질 상담소',540,196);
+  x.font="120px sans-serif";x.fillText(d.emo,540,380);
+  x.fillStyle='#2E2A3A';x.font="700 72px 'Jua',sans-serif";
+  x.fillText(d.title,540,500);
+  x.fillStyle='#7C5CC9';x.font="400 44px 'Jua',sans-serif";
+  x.fillText(d.hook,540,570);
+  if(d.sibLine){x.fillStyle='#8B85A0';x.font="400 38px 'Jua',sans-serif";x.fillText(d.sibLine,540,630);}
+  d.bars.forEach((b,i)=>{
+    const y=680+i*90;
+    x.textAlign='left';x.fillStyle='#2E2A3A';x.font="400 36px 'Jua',sans-serif";
+    x.fillText(b.label,140,y+14);
+    x.fillStyle='#EBE7F4';x.beginPath();x.roundRect(300,y-18,560,44,22);x.fill();
+    x.fillStyle=b.col;x.beginPath();x.roundRect(300,y-18,Math.max(44,560*b.pct),44,22);x.fill();
+    x.fillStyle='#2E2A3A';x.font="700 36px 'Jua',sans-serif";
+    x.fillText(b.txt,890,y+12);
+  });
+  x.textAlign='center';x.fillStyle='#8B85A0';x.font="400 36px 'Gowun Dodum',sans-serif";
+  x.fillText('우리 집은 어떤 조합일까? · gijilnyang.com',540,1010);
+  return cv;
+}
+function scanSaveCard(){
+  try{
+    const cv=scanCardCanvas();
+    cv.toBlob(b=>{
+      const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='기질스캔결과.png';
+      document.body.appendChild(a);a.click();a.remove();
+      toast('결과 카드를 저장했어요! 인스타·카톡에 자랑해보세요 🐾');
+    },'image/png');
+  }catch(e){scanCopyLink();}
+}
+async function scanShare(){
+  const d=scanCardData();
+  try{
+    const cv=scanCardCanvas();
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+    const file=new File([blob],'gijil_scan.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],text:d.shareText+' '+d.link});return;
+    }
+    if(navigator.share){await navigator.share({text:d.shareText,url:d.link});return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  scanCopyLink();
+}
+function scanCopyLink(){
+  const d=scanCardData();
+  try{navigator.clipboard.writeText(d.link);toast('링크를 복사했어요! 붙여넣기만 하면 돼요');}
+  catch(e){prompt('이 링크를 복사해 공유하세요',d.link);}
+}
+
+/* ── 부팅 진입 판단 + 딥링크 파서 — main.js 에서 호출 ── */
+function scanTabbar(on){
+  const tb=document.querySelector('.tabbar');if(tb)tb.style.display=on?'':'none';
+}
+function scanBoot(){
+  let deep=null;
+  try{const sp=new URLSearchParams(location.search);if(sp.get('t'))deep=decodeURIComponent(sp.get('t'));}catch(e){}
+  let done=null;try{done=localStorage.getItem('kn_scan_done');}catch(e){}
+  const hasData=(S.kids&&S.kids.some(k=>k&&k.score))||!!S.pScore||Object.keys(S.parents||{}).length>0;
+  if(deep){
+    /* 공유 딥링크 — 누구든 스캐너 랜딩(친구 프리뷰)부터. 기존 사용자는 탭바 유지 */
+    SCAN.from=deep;scanTabbar(!!(done||hasData));
+    renderScanLanding();show('s-scan');return true;
+  }
+  if(!done&&!hasData){
+    /* 신규 방문자 — 첫 화면 = 스캐너, 탭바는 결과·건너뛰기 이후 노출 */
+    scanTabbar(false);
+    renderScanLanding();show('s-scan');return true;
+  }
+  return false;
+}
 /* ===== js/render/career.js (167) ===== */
 /* ══════════════ 미래 직업 — 진행 · 채점 · 리포트 ══════════════
    무료: 조합 유형명(careerCombo) + 잘 맞는 일 5가지(주3+부2) + 긴 서사  (공유 카드도 여기까지)
@@ -3581,7 +4448,7 @@ async function unlockCareer(){
   save();
 }
 function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-/* ===== js/share.js (263) ===== */
+/* ===== js/share.js (273) ===== */
 /* ══════════════ 공유 · 초대 · 선물 · 게이지 · 다음 루트 ══════════════
    광고비 0원으로 150만을 모은 사주아이의 엔진이 공유였다.
    공유는 나중에 붙이는 기능이 아니라 경험의 일부다. */
@@ -3617,7 +4484,7 @@ function inviteReward(){
 /* ── 공유 시트 ── */
 const SHARE_TITLES={
   career:'미래 직업', child:'아이 기질', parent:'부모 성향', fit:'우리 궁합', family:'원가족', app:'기질냥구소',
-  book:'우리 집 이야기', mimic:'30초 궁합', map:'가족 궁합 지도'
+  book:'우리 집 이야기', mimic:'30초 궁합', map:'가족 궁합 지도', sibling:'우리 집 사용설명서'
 };
 function shareCardText(kind){
   const kid=S.kids[S.activeK]||{};
@@ -3628,7 +4495,7 @@ function shareCardText(kind){
     return `🐣 ${kid.name||'우리 아이'} (${kid.label||''}) · ${careerCombo(cr).n}\n잘 맞는 일 5가지\n${j}\n"${careerOneLiner(cr.top,cr.second)}"`;
   }
   if(kind==='child'&&kid.ktype)  return `🐣 ${kid.name||'우리 아이'} (${kid.label||''})\n기질 유형 · ${kid.ktype}`;
-  if(kind==='parent'&&S.activeP) return `${ROLE_EMOJI[S.activeP]||'🌷'} ${S.activeP} · ${(S.parents[S.activeP]||{}).ptype||''}`;
+  if(kind==='parent'&&S.activeP){const pr=S.parents[S.activeP]||{};return `${ROLE_EMOJI[S.activeP]||'🌷'} ${S.activeP} · ${pr.psub||pr.ptype||''}`;}   /* 세부 유형 우선 (2026-08-21) */
   if(kind==='fit'){
     const pt=(S.parents[S.activeP]||{}).ptype||(S.pScore&&typeof calcPType==='function'?calcPType(S.pScore):'');
     const kb=(kid.kbase||kid.ktype||'');const kk=kb.indexOf('무지개')===0?'무지개형':kb;
@@ -3643,6 +4510,11 @@ function shareCardText(kind){
   if(kind==='map'&&typeof mapPairs==='function'){   /* 가족 궁합 지도 (2026-08-15) */
     const mp=mapPairs();const n=mp.ps.length*mp.ks.length;
     return `🗺 우리 가족 궁합 지도\n양육자 ${mp.ps.length}명 × 아이 ${mp.ks.length}명 = 조합 ${n}개\n누가 누구와 잘 맞는지 한눈에`;
+  }
+  if(kind==='sibling'&&typeof sibKids==='function'){   /* 형제 비교 (2026-08-21) — 다자녀 "우리 집도 똑같아요" 정조준 */
+    const ks=sibKids();
+    const types=ks.map(i=>{const k=S.kids[i];const b=k.kbase||k.ktype||'';return (b.indexOf('무지개')===0?'무지개':b.replace('형','').split(' ')[0]);}).join('·');
+    return `📖 우리 집 사용설명서\n${ks.map(i=>S.kids[i].name).join('·')} — ${types}\n같은 집에서 태어나도 이렇게 다릅니다`;
   }
   if(kind==='mimic'){
     /* 🔴 문항을 푸는 도중에도 공유 FAB 이 떠서 미완성 결과가 나가던 것 방지 (2026-08-15 재검토) */
@@ -3669,6 +4541,7 @@ function shareHashtag(kind){
   }
   if(kind==='mimic')return '#우리집궁합점수';
   if(kind==='map')return '#우리가족궁합지도';
+  if(kind==='sibling')return '#우리집사용설명서';
   return '#기질냥구소';
 }
 /* 비교 CTA — "너네 애는 뭐 나왔어?"를 유발 (바이럴_후킹 공식 6·5장) */
@@ -3681,6 +4554,7 @@ function shareCompareCTA(kind){
   if(kind==='book')return '우리 집 사용설명서, 한 권으로 👉 온가족 종합 리포트';
   if(kind==='mimic')return '너희 집 궁합은 몇 점? 👉 30초 테스트';
   if(kind==='map')return '너희 집 조합은 어때? 👉 가족 궁합 지도';
+  if(kind==='sibling')return '너네 형제는 어떤 조합이야? 👉 형제 비교 리포트';
   return '우리 애는 어떤 기질일까? 👉 3분 검사';
 }
 function openShare(kind){
@@ -3833,6 +4707,9 @@ function nextRoutes(from){
   if(from!=='child'&&!hasC) R.push(['🐣','아이 기질검사','연령 맞춤 문항 · 4분','startTest(\'child\')','무료']);
   if(from!=='parent')       R.push(['🌷','다른 양육자도 검사','아빠·조부모·이모삼촌 누구나','startTest(\'parent\')','무료']);
   if(from!=='fit'&&hasP&&hasC) R.push(['💞','부모 × 아이 궁합','마찰 지점과 처방까지','goFit()','까까 1']);
+  /* 우리 집 사용설명서 — 아이 2명부터 (2026-08-21) */
+  if(from!=='sib'&&typeof sibKids==='function'&&sibKids().length>=2)
+    R.push(['📖','우리 집 사용설명서','같은 상황, 아이마다 다른 대사','goSibling()','일부무료']);
   /* 가족 궁합 지도 — 가족이 셋 이상일 때만 (2:1 · 1:2 부터 매트릭스가 의미 있다) */
   if(from!=='map'&&typeof mapPairs==='function'){const mp=mapPairs();if(mp.ps.length&&mp.ks.length&&(mp.ps.length+mp.ks.length>=3))
     R.push(['🗺','우리 가족 궁합 지도','누가 누구와 잘 맞는지 한눈에','goMap()','까까 3']);}
@@ -3845,7 +4722,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (512) ===== */
+/* ===== js/chat.js (513) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -3925,6 +4802,7 @@ function goChat(){
   renderSnack();
   show('s-chat-list');
   renderChatGate();
+  if(typeof renderWorryChips==='function')renderWorryChips();   /* 상황어 칩 — 홈에서 이사 (2026-08-21) */
   const tip=document.getElementById('chat-tip');
   if(tip)tip.style.display='none';   /* 안내는 게이트 카드가 대신한다 */
 }
@@ -4539,7 +5417,7 @@ function maybeAskLogin(){
     if(h.scrollHeight<=window.innerHeight*1.15)onScroll();
   },2500);
 }
-/* ===== js/wallet.js (219) ===== */
+/* ===== js/wallet.js (264) ===== */
 /* ══════════════ 까까 화폐 · 잠금 · 내정보 · 오늘의 한마디 ══════════════ */
 /* 화폐는 '까까' 하나뿐이다(방울 폐지). 까까 1개 = 1,000원. */
 
@@ -4642,14 +5520,43 @@ async function _demoTopup(n, talk, label){
   alert(r&&r.error==='daily'?'오늘 데모 충전 한도에 닿았어요! 내일 다시 해주세요.':'잠시 후 다시 시도해주세요!');
   return false;
 }
+/* ── 결제 바텀시트 (2026-08-21 라이트 퍼널 §4 — 시트 1장: 상품명·가격·간편결제 버튼 3개) ──
+   토스 가입(정식배포 전) 전까지는 어떤 수단을 눌러도 데모 충전(_demoTopup).
+   🔴 라이브 전환: 각 buy 함수의 go 콜백 안 _demoTopup 을 _tossPay({pack:i}/{kka:n}) 로 교체하고
+   requestPayment 의 method 를 선택 수단(KAKAOPAY/TOSSPAY/NAVERPAY→easyPay)으로 넘긴다. */
+let PAY_CTX=null;
+function openPaySheet(ctx){
+  const ov=document.getElementById('pay-ov');
+  if(!ov){ctx.go('DEMO');return;}   /* 컨테이너가 없으면 진행이라도 되게 (버튼이 죽으면 안 된다) */
+  PAY_CTX=ctx;
+  ov.innerHTML=`<div class="pay-sheet" onclick="event.stopPropagation()">
+    <p style="font-family:'Jua';font-size:1.1rem">${ctx.name}</p>
+    ${ctx.sub?`<p class="small" style="margin-top:2px">${ctx.sub}</p>`:''}
+    <p style="font-family:'Jua';font-size:1.6rem;margin-top:6px">${ctx.won}</p>
+    <button class="pay-m" onclick="_paySelect('KAKAOPAY')"><span style="font-size:1.15rem">💛</span><b>카카오페이</b></button>
+    <button class="pay-m" onclick="_paySelect('TOSSPAY')"><span style="font-size:1.15rem">💙</span><b>토스페이</b></button>
+    <button class="pay-m" onclick="_paySelect('NAVERPAY')"><span style="font-size:1.15rem">💚</span><b>네이버페이</b></button>
+    <p class="small" style="margin-top:10px;opacity:.65">지금은 준비 기간이라 어떤 수단을 눌러도 결제 없이 바로 충전돼요</p>
+    <button class="btn ghost mt8" onclick="closePaySheet()">닫기</button>
+  </div>`;
+  ov.classList.add('on');ov.onclick=closePaySheet;
+}
+function closePaySheet(){const ov=document.getElementById('pay-ov');if(ov){ov.classList.remove('on');ov.innerHTML='';}PAY_CTX=null;}
+async function _paySelect(method){
+  const ctx=PAY_CTX;closePaySheet();
+  if(ctx&&ctx.go)await ctx.go(method);
+}
 async function buyKka(i){
   const p=KKA_PACKS[i];if(!p)return;
   if(!isLoggedIn()){
     if(confirm('까까 충전에는 카카오 로그인이 필요해요.\n(결제·잔액이 계정에 안전하게 저장돼요)\n\n로그인할까요?'))kakaoLogin();
     return;
   }
-  if(!confirm(`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''}${p.talk?` +상담 ${p.talk}회`:''} · ${kkaWon(p.n)}\n충전할까요?`))return;
-  await _demoTopup(p.n+p.bonus, p.talk, `까까 ${p.n+p.bonus}개${p.talk?` + 상담 ${p.talk}회`:''}`);
+  openPaySheet({
+    name:`${p.name}${p.bonus?` (+덤 ${p.bonus}개)`:''}${p.talk?` +상담 ${p.talk}회`:''}`,
+    won:kkaWon(p.n),
+    go:async()=>{await _demoTopup(p.n+p.bonus, p.talk, `까까 ${p.n+p.bonus}개${p.talk?` + 상담 ${p.talk}회`:''}`);}
+  });
 }
 /* 부족분 원클릭 충전 — 잔액 제로 3-① (딱 N개만 사서 잔액이 안 남게) */
 async function buyKkaExact(n){
@@ -4658,8 +5565,12 @@ async function buyKkaExact(n){
     if(confirm('충전에는 카카오 로그인이 필요해요.\n로그인할까요?'))kakaoLogin();
     return;
   }
-  if(!confirm(`부족한 까까 ${n}개만 충전할까요? · ${kkaWon(n)}\n(딱 필요한 만큼만 — 잔돈이 안 남아요)`))return;
-  await _demoTopup(n, 0, `까까 ${n}개`);
+  openPaySheet({
+    name:`부족한 까까 ${n}개만 충전`,
+    sub:'딱 필요한 만큼만 — 잔돈이 안 남아요',
+    won:kkaWon(n),
+    go:async()=>{await _demoTopup(n, 0, `까까 ${n}개`);}
+  });
 }
 
 /* 결제창에서 돌아온 뒤 서버 승인 → 까까 지급 (부팅 때 main.js 가 부른다) */
@@ -4699,9 +5610,10 @@ async function spendKkaSrv(n,kind){
   const r=await rpc('wallet_spend',{p_token:ME.token,p_n:n,p_kind:kind});
   if(r&&r.ok){KKA=r.kka;renderSnack();save();return true;}
   if(r&&r.error==='poor'){
-    /* 잔액 제로 3-① 부족분 원클릭 충전 — 패키지로 쫓아내지 않고 딱 부족분만 */
+    /* 잔액 제로 3-① 부족분 원클릭 충전 — 패키지로 쫓아내지 않고 딱 부족분만.
+       confirm 단계 없이 바로 바텀시트(2026-08-21 라이트 퍼널 — 탭 수 최소화) */
     const lack=Math.max(1,n-(r.kka||0));
-    if(confirm('앗, 까까가 '+lack+'개 모자라요. (지금 '+(r.kka||0)+'개)\n부족한 '+lack+'개만 충전할까요? · '+kkaWon(lack)))buyKkaExact(lack);   /* 아쉬움 달래기 = 츄비 */
+    buyKkaExact(lack);
   }else if(r&&r.error==='login'){alert('로그인이 풀렸어요. 다시 로그인해주세요!');}
   else alert('잠시 후 다시 시도해주세요!');
   return false;
@@ -4753,13 +5665,24 @@ async function unlockMap(){
   MAP_UNLOCKED=true;(UNLOCKS[MAP_KEY]=UNLOCKS[MAP_KEY]||{}).map=true;applyMapLock();save();
   toast('🗺 <b>가족 궁합 지도</b>가 전부 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">역할 나누기부터 읽어보세요</span>');
 }
+/* 우리 집 사용설명서 — 형제 비교 (2026-08-21). 상황 전체 1까까 + 부모 대조 1까까 */
+async function unlockSibling(){
+  if(!(await spendKkaSrv(1,'sibling')))return;
+  SIB_UNLOCKED=true;(UNLOCKS[SIB_KEY]=UNLOCKS[SIB_KEY]||{}).sib=true;applySibLock();save();
+  toast('📖 <b>상황 9가지 전체</b>가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">오늘 제일 힘든 상황부터 눌러보세요</span>');
+}
+async function unlockSibP(){
+  if(!(await spendKkaSrv(1,'sibling-parent')))return;
+  SIBP_UNLOCKED=true;(UNLOCKS[SIB_KEY]=UNLOCKS[SIB_KEY]||{}).sibp=true;applySibLock();save();
+  toast('🌷 <b>부모 대조</b>가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">나에게 어려운 기법부터 보조팁을 확인하세요</span>');
+}
 /* 온가족 종합 리포트 「우리 집 이야기」 — 5까까 프리미엄 앵커 (2026-08-15 본편) */
 async function unlockBook(){
   if(!(await spendKkaSrv(5,'book')))return;
   BOOK_UNLOCKED=true;const uk=bookKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).book=true;applyBookLock();save();
   toast('📕 <b>우리 집 이야기</b> 전체가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">마지막 장의 인쇄용 한 장까지 꼭 챙겨가세요</span>');
 }
-/* ===== js/talk.js (197) ===== */
+/* ===== js/talk.js (208) ===== */
 /* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
    사장님 확정 스펙: 사연 + 투표("어떻게 했어야 할까") + 발바닥 공감 + 연구원 한마디.
    댓글 없음(운영 부담) · 보상 없음(참여 붙으면 이벤트로) · 누적 피드.
@@ -4872,10 +5795,14 @@ function renderTalk(){
   if(TALK_MORE)box.insertAdjacentHTML('beforeend','<button class="btn ghost mt8" onclick="talkLoad(true)">사연 더 보기</button>');
 }
 
+let _voteBusy=false;   /* 연타 시 응답 전 두 번 나가 로컬 카운트가 +2 되던 것 방지 (2026-08-21 전수조사) */
 async function votePoll(i,j){
-  const p=TALK[i];if(!p||!p.poll||p.poll.my!=null)return;
-  const r=await rpc('talk_vote',{p_post:p.id,p_voter:deviceId(),p_choice:j});
-  if(r&&r.ok){p.poll.my=j;p.poll.opts[j].v++;renderTalk();}
+  const p=TALK[i];if(!p||!p.poll||p.poll.my!=null||_voteBusy)return;
+  _voteBusy=true;
+  try{
+    const r=await rpc('talk_vote',{p_post:p.id,p_voter:deviceId(),p_choice:j});
+    if(r&&r.ok){p.poll.my=j;p.poll.opts[j].v++;renderTalk();}
+  }finally{_voteBusy=false;}
 }
 
 async function heartPost(i){
@@ -4895,7 +5822,9 @@ async function reportPost(i){
 async function aiPoll(){
   const t=document.getElementById('talk-input').value.trim();
   if(!t){alert('먼저 사연을 적어주세요!');return;}
-  const b=event.target;b.disabled=true;b.textContent='항목 만드는 중…';
+  /* 🔴 event 전역은 크롬 계열만 있다 — 파이어폭스에선 ReferenceError 로 버튼이 무반응이 됨 (2026-08-21 전수조사) */
+  const b=(typeof event!=='undefined'&&event)?event.target:null;
+  if(b){b.disabled=true;b.textContent='항목 만드는 중…';}
   try{
     const res=await fetch(SB_URL+'/functions/v1/chat',{
       method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
@@ -4906,7 +5835,7 @@ async function aiPoll(){
     const v=m?JSON.parse(m[0]):null;
     if(v&&Array.isArray(v.opts))[0,1,2].forEach(k=>{if(v.opts[k])document.getElementById('poll-'+(k+1)).value=v.opts[k];});
   }catch(e){alert('앗, '+((e&&e.message)||'연결이 끊겼어요')+'. 직접 적어주셔도 돼요!');}
-  b.disabled=false;b.textContent='🗳 투표 받아보기';
+  if(b){b.disabled=false;b.textContent='🗳 투표 받아보기';}
 }
 
 /* 올리기 — 로그인 필수. 올린 뒤 츄비 한마디를 자동으로 단다 */
@@ -4914,6 +5843,7 @@ async function addTalk(){
   const t=document.getElementById('talk-input');const v=t.value.trim();
   if(!v){alert('내용을 입력해주세요!');return;}
   if(v.length<10){alert('조금만 더 자세히 적어주세요! (10자 이상)');return;}
+  if(v.length>1200){alert('사연은 1,200자까지 올릴 수 있어요! (지금 '+v.length+'자)');return;}   /* 서버 한도와 동일 (2026-08-21) */
   if(!cleanCheck(v))return;
   if(!isLoggedIn()){
     if(confirm('사연을 올리려면 카카오 로그인이 필요해요.\n(익명으로 게시되고, 닉네임은 공개되지 않아요)\n\n로그인할까요?'))kakaoLogin();
@@ -4928,7 +5858,11 @@ async function addTalk(){
   const r=await rpc('talk_write',{p_token:ME.token,p_who:who,p_text:v,p_poll:ops.length>=2?ops:null});
   if(btn){btn.disabled=false;btn.textContent='올리기';}
   if(!(r&&r.ok)){
-    alert(r&&r.error==='daily'?'하루에 5개까지 올릴 수 있어요!':r&&r.error==='login'?'로그인이 풀렸어요. 다시 로그인해주세요!':'잠시 후 다시 시도해주세요!');
+    alert(r&&r.error==='daily'?'하루에 5개까지 올릴 수 있어요!'
+      :r&&r.error==='login'?'로그인이 풀렸어요. 다시 로그인해주세요!'
+      :r&&r.error==='long'?'사연은 1,200자까지 올릴 수 있어요!'
+      :r&&r.error==='poll'?'투표 항목은 2~4개, 각 30자 이내로 적어주세요!'
+      :'잠시 후 다시 시도해주세요!');
     return;
   }
   (S.myTalks=S.myTalks||[]).push(r.id);save();
@@ -5133,7 +6067,7 @@ function startCountdown(){
   };
   tick();CD_TIMER=setInterval(tick,1000);
 }
-/* ===== js/main.js (60) ===== */
+/* ===== js/main.js (67) ===== */
 /* ══════════════ 부팅 ══════════════ */
 const _restored=load();          // 새로고침해도 결과가 남아 있게
 /* 온보딩 화면 제거로 불필요 (2026-08-12) */
@@ -5156,12 +6090,18 @@ S.kids.forEach(k=>{
 kakaoCallback();       /* 카카오에서 ?code= 로 돌아온 경우 로그인 마무리 (비동기) */
 payReturn();           /* 토스 결제창에서 ?pay=ok&paymentKey=… 로 돌아온 경우 승인·지급 (비동기) */
 updateHome();renderDaily();
-/* 홈은 히스토리 바닥. 그 위에 마지막 화면을 얹으면 뒤로가기 한 번에 홈으로 온다 */
-show('s-home');
-try{history.replaceState({screen:'s-home'},'');}catch(e){}
+/* Layer 0 스캐너 게이트 (2026-08-21 라이트 퍼널) — 신규 방문자·공유 딥링크(?t=)는 첫 화면이 스캐너.
+   검사 데이터가 있거나 스캔을 마친(건너뛴) 사람은 기존 흐름 그대로 홈. */
+let _scanGate=false;
+try{_scanGate=(typeof scanBoot==='function')&&scanBoot();}catch(e){_scanGate=false;}
+if(!_scanGate){
+  /* 홈은 히스토리 바닥. 그 위에 마지막 화면을 얹으면 뒤로가기 한 번에 홈으로 온다 */
+  show('s-home');
+  try{history.replaceState({screen:'s-home'},'');}catch(e){}
+}
 window.__booted=true;            // 이 시점부터 화면 전환마다 자동 저장
 /* 새로고침 전에 결과를 보고 있었으면 그 화면으로 되돌린다 (pull-to-refresh 사고 보완) */
-try{if(_restored)restoreView();}catch(e){}
+try{if(_restored&&!_scanGate)restoreView();}catch(e){}
 
 /* 문헌 반영 배지 자동 갱신 (2026-08-14 사장님 지시) — 학습봇이 매일 쌓는 knowledge 의
    실제 마지막 적재일·누적 건수를 그대로 보여준다. 실패하면 정적 날짜 유지(거짓 없음). */
@@ -5178,11 +6118,12 @@ try{if(_restored)restoreView();}catch(e){}
       const ds=d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
       el.textContent='문헌 반영 '+ds+(total&&total!=='*'?' · 누적 '+total+'건':'');
     }
-    /* 히어로 근거 숫자도 같은 실측값으로 (2026-08-17) — 과장 금지 원칙에 따라 내림해서 "N,000+" 로만 */
+    /* 히어로 근거 숫자도 같은 실측값으로 — 100단위 내림 "6,300+" (2026-08-21 사장님: 매일 늘어나는 게 보이게).
+       내림이라 항상 참 = 과장 금지 원칙 유지. */
     const hp=document.getElementById('hp-lit');
     if(hp&&total&&total!=='*'){
       const n=parseInt(total,10);
-      if(n>0)hp.textContent=(n>=1000?(Math.floor(n/1000)+',000+'):(n+'+'));
+      if(n>0)hp.textContent=(Math.floor(n/100)*100).toLocaleString('ko-KR')+'+';
     }
   }catch(e){}
 })();
