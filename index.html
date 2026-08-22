@@ -131,8 +131,7 @@ h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-.01em
 .bar-row{display:flex;align-items:center;gap:10px;margin:9px 0}
 .bar-row .label{flex:0 0 96px;font-size:.79rem;line-height:1.3}
 .bar-track{flex:1;height:12px;background:var(--line);border-radius:99px;position:relative}
-.bar-track::after{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--sub);opacity:.5;border-radius:2px}
-.cluster-row .bar-track::after{left:33.3%}
+/* 기준선(중간값·33% 세로선)은 2026-08-21 사장님 지시로 제거 — 라벨 없인 의미 전달이 안 되고 설명은 사족이라. */
 .bar-fill{height:100%;border-radius:99px;background:var(--amber);width:0;transition:width .6s ease}
 .bar-row .val{flex:0 0 44px;text-align:right;font-family:'Jua';font-size:.8rem;color:var(--sub)}
 .avg-note{font-size:.72rem;color:var(--sub);margin-bottom:6px}
@@ -629,7 +628,8 @@ details.acc>*:not(summary){margin-top:10px}
   <div class="card"><h3 style="font-size:1rem;margin-bottom:6px">기질 색깔의 비율</h3><div id="c-cluster" class="mt8"></div></div>
   <div class="card"><h3 style="font-size:1rem;margin-bottom:6px">🔮 우리 아이 풀이</h3><div id="c-story" style="font-size:.93rem;line-height:1.8"></div></div>
   <div id="c-voice"></div>
-  <details class="card acc"><summary><h3>우리 아이 마음의 3가지 힘</h3><span class="acc-arrow">▾</span></summary><div id="c-super"></div><p class="small mt8" id="c-super-note"></p></details>
+  <!-- '마음의 3가지 힘' 섹션은 2026-08-21 사장님 지시로 제거 — 숫자만 던지는 구간("없는 게 낫다").
+       세 상위요인의 내용은 심화 10가지 온도계가 더 깊게 다룬다. -->
   <details class="card acc"><summary><h3>💞 이런 아이는, 이런 부모와 잘 맞아요</h3><span class="acc-arrow">▾</span></summary><div id="c-fitpar"></div></details>
   <div class="card" id="c-taste" style="display:none"></div>
   <div class="card locked" id="c-lock-wrap">
@@ -639,7 +639,7 @@ details.acc>*:not(summary){margin-top:10px}
     <div class="lock-cover" id="c-cover">
       <div style="font-size:1.5rem">🔒</div>
       <p style="font-family:'Jua'">여기부터 심화 풀이</p>
-      <p class="small">활동량·리듬·민감성… 10가지 온도 각각의 등급과<br>맞춤 해설이 우리 아이 기준으로 열려요<br><b>+ 🩺 냥쪽처방 1회권 선물</b></p>
+      <p class="small">활동량·리듬·민감성… 10가지 온도의 등급·해설과<br><b>🎯 적어주신 고민의 맞춤 해답</b>까지 우리 아이 기준으로 열려요<br><b>+ 🩺 냥쪽처방 1회권 선물</b></p>
       <p class="small" style="color:#8B5C4A;font-weight:500;margin-top:6px">칸쵸 · 여기부터는 내 구역이다냥. 열 가지 온도를 하나씩 짚고, 오늘 집에서 바꿀 것부터 순서대로 적어놨다냥.</p>
       <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockCReport()"><i class="ddeok-i"></i> 까까 1개로 심화 풀이 보기</button>
     </div>
@@ -2671,7 +2671,7 @@ function renderScene(){
     box.appendChild(b);
   });
 }
-/* ===== js/render/parent.js (146) ===== */
+/* ===== js/render/parent.js (145) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -2684,8 +2684,7 @@ function renderParentReport(){
   rec.psub=psub.name;
   document.getElementById('p-typename').textContent=psub.name+' 양육자';
   const pd=document.getElementById('p-typedesc');
-  if(pd)pd.innerHTML=(psub.desc?psub.desc+' <b>'+psub.base+'</b>':'5가지 성향 축으로 본 나의 양육 에너지')
-    +(psub.name!==psub.base?`<br><span class="small">${psub.base} 갈래 · 46가지 세부 유형 중 하나예요</span>`:'');
+  if(pd)pd.innerHTML=(psub.desc?psub.desc+' <b>'+psub.base+'</b>':'5가지 성향 축으로 본 나의 양육 에너지');   /* "46가지 중 하나" 메타 설명 제거 (2026-08-21) */
   // 🔮 풀이 서사 (스포일러)
   const t1=sorted[0][0],t2=sorted[1][0];
   let story;
@@ -2704,7 +2703,7 @@ function renderParentReport(){
     story+=' 한 가지 더 — 아이와 애착을 만드는 힘은 엄마와 아빠가 같은 크기라는 게 2만 명 넘는 아이를 종합한 연구의 결론이에요. 아빠의 반응적인 놀이와 대화는 아이의 말하는 힘, 계획하는 힘, 감정 조절과도 이어집니다. 부모 두 사람이 각각 검사하면 우리 집 그림이 완성돼요.';
   }
   const bars=document.getElementById('p-bars');
-  bars.innerHTML='<h3 style="font-size:1rem;margin-bottom:4px">나의 다섯 가지 양육 에너지</h3><p class="avg-note">┃ 회색 선 = 중간값 (3.0)</p>';
+  bars.innerHTML='<h3 style="font-size:1rem;margin-bottom:4px">나의 다섯 가지 양육 에너지</h3>';
   for(const k of ['E','A','C','N','O']){
     const v=avg[k];
     bars.insertAdjacentHTML('beforeend',`<div class="bar-row"><div class="label">${P_LABEL[k]}</div><div class="bar-track"><div class="bar-fill" data-w="${(v-1)/4*100}"></div></div><div class="val">${v.toFixed(1)}</div></div>`);
@@ -2818,7 +2817,20 @@ function renderParentReport(){
   inviteReward();
 
 }
-/* ===== js/render/child.js (208) ===== */
+/* ===== js/render/child.js (242) ===== */
+/* 고민 텍스트 → 사용설명서 상황(SIB_RX) 매칭 (2026-08-21 사장님 "주관식 고민 해답 = 유료").
+   정규식은 템플릿 리터럴 밖(빌드 스캐너 함정 회피). 칩(동생 출생 등)은 상황 밖이라 텍스트만 본다. */
+const CONCERN_RX=[
+ [/아침|양치|치카|옷 ?입|나갈 준비|등원 준비/,'morning'],
+ [/떼|드러눕|고집|짜증.*(부리|내|심)/,'tantrum'],
+ [/등원|등교|유치원|어린이집|학교.*(가기 싫|거부|안 가|울)/,'refuse'],
+ [/형제|남매|자매|동생.*(싸|다툼|때리|질투)|싸워|다퉈/,'fight'],
+ [/잠|재우|취침|안 자|늦게 자|수면|악몽|무서운 꿈|밤에 깨/,'sleep'],
+ [/밥|편식|먹|식사|반찬|입이 짧/,'eat'],
+ [/폰|휴대폰|스마트폰|영상|유튜브|게임|미디어|티비|TV/,'phone'],
+ [/예민|민감|울보|잘 울|사소한 일에|칭얼/,'sensitive'],
+ [/말대꾸|말버릇|버릇없|말투|반항/,'backtalk']
+];
 function renderChildReport(){
   const avg=(S.kids[S.activeK]&&S.kids[S.activeK].score)||S.cScore;
   // Thomas & Chess 군집 — 연속체로 계산 (rhy, app, ada, int, moo 5개 결정 차원)
@@ -2844,15 +2856,22 @@ function renderChildReport(){
   if(S.kids[S.activeK]){S.kids[S.activeK].ktype=fine;S.kids[S.activeK].kbase=main;}
   const kid=S.kids[S.activeK];
   const bandName={t:'걸음마기',p:'유아기',s:'초등',a:'청소년'};
+  /* 메타 설명("13가지 세부 유형 중 하나")·기준선 라벨은 2026-08-21 사장님 지시로 제거 — 사주아이식: 방법론 설명 없이 결과만 */
   document.getElementById('c-typedesc').innerHTML=fineDesc
-    +(fine!==main?`<br><span class="small">${main} 계열 · 13가지 세부 유형 중 하나예요</span>`:'')
     +(kid&&kid.label?`<br>${kid.label} 아이라 ${bandName[kid.band]||'연령'} 맞춤 문항으로 검사했어요`:'');
-  const cl=document.getElementById('c-cluster');cl.innerHTML='<p class="avg-note">┃ 세로선 = 세 기질이 똑같이 섞였을 때 (33%)</p>';
+  /* 비율 그래프 = 누적 한 줄 (2026-08-21 사장님 "셋이 합쳐 100인데 따로 그리니 헷갈려") —
+     세 기질이 한 막대 안에서 나뉘어 합 100%가 눈에 보인다. 기준선·주석 없음 */
+  const cl=document.getElementById('c-cluster');
+  const CCOL={"햇살형":"var(--amber)","불꽃형":"#C2544E","새벽형":"var(--pri)"};
+  const CEMO={"햇살형":"🌞","불꽃형":"🔥","새벽형":"🌙"};
   const rank=Object.entries(pct).sort((a,b)=>b[1]-a[1]);
-  for(const[k,v]of Object.entries(pct)){
-    cl.insertAdjacentHTML('beforeend',`<div class="bar-row cluster-row"><div class="label">${k}</div><div class="bar-track"><div class="bar-fill" data-w="${v*100}"></div></div><div class="val">${Math.round(v*100)}%</div></div>
-    <p class="small" style="margin:-2px 0 8px 2px">${CLUSTER_DEF[k]||''}</p>`);
-  }
+  cl.innerHTML=`<div style="display:flex;height:30px;border-radius:99px;overflow:hidden">
+      ${rank.map(([k,v])=>`<div style="width:${v*100}%;background:${CCOL[k]}"></div>`).join('')}
+    </div>
+    ${rank.map(([k,v])=>`<div style="display:flex;align-items:baseline;gap:7px;margin-top:9px">
+      <b style="font-family:'Jua';font-size:.95rem;color:${CCOL[k]};white-space:nowrap">${CEMO[k]} ${k} ${Math.round(v*100)}%</b>
+      <span class="small" style="line-height:1.6">${CLUSTER_DEF[k]||''}</span>
+    </div>`).join('')}`;
   const nm=kid?kid.name:'우리 아이';
   const [aN,aV]=rank[0],[bN,bV]=rank[1],[cN,cV]=rank[2];
   const mixKey=[aN,bN].sort().join('|');
@@ -2879,26 +2898,9 @@ function renderChildReport(){
     <p class="mt8">${tale}</p>
     <p class="mt8"><b>일상에서는 이렇게 보여요.</b> ${dailyTxt}</p>
     <p class="mt8">지금까지 ${josa(nm,'를')} 키우며 느꼈던 '왜 이럴까'의 절반은, 사실 타고난 기질이었어요. 기질은 부모를 쏙 닮기도 하고, 정반대이기도 합니다. 닮은 쪽은 말하지 않아도 통하지만, 반대인 쪽은 같은 상황에서도 서로를 이해하기가 유독 어렵죠. 그래서 아이 기질만큼 중요한 게 '나는 어떤 부모인가'예요. 둘이 어디서 부딪히고 어디서 통하는지까지 알면, 매일의 육아가 한결 수월해집니다.</p>`;
-  // Rothbart 3상위요인 (한국판 CBQ 3요인 구조 근거): 외향성 / 부정적 정서 / 의도적 통제
-  const sup={
-    "세상에 다가가는 힘":(avg.act+avg.app)/2,
-    "감정의 파도":(avg.int+inv(avg.moo)+avg.thr)/3,
-    "스스로 멈추는 힘":(avg.ec+avg.per+inv(avg.dis))/3
-  };
-  const supC=sup["스스로 멈추는 힘"];
-  const sp=document.getElementById('c-super');sp.innerHTML='<p class="avg-note">┃ 회색 선 = 중간값 (3.0)</p>';
-  for(const[k,v]of Object.entries(sup)){
-    const t=SUPER_TEXT[k];const lv=v>=3.6?'hi':v<=2.4?'lo':'mid';
-    sp.insertAdjacentHTML('beforeend',`<div style="margin-bottom:13px">
-      <div class="bar-row"><div class="label">${k}</div><div class="bar-track"><div class="bar-fill" data-w="${(v-1)/4*100}"></div></div><div class="val">${v.toFixed(1)}</div></div>
-      <p style="font-size:.88rem;margin-top:3px"><b>${grade(v)}</b> · ${t?t[lv]:''}</p>
-    </div>`);
-  }
-  const notes=[];
-  if(avg.thr>=3.6)notes.push("감각이 예민한 아이는 힘든 환경에서 더 쉽게 지치지만, 따뜻하게 반응해주는 환경에서는 또래보다 <b>더 크게</b> 좋은 쪽으로 자란다는 게 최근 연구들의 공통 결론이에요. 긍정적 경험의 효과를 남들보다 크게 받는 이 특성을 연구자들은 '유리한 민감성'이라고까지 불러요. 민감함은 결함이 아니라 증폭기예요.");
-  if(supC<2.6)notes.push("'스스로 멈추는 힘'은 유아기 내내 <b>자라나는 능력</b>이에요. 지금 낮은 건 이상이 아니라 자라는 중이라는 뜻이에요.");
-  document.getElementById('c-super-note').innerHTML=notes.join('<br>')||"세 가지 모두 우열이 아니라 아이의 고유한 색깔이에요.";
-  const bars=document.getElementById('c-bars');bars.innerHTML='<p class="avg-note">┃ 회색 선 = 중간값 (3.0)</p>';
+  /* '마음의 3가지 힘'(c-super) 섹션은 2026-08-21 사장님 지시로 제거 — 숫자만 던지는 구간.
+     민감성 특수 문구(유리한 민감성)는 심화 thr 축·FITPAR 에 이미 있으므로 유실 없음. */
+  const bars=document.getElementById('c-bars');bars.innerHTML='';
   for(const k in C_DIMS){
     const v=avg[k];const d=DIM_TEXT[k];
     const line=v>=3.6&&d?d.hi:v<=2.4&&d?d.lo:(d&&d.mid?d.mid:'중간 — 상황에 따라 양쪽을 오가는 유연한 구간이에요.');
@@ -2953,6 +2955,37 @@ function renderChildReport(){
       });
       bars.insertAdjacentHTML('beforeend',sc);
     }
+  }
+  /* 🎯 적어주신 고민 맞춤 해답 (2026-08-21 사장님 지시 — 유료 심화의 세 번째 기둥).
+     주관식 고민을 사용설명서 사전(SIB_RX)에 매칭해 우리 아이 유형 기준 3단 처방으로 답한다. */
+  {
+    const con=S.concern||{};const ctext=(con.text||'').trim();
+    const rxType=main.indexOf('무지개')===0?'무지개형':main;
+    let ch='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">🎯 적어주신 고민, '+josa(nm,'의')+' 기질 기준 해답</h3>';
+    if(!ctext){
+      ch+=`<p style="font-size:.9rem;line-height:1.8">검사 때 고민을 적어주시면 이 자리에 ${josa(nm,'의')} 기질 기준 맞춤 해답이 담겨요. 지금이라도 상담실에서 물어보시면 검사 결과를 아는 츄비·칸쵸가 바로 답해드립니다.</p>
+        <button class="btn ghost mt8" style="padding:10px" onclick="goChat()">💬 상담실에서 물어보기</button>`;
+    }else{
+      const hits=(typeof SIB_RX!=='undefined')?CONCERN_RX.filter(m=>m[0].test(ctext)).slice(0,2):[];
+      ch+=`<p class="small" style="background:var(--pri-soft);border-radius:10px;padding:9px 12px;line-height:1.7">📝 "${esc(ctext.slice(0,90))}${ctext.length>90?'…':''}"</p>`;
+      if(hits.length){
+        hits.forEach(m=>{
+          const sit=(typeof SIB_SITS!=='undefined')?SIB_SITS.find(s=>s.k===m[1]):null;
+          const rx=(SIB_RX[m[1]]||{})[rxType];if(!rx||!sit)return;
+          ch+=`<div class="fit-item" style="margin-top:10px"><h4>${sit.label}</h4>
+            <p style="margin-top:6px"><b>🚫 하지 말 것</b> · ${rx.no}</p>
+            <p style="margin-top:6px"><b>💬 대신 이렇게</b> · ${rx.say}</p>
+            <p style="margin-top:6px"><b>🌟 마친 후</b> · ${rx.after}</p>
+            ${rx.ev?`<p class="small" style="margin-top:6px;opacity:.75">📚 ${rx.ev}</p>`:''}</div>`;
+        });
+        ch+=`<p class="small mt8">우리 집 상황에 더 딱 맞는 답이 필요하면 — 검사 결과와 이 고민을 아는 츄비·칸쵸가 상담실에서 이어받아요.</p>
+          <button class="btn ghost mt8" style="padding:10px" onclick="goChat()">💬 이 고민, 상담실에서 이어가기</button>`;
+      }else{
+        ch+=`<p style="font-size:.9rem;line-height:1.8">적어주신 고민은 정해진 답보다 <b>대화가 필요한 주제</b>예요. 검사 결과와 이 고민을 함께 아는 츄비·칸쵸가 상담실에서 ${josa(nm,'의')} 기질 기준으로 답해드립니다 — 오늘 무료 상담이 남아 있어요.</p>
+          <button class="btn ghost mt8" style="padding:10px" onclick="goChat()">💬 이 고민 들고 상담실 가기</button>`;
+      }
+    }
+    bars.insertAdjacentHTML('beforeend',ch);
   }
   // 💞 이런 부모와 잘 맞아요
   const fpEl=document.getElementById('c-fitpar');
@@ -3063,7 +3096,7 @@ function scoreFamily(){
   const fc=document.getElementById('fam-cover'),fi=document.getElementById('fam-lock-inner');
   if(famU){fc.style.display='none';fi.classList.remove('locked-peek');}
   else{fc.style.display='flex';fi.classList.add('locked-peek');}
-  const ax=document.getElementById('f-axes');ax.innerHTML='<h3 style="font-size:1rem;margin-bottom:6px">내가 기억하는 우리 집</h3><p class="avg-note">┃ 회색 선 = 중간값 (3.0)</p>';
+  const ax=document.getElementById('f-axes');ax.innerHTML='<h3 style="font-size:1rem;margin-bottom:6px">내가 기억하는 우리 집</h3>';
   [['따뜻함',care,'care'],['통제',ctrl,'ctrl']].forEach(([n,v,key])=>{
     const t=FAM_AXIS[key];const lv=v>=3.6?'hi':v<=2.6?'lo':'mid';
     ax.insertAdjacentHTML('beforeend',`<div style="margin-bottom:12px">
@@ -3922,7 +3955,7 @@ function renderDaily(){
   const dc=document.getElementById('daily-cta');if(dc)dc.style.display='none';
 }
 
-/* ===== js/render/scan.js (357) ===== */
+/* ===== js/render/scan.js (355) ===== */
 /* ══════════════ Layer 0 기질 스캐너 (2026-08-21 사장님 기획서 「라이트 퍼널」) ══════════════
    친일파스캐너 × 사주아이 — 무기명 · 7문항 · 40초 · 즉시 결과 + 공유카드.
    첫 화면 = 스캐너 랜딩. 사장님 재지시(2026-08-21): 대상이 육아 부모/예비 부모/내 기질이 먼저인
@@ -4097,7 +4130,6 @@ function renderScanResult(){
            </div>
            <b style="font-size:.85rem;flex:0 0 38px;text-align:right">${p100(v)}%</b>
          </div>`).join('')}
-       <p class="small" style="margin-top:4px">균등선 33% 기준 — 어느 기운이 진한지의 비율이에요</p>
        <p style="font-size:.9rem;line-height:1.8;margin-top:10px">${summary}</p>
      </div>
      ${SCAN_SIBS.length?`<p class="small" style="margin-top:10px">우리 아이들: <b>${SCAN_SIBS.map(s=>s.type.replace(' (혼합)','')).concat([type.replace(' (혼합)','')]).join(' × ')}</b> — 같은 집인데 이렇게 달라요</p>`:''}
@@ -4146,7 +4178,6 @@ function renderScanPResult(){
            </div>
            <b style="font-size:.85rem;flex:0 0 38px;text-align:right">${v.toFixed(1)}</b>
          </div>`).join('')}
-       <p class="small" style="margin-top:4px">5점 척도 — 중간값 3.0 기준이에요</p>
        <p style="font-size:.9rem;line-height:1.8;margin-top:10px">${desc}</p>
      </div>
      <div style="display:flex;gap:8px;margin-top:12px">
