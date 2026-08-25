@@ -599,7 +599,7 @@ details.acc>*:not(summary){margin-top:10px}
     <div class="lock-cover" id="p-cover">
       <div style="font-size:1.5rem">🔒</div>
       <p style="font-family:'Jua'">여기부터 심화 풀이</p>
-      <p class="small">외향성·온정·성실… 다섯 축 각각의 등급별 해설과<br>나의 무기 · 살펴볼 지점이 내 점수 기준으로 열려요<br><b>+ 🩺 냥쪽처방 1회권 선물</b></p>
+      <p class="small">외향성·온정·성실… 다섯 축 각각의 등급별 해설과<br>나의 무기 · 살펴볼 지점이 내 점수 기준으로 열려요<br>+ 🎯 <b>적어주신 고민의 내 성향 기준 해답</b><br><b>+ 🩺 냥쪽처방 1회권 선물</b></p>
       <p class="small" style="color:#8B5C4A;font-weight:500;margin-top:6px">칸쵸 · 여기부터가 팩트다냥. 다섯 축이 실제 하루에 어떻게 나오는지, 네 무기와 약점을 짚어놨다냥.</p>
       <button class="btn pri" style="width:auto;padding:13px 24px" onclick="unlockPReport()"><i class="ddeok-i"></i> 까까 1개로 심화 풀이 보기</button>
     </div>
@@ -2023,7 +2023,7 @@ const CAREER_QS=[
   opts:[['산만하다는 말','draw'],['느리다는 말','dig'],['고집 세다는 말','tidy'],
         ['예민하다는 말','heart'],['말이 많다는 말','lead'],['별로 없어요','hand']]}
 ];
-/* ===== js/data/sibling.js (203) ===== */
+/* ===== js/data/sibling.js (337) ===== */
 /* ══════════ 「우리 집 사용설명서」 데이터 — 상황 × 아이 유형 × 3단 처방 (2026-08-21 기획서) ══════════
    발단: Threads 세쌍둥이 글(조회 12만) — 같은 상황 × 아이마다 다른 대사. 텍스트가 본체, 코드는 얇게.
    3단 구조는 원글에서 검증된 전달 형식: ①하지 말 것(no) ②대신 할 말·행동(say) ③마친 후 메시지(after).
@@ -2227,6 +2227,140 @@ const RX_PARENT={
   '탐험형':'기분 전환 아이디어가 먼저 나가는 타입 — 전환은 감정을 읽은 다음이어야 약이 돼요.',
   '카멜레온형':'읽어주는 폭은 넓은데 표현이 옅을 수 있어요 — 속으로 아는 것 말고 소리 내어 이름 붙여주세요("속상했구나").'}
 };
+/* ══════════ 부모 자신의 고민 사전 P_RX — 부모 리포트 「고민 맞춤 해답」 (2026-08-25 사장님 지시) ══════════
+   사주아이 벤치마크: 검사 전에 받은 주관식 컨텍스트가 결과를 "내 얘기"로 만든다(구조설계 4-0-c).
+   구조 = 아이 SIB_RX와 대칭: 상황 9종 × 공통 3단(no/say/after) + 부모 6유형 보정 한 줄(by).
+   정규식은 템플릿 리터럴 밖(빌드 스캐너 함정 회피). 좋고 나쁨 암시 단어 금지, 존댓말 위로 톤. */
+
+const P_RX_SITS=[
+ {k:'anger',   label:'😤 나도 모르게 큰소리'},
+ {k:'burnout', label:'🪫 지치고 소진된 마음'},
+ {k:'consist', label:'🎯 기준이 자꾸 흔들려요'},
+ {k:'guilt',   label:'😔 미안함·죄책감'},
+ {k:'couple',  label:'💑 배우자와 육아 온도차'},
+ {k:'compare', label:'🐢 자꾸 비교하게 돼요'},
+ {k:'play',    label:'🧸 놀아주기가 힘들어요'},
+ {k:'talk',    label:'🗣 잔소리만 늘어요'},
+ {k:'patience',label:'⏳ 기다려주기가 힘들어요'}
+];
+
+const P_CRX=[
+ [/소리(를 ?지|부터|치)|화(를 ?내| ?내고|가 ?나|를 ?못 ?참|부터)|버럭|욱하|감정 ?조절|폭발/,'anger'],
+ [/지쳐|지쳤|지친|번아웃|소진|내 ?시간|나를 ?잃|무기력|에너지가 ?없|충전이/,'burnout'],
+ [/일관|기준이|오락가락|흔들리|어떨 ?땐|어떤 ?날은|원칙이/,'consist'],
+ [/죄책|미안|워킹(맘|대디)|일하느라|못 ?해 ?주|부족한 ?(엄마|아빠|부모)|자책/,'guilt'],
+ [/남편|아내|신랑|와이프|배우자|부부|독박/,'couple'],
+ [/비교|또래(보다| ?애들)|뒤처|조급|느린 ?것 ?같|빠른 ?애들|발달이 ?느/,'compare'],
+ [/놀아 ?주|놀이가 ?힘|심심하다|심심해 ?하|뭘 ?하고 ?놀|같이 ?노는 ?게/,'play'],
+ [/잔소리|말이 ?안 ?통|대화가 ?안|말을 ?안 ?들|백 ?번 ?말/,'talk'],
+ [/기다려 ?주|기다리(는 ?게|기가)|인내|참을성|참는 ?게|급한 ?성격/,'patience']
+];
+
+const P_RX={
+ anger:{
+  no:'화낸 뒤 바로 다정하게 사과부터 하고 넘어가는 것 — 미안한 마음은 진짜지만, 반복되면 아이에겐 "폭발→다정"이 한 세트로 학습돼요. 사과는 짧게, 힘은 다음 폭발을 줄이는 데 쓰세요.',
+  say:'터지기 직전의 내 신호(어금니에 힘, 목소리 톤)를 하나 정해두고, 그게 오면 세 걸음 물러나며 "화 식히고 올게" — 감정을 숨기는 게 아니라 다루는 모습을 보여주는 거예요.',
+  after:'이번 주엔 화가 났지만 터지지 않은 순간을 하루 하나만 세어보세요. 화낸 횟수가 아니라 잡아챈 횟수가 늘고 있으면 잘 가고 있는 거예요.',
+  by:{
+  '활력형':'에너지가 크게 나가는 타입이라 화도 크게 나가요 — 목소리 크기만 반으로 줄여도 아이가 받는 무게는 절반이 됩니다.',
+  '온기형':'평소가 따뜻한 만큼 한 번의 폭발이 아이에게 더 크게 남아요 — 폭발 뒤 자책 대신, 위의 "세 걸음 물러나기"부터 연습하세요.',
+  '등대형':'기준이 어긋나는 순간 화가 올라오는 타입 — 방아쇠가 아이가 아니라 "계획이 틀어짐"일 때가 많다는 걸 알아차리는 것만으로 절반은 줄어요.',
+  '안테나형':'마음이 예민하게 켜져 있는 날 폭발이 몰려요 — 화 관리보다 내 피로 관리(잠·혼자 10분)가 먼저인 타입이에요.',
+  '탐험형':'평소엔 느긋하다 한계선에서 갑자기 터지는 타입 — 한계에 닿기 전에 "지금 3단계쯤 왔어"라고 중간 신호를 소리 내보세요.',
+  '카멜레온형':'참을 수 있는 폭이 넓어 쌓였다 한 번에 터지기 쉬워요 — 작게 자주 표현하는 게 크게 한 번 터지는 것보다 서로에게 안전해요.'}},
+ burnout:{
+  no:'"애 보는 게 뭐가 힘드냐"는 말을 그대로 두는 것 — 남의 말이든 내 안의 말이든요. 육아는 교대 없는 근무예요. 힘든 게 정상이에요.',
+  say:'"다 하고 나서 쉬자"를 "10분 먼저 쉬고 하자"로 순서만 바꿔보세요 — 방전된 채 버티는 한 시간보다 충전된 30분이 아이에게도 더 좋아요.',
+  after:'이번 주엔 나만을 위한 10분을 달력에 먼저 적어두세요(낮잠·등원 직후 같은 자투리면 돼요). 못 지킨 날이 있어도, 적어둔 것 자체가 시작이에요.',
+  by:{
+  '활력형':'방전돼도 겉으론 티가 안 나 주변이 몰라주는 타입 — "나 오늘 배터리 20%야"라고 숫자로 말하는 연습을 해보세요.',
+  '온기형':'아이 마음을 채우느라 내 마음이 비는 타입 — 내 컵이 비면 아이에게 부어줄 것도 없다는 걸, 허락처럼 기억하세요.',
+  '등대형':'할 일 목록이 끝나야 쉬는 타입인데 육아의 목록은 끝나지 않아요 — 목록에 "쉬기"를 항목으로 넣는 게 유일한 방법이에요.',
+  '안테나형':'아이 신호에 늘 안테나가 켜져 있어 여섯 유형 중 가장 빨리 방전돼요 — 하루 10분은 안테나를 꺼도 아이는 안전해요.',
+  '탐험형':'새로운 자극이 곧 충전인 타입 — 휴식이 꼭 눕는 것일 필요는 없어요. 산책 코스만 바꿔도 충전이 됩니다.',
+  '카멜레온형':'모두에게 맞추다 내 것이 사라지는 타입 — "오늘 내가 하고 싶은 것 하나"를 아침에 정해보세요.'}},
+ consist:{
+  no:'어제 안 되던 게 오늘 되는 것 — 아이는 규칙 대신 "조르면 바뀐다"를 학습해요. 지키기 어려운 규칙을 여러 개 두는 게 원인일 때가 많아요.',
+  say:'규칙을 딱 하나로 줄이고 그것만은 매일 같게 — "우리 집은 밥 먹고 영상"처럼요. 하나가 자리 잡은 다음에 두 번째를 더하세요.',
+  after:'이번 주는 그 규칙 하나가 흔들린 순간을 기록만 해보세요 — 언제(피곤한 저녁? 외출 중?) 흔들리는지 보이면, 규칙이 아니라 그 상황을 손보면 됩니다.',
+  by:{
+  '활력형':'기분 좋은 날 크게 허용하다 기준이 흐려지기 쉬워요 — 허용도 규칙("주말엔 특별히")으로 만들면 그게 일관성이 됩니다.',
+  '온기형':'우는 얼굴 앞에서 기준이 녹는 타입 — 마음은 다 받아주되 행동 기준만 지키는 이원화("속상하지. 그래도 오늘은 여기까지")를 연습하세요.',
+  '등대형':'기준 자체는 튼튼한데 예외를 못 둬서 힘든 타입 — 일관성의 반대는 예외가 아니라 무원칙이에요. "아플 땐 예외"도 훌륭한 규칙입니다.',
+  '안테나형':'아이 컨디션에 맞추다 보니 밖에서 보면 오락가락처럼 보일 수 있어요 — 바꿀 땐 "오늘은 네가 아파서 특별"이라고 이유를 소리 내 말해주세요.',
+  '탐험형':'새 방법을 자주 시도해 아이가 기준을 못 잡기 쉬워요 — 실험은 자유롭게 하되 "안 되는 것 한 가지"만은 고정하세요.',
+  '카멜레온형':'상황 따라 유연한 게 강점이자 함정 — 양육자들끼리 "우리 집 공통 규칙 1개"만 정해도 흔들림이 확 줄어요.'}},
+ guilt:{
+  no:'미안함을 물건이나 허용으로 갚는 것 — 아이가 원한 건 보상이 아니라 함께였는데, 보상이 반복되면 그게 기준이 돼요.',
+  say:'시간의 양 대신 확실한 10분 — 폰을 내려놓고 아이가 고른 놀이를 하는 10분이, 마음 반쯤 딴 데 있는 두 시간보다 아이 기억에 남아요.',
+  after:'이번 주엔 잘한 것 한 가지를 매일 밤 하나만 적어보세요. 부족한 것은 이미 충분히 세고 있으니까요.',
+  by:{
+  '활력형':'함께 못 논 날 미안함이 큰 타입 — 짧아도 온몸으로 노는 10분이 당신의 무기예요. 길이로 자책하지 마세요.',
+  '온기형':'아이 서운한 표정 하나가 하루 종일 마음에 남는 타입 — 아이의 회복은 어른보다 빨라요. 사과했다면 거기서 끝내도 됩니다.',
+  '등대형':'"좋은 부모 기준표"로 자신을 채점하는 타입 — 그 기준표는 아이가 만든 게 아니라 내가 만든 거예요. 항목을 세 개로 줄이세요.',
+  '안테나형':'아이 마음을 잘 읽는 만큼 못 해준 것도 잘 보여 죄책감이 깊은 타입 — 잘 보인다는 건 잘 돌보고 있다는 증거이기도 해요.',
+  '탐험형':'남들 하는 것(학원·전집)을 안 하고 있나 불안해지는 타입 — 새로운 경험을 주는 당신의 방식도 훌륭한 교육이에요.',
+  '카멜레온형':'모두의 기대에 맞추려다 어느 것도 충분치 않게 느끼는 타입 — 지금 누구의 기준으로 자책하고 있는지 한번 물어보세요.'}},
+ couple:{
+  no:'아이 앞에서 "아빠(엄마)는 맨날…" — 내 편을 만들려는 말이지만, 아이는 두 세계 사이에서 눈치 보는 법부터 배워요.',
+  say:'"도와줘" 대신 구체적인 지분 — "목욕은 당신 담당"처럼 역할을 통째로 넘기세요. 돕는 사람은 시켜야 움직이지만, 담당자는 알아서 움직여요.',
+  after:'이번 주에 역할 하나만 통째로 넘기고, 방식이 달라도 3일은 참견하지 않기 — 참견은 담당자를 다시 보조로 만들어요.',
+  by:{
+  '활력형':'내가 하는 게 빨라서 다 하다가 터지는 타입 — 느려도 넘기는 게 길게 보면 빠른 길이에요.',
+  '온기형':'갈등이 싫어 말을 삼키다 서운함이 쌓이는 타입 — "나 오늘 힘들었어"는 비난이 아니라 정보예요. 정보는 줘야 알아요.',
+  '등대형':'내 기준대로 안 하는 배우자에게 화가 나는 타입 — 방식이 달라도 결과(아이가 씻었다)가 같으면 통과로 치세요.',
+  '안테나형':'배우자의 무심함에 가장 크게 지치는 타입 — 알아주길 기다리기보다 "지금 20분만 아이 봐줘"처럼 즉시·구체로 요청하세요.',
+  '탐험형':'육아 방식 실험을 배우자가 못 따라와 답답한 타입 — 새 방법은 한 번에 하나씩만 공유하면 따라오기 쉬워요.',
+  '카멜레온형':'중간에서 맞추다 정작 내 몫이 제일 커지는 타입 — 역할표를 눈에 보이게 붙이는 것만으로 균형이 드러나요.'}},
+ compare:{
+  no:'아이 앞에서 다른 아이 이름을 기준으로 쓰는 것("○○는 벌써…") — 아이는 내용보다 "나는 부족하구나"만 가져가요.',
+  say:'남과의 비교를 이 아이의 과거와의 비교로 — "지난달엔 여기까지였는데 지금 이만큼 하네." 같은 비교인데 방향만 바꾸는 거예요.',
+  after:'이번 주, 이 아이가 한 달 전보다 늘어난 것 세 가지를 찾아 적어보세요 — 조급함은 정보가 부족할 때 커지거든요.',
+  by:{
+  '활력형':'내 속도가 빨라 아이가 상대적으로 느려 보이는 착시가 있어요 — 아이 속도의 기준은 내가 아니라 아이예요.',
+  '온기형':'비교하는 마음이 드는 것 자체에 죄책감까지 얹는 타입 — 비교는 사랑의 부작용일 뿐, 마음에 드는 것까진 죄가 아니에요.',
+  '등대형':'발달표·평균 수치에 민감한 타입 — 표의 숫자는 범위이지 합격선이 아니에요. 범위 안 어디든 정상 궤도입니다.',
+  '안테나형':'작은 차이도 크게 감지돼 불안으로 번지기 쉬운 타입 — 걱정 딱 하나만 정해 4주 지켜본 뒤 판단하기로 미뤄두세요.',
+  '탐험형':'커뮤니티·SNS에서 정보를 접할수록 비교 대상이 늘어요 — 정보 입력을 줄이는 것도 훌륭한 육아 기술이에요.',
+  '카멜레온형':'주변 얘기에 기준이 같이 흔들리는 타입 — "우리 애 기준 3가지"를 폰에 적어두고 흔들릴 때 꺼내 보세요.'}},
+ play:{
+  no:'"제대로 놀아줘야 한다"는 부담으로 시작을 미루는 것 — 아이에게 놀이의 핵심은 프로그램이 아니라, 지금 나를 보고 있다는 감각이에요.',
+  say:'내가 주도하는 30분 대신 아이가 주도하는 10분 — "오늘은 네가 대장, 뭐부터 할까?" 지시 없이 따라가기만 하면 돼요.',
+  after:'이번 주 하루 10분 "따라가는 놀이"를 해보고, 아이 표정이 달라지는 순간을 하나만 찾아보세요.',
+  by:{
+  '활력형':'몸놀이는 최강인데 앉아서 하는 역할놀이가 고역인 타입 — 잘하는 놀이로 승부하세요. 놀이에 골고루는 없어요.',
+  '온기형':'놀아주면서도 마음 한쪽이 집안일에 가 있기 쉬워요 — 10분 타이머를 켜고 그동안만은 폰과 일 생각을 문밖에 두세요.',
+  '등대형':'놀이가 자꾸 교육이 되는 타입("이건 무슨 색이야?") — 질문을 감탄("우와, 그렇게 되네!")으로 바꾸는 것만으로 놀이가 됩니다.',
+  '안테나형':'아이가 재미없어 보일까 봐 계속 프로그램을 바꾸는 타입 — 심심한 순간을 견뎌주면 아이 스스로 노는 힘이 자라요.',
+  '탐험형':'타고난 놀이 재능 구간이에요 — 다만 내 아이디어가 아이 주도를 덮지 않게, 오늘은 조수 역할만 해보세요.',
+  '카멜레온형':'아이마다 다른 놀이를 맞춰줄 수 있는 강점 — 대신 나도 즐거운 놀이 하나쯤은 목록에 넣으세요. 부모가 즐거워야 오래갑니다.'}},
+ talk:{
+  no:'같은 말을 반복해서 늘리는 것 — 잔소리는 횟수가 늘수록 힘이 떨어져요. 백 번째 말은 배경 소음이 됩니다.',
+  say:'지시 대신 예고+선택 — "5분 뒤에 정리할 거야. 로봇부터 넣을래, 블록부터 넣을래?" 말수는 줄고 실행은 늘어요.',
+  after:'이번 주, 제일 자주 하는 잔소리 하나를 골라 말 대신 장치(현관 앞 체크판, 타이머)로 바꿔보세요 — 말은 닳지만 장치는 안 닳아요.',
+  by:{
+  '활력형':'말이 빠르고 많아 아이가 처리할 틈이 없기 쉬워요 — 한 번에 한 가지, 말한 뒤 5초 기다리기를 연습하세요.',
+  '온기형':'부탁조로 돌려 말하다 안 통하면 서운해지는 타입 — 다정함은 유지하되 문장은 짧고 명확하게("이제 정리할 시간이야").',
+  '등대형':'설명이 길어지는 타입 — 아이에게 논리는 세 문장이 한계예요. 결론부터, 이유는 하나만.',
+  '안테나형':'아이 기분을 봐가며 타이밍을 재다 잔소리가 몰아서 나가는 타입 — 정해진 시점(밥 먹고 나서)에 짧게 하는 편이 서로 편해요.',
+  '탐험형':'말하다 다른 주제로 새기 쉬운 타입 — 원래 용건 하나로 끝내는 연습을요. 아이는 마지막 문장만 기억해요.',
+  '카멜레온형':'아이 반응 따라 톤이 바뀌어 메시지가 흐려질 수 있어요 — 내용은 그대로, 톤만 낮고 일정하게가 요령이에요.'}},
+ patience:{
+  no:'기다리다 결국 대신 해주는 것 — 아이는 "버티면 어른이 해준다"를 배우고, 다음엔 더 빨리 손을 놓아요.',
+  say:'막연히 참지 말고 시간을 정해 기다리기 — "신발은 네가 신는 거야, 서른까지 셀게." 기다림에 끝이 보이면 참을 수 있어요.',
+  after:'이번 주, 대신 해주고 싶은 순간에 딱 10초만 세어보세요 — 그 10초 안에 아이가 해내는 걸 몇 번 보면 기다림이 쉬워져요.',
+  by:{
+  '활력형':'내 손이 빨라 아이 속도가 두 배로 느리게 느껴지는 타입 — 그 시간에 다른 일(가방 챙기기)을 하면 기다림이 사라져요.',
+  '온기형':'힘들어하는 모습을 못 봐서 손이 나가는 타입 — 대신 해주는 건 도움이지만, 기다려주는 건 믿음이에요. 아이는 후자에서 자라요.',
+  '등대형':'정해진 시간 안에 끝나야 해서 기다림이 사치처럼 느껴지는 타입 — 시간표에 "아이가 하는 시간" 자체를 넣어버리세요.',
+  '안테나형':'힘들어하는 신호를 빨리 감지해 빨리 개입하는 타입 — 힘들어하는 것과 못 하는 것은 달라요. 낑낑대는 소리는 자라는 소리이기도 해요.',
+  '탐험형':'기다리는 동안의 지루함을 못 견디는 타입 — 기다림을 관찰 게임("어느 손부터 쓰나 보자")으로 바꾸면 견딜 만해져요.',
+  '카멜레온형':'상황 따라 기다렸다 안 기다렸다 하기 쉬워요 — "이것만은 늘 기다린다" 항목 하나(신발·숟가락)를 정해 고정하세요.'}}
+};
+
+/* 아이 상황 고민(CONCERN_RX)이 부모 검사에서 나왔을 때 → 부모가 쓸 기법(RX_PARENT) 연결 */
+const SIT_TECH={morning:'play',tantrum:'ignore',refuse:'notice',fight:'mirror',sleep:'notice',eat:'praise',phone:'notice',sensitive:'mirror',backtalk:'mirror'};
+const TECH_LABEL={praise:'칭찬 바꾸기',ignore:'무반응 견디기',play:'놀이로 바꾸기',notice:'미리 예고',mirror:'감정 읽기'};
 /* ===== js/state.js (189) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
@@ -2376,7 +2510,7 @@ function save(){
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       v:1, kids:S.kids, parents:S.parents, family:S.family,
       myRole:S.myRole, activeP:S.activeP, activeK:S.activeK,
-      concern:S.concern, concernDone:S.concernDone,
+      concern:S.concern, concernDone:S.concernDone, concernP:S.concernP||null,
       kka:KKA, unlocks:UNLOCKS,
       chat:{free:CHAT.free,paid:CHAT.paid,presc:CHAT.presc,intake:CHAT.intake,intakeDone:CHAT.intakeDone,hist:CHAT.hist,until:CHAT.until,freeDay:CHAT.freeDay,lastDay:CHAT.lastDay},
       day:todayStr()
@@ -2393,7 +2527,7 @@ function load(){
   S.kids=d.kids||[];S.parents=d.parents||{};S.family=d.family||null;
   S.myRole=d.myRole||null;S.activeP=d.activeP||null;
   S.activeK=(d.activeK===0||d.activeK)?d.activeK:null;
-  S.concern=d.concern||null;S.concernDone=!!d.concernDone;
+  S.concern=d.concern||null;S.concernDone=!!d.concernDone;S.concernP=d.concernP||null;   /* 옛 저장분엔 없음 → null 무해 */
   if(S.activeK!=null&&S.kids[S.activeK])S.cScore=S.kids[S.activeK].score||null;
   if(S.activeP&&S.parents[S.activeP])S.pScore=S.parents[S.activeP].score||null;
   if(typeof d.kka==='number')KKA=d.kka;
@@ -2587,7 +2721,7 @@ function onboardStart(){
   S.activeK=S.kids.length-1;
   beginTest('child');
 }
-/* ===== js/render/test.js (84) ===== */
+/* ===== js/render/test.js (87) ===== */
 function startTest(mode){if(mode==='family'){beginTest('family');return;}chooseWho(mode);}
 /* ── 부모 검사로 가는 단 하나의 입구 ────────────────────────────
    화면 여러 곳에 "나는 어떤 부모일까?" 버튼이 있는데 서로 다른 함수를
@@ -2632,7 +2766,10 @@ function answer(v){
   const arr=S.mode==='parent'?S.pAns:S.mode==='family'?S.fAns:S.cAns;
   arr[S.idx]=v;S.idx++;
   if(S.idx<items().length){renderQ();return;}
-  if(S.mode==='parent'){scoreParent();return;}
+  if(S.mode==='parent'){
+    /* 부모 검사도 결과 전 주관식 고민 필수 (2026-08-25 사장님 지시 — 사주아이식: 컨텍스트를 받아야 답이 맞는다) */
+    CONCERN_NEXT=scoreParent;concernIntro('parent');show('s-concern');return;
+  }
   if(S.mode==='family'){scoreFamily();return;}
   /* 아이 검사: 채점 22문항 끝 → 장면 보조 문항 2개 (점수 미반영, 2026-08-14) → 주관식 */
   SCENE_I=0;renderScene();
@@ -2672,7 +2809,7 @@ function renderScene(){
     box.appendChild(b);
   });
 }
-/* ===== js/render/parent.js (145) ===== */
+/* ===== js/render/parent.js (187) ===== */
 function renderParentReport(){
   const rec=S.parents[S.activeP||'엄마']||{score:S.pScore,px:{}};
   const avg=rec.score;const PX=rec.px||{};
@@ -2801,6 +2938,48 @@ function renderParentReport(){
      +'<p style="font-size:.9rem"><b>💪 나의 무기</b></p>'+gains.map(g=>`<p style="font-size:.87rem;margin:3px 0">· ${g}</p>`).join('')
      +'<p style="font-size:.9rem" class="mt8"><b>🔍 살펴볼 지점</b></p>'+cautions.map(g=>`<p style="font-size:.87rem;margin:3px 0">· ${g}</p>`).join('')
      +'<p class="small mt8">※ 우리 아이 기질과 만나면 이 에너지가 어떻게 작용하는지 — 그게 궁합 리포트예요.</p>';
+    /* 🎯 적어주신 고민 맞춤 해답 — 아이 심화의 세 번째 기둥과 대칭 (2026-08-25 사장님 지시).
+       ① 부모 본인 고민(P_CRX→P_RX): 공통 3단 + 내 유형 보정줄
+       ② 아이 상황 고민(CONCERN_RX): 그 상황에서 부모가 쓸 기법(RX_PARENT) + 아이 리포트 안내
+       ③ 사전 밖: 상담실 유도 / 미작성(옛 저장분): 안내 */
+    {
+      const pc=(S.concernP||{})[S.activeP]||{};const ptext=(pc.text||'').trim();
+      let ch='<h3 style="font-size:1rem;margin:18px 0 8px;border-top:1px dashed var(--line);padding-top:14px">🎯 적어주신 고민, 내 성향 기준 해답</h3>';
+      if(!ptext){
+        ch+='<p style="font-size:.9rem;line-height:1.8">검사 때 고민을 적어주시면 이 자리에 내 성향 기준 맞춤 해답이 담겨요. 지금이라도 상담실에서 물어보시면 검사 결과를 아는 츄비·칸쵸가 바로 답해드립니다.</p>'
+          +'<button class="btn ghost mt8" style="padding:10px" onclick="goChat()">💬 상담실에서 물어보기</button>';
+      }else{
+        ch+=`<p class="small" style="background:var(--pri-soft);border-radius:10px;padding:9px 12px;line-height:1.7">📝 "${esc(ptext.slice(0,90))}${ptext.length>90?'…':''}"</p>`;
+        const phits=(typeof P_RX!=='undefined')?P_CRX.filter(m=>m[0].test(ptext)).slice(0,2):[];
+        const chits=(typeof CONCERN_RX!=='undefined')?CONCERN_RX.filter(m=>m[0].test(ptext)).slice(0,2):[];
+        if(phits.length){
+          phits.forEach(m=>{
+            const sit=P_RX_SITS.find(s=>s.k===m[1]);const rx=P_RX[m[1]];if(!rx||!sit)return;
+            const byline=(rx.by||{})[myPT];
+            ch+=`<div class="fit-item" style="margin-top:10px"><h4>${sit.label}</h4>
+              <p style="margin-top:6px"><b>🚫 멈춰볼 것</b> · ${rx.no}</p>
+              <p style="margin-top:6px"><b>💬 대신 이렇게</b> · ${rx.say}</p>
+              <p style="margin-top:6px"><b>🌱 이번 주 실험</b> · ${rx.after}</p>
+              ${byline?`<p class="small" style="margin-top:6px;background:var(--amber-soft);border-radius:8px;padding:7px 10px;line-height:1.7">🧭 <b>${myPT}인 나에게</b> · ${byline}</p>`:''}</div>`;
+          });
+          ch+='<p class="small mt8">더 깊이 가고 싶으면 — 이 고민과 검사 결과를 아는 츄비·칸쵸가 상담실에서 이어받아요.</p>'
+            +'<button class="btn ghost mt8" style="padding:10px" onclick="goChat()">💬 이 고민, 상담실에서 이어가기</button>';
+        }else if(chits.length){
+          chits.forEach(m=>{
+            const sit=(typeof SIB_SITS!=='undefined')?SIB_SITS.find(s=>s.k===m[1]):null;
+            const tech=SIT_TECH[m[1]];const tip=tech&&typeof RX_PARENT!=='undefined'?(RX_PARENT[tech]||{})[myPT]:null;
+            if(!sit||!tip)return;
+            ch+=`<div class="fit-item" style="margin-top:10px"><h4>${sit.label} — 이 상황에서 내가 쓸 기법: ${TECH_LABEL[tech]}</h4>
+              <p style="margin-top:6px">${tip}</p></div>`;
+          });
+          ch+='<p class="small mt8">아이 기질 기준 3단 처방(하지 말 것 → 대신 이렇게 → 마친 후)은 <b>아이 리포트의 고민 해답</b>과 <b>우리 집 사용설명서</b>에 준비돼 있어요.</p>';
+        }else{
+          ch+='<p style="font-size:.9rem;line-height:1.8">적어주신 고민은 정해진 답보다 <b>대화가 필요한 주제</b>예요. 검사 결과와 이 고민을 함께 아는 츄비·칸쵸가 상담실에서 내 성향 기준으로 답해드립니다 — 오늘 무료 상담이 남아 있어요.</p>'
+            +'<button class="btn ghost mt8" style="padding:10px" onclick="goChat()">💬 이 고민 들고 상담실 가기</button>';
+        }
+      }
+      deepHtml+=ch;
+    }
     dp.innerHTML=deepHtml;
   }
   // 잠금 상태 복원 (부모별)
@@ -3113,7 +3292,7 @@ function scoreFamily(){
   inviteReward();
 
 }
-/* ===== js/render/fit.js (158) ===== */
+/* ===== js/render/fit.js (174) ===== */
 function pairKey(){return (S.activeP||'엄마')+'×'+(S.activeK!=null&&S.kids[S.activeK]?S.kids[S.activeK].name:'아이');}
 function goFit(){
   const ps=Object.keys(S.parents).filter(n=>S.parents[n]&&S.parents[n].score);
@@ -3141,14 +3320,23 @@ function pairGo(){
   requestFit();
 }
 function requestFit(){
-  if(!S.concernDone){CONCERN_NEXT=computeFit;show('s-concern');return;}
+  if(!S.concernDone){CONCERN_NEXT=computeFit;concernIntro('child');show('s-concern');return;}
   computeFit();
 }
-let CONCERN_NEXT=null;   /* s-concern 다음에 갈 곳 (기질검사→scoreChild, 궁합→computeFit) */
-function concernIntro(){
-  const kid=S.kids[S.activeK];const nm=kid&&kid.name?kid.name:'아이';
+let CONCERN_NEXT=null;   /* s-concern 다음에 갈 곳 (기질검사→scoreChild, 궁합→computeFit, 부모검사→scoreParent) */
+let CONCERN_MODE='child';/* 'child'=가족 공용 S.concern / 'parent'=검사한 부모 본인 고민 S.concernP[역할] (2026-08-25) */
+function concernIntro(mode){
+  CONCERN_MODE=mode||'child';
   const bub=document.querySelector('#s-concern .bubble');
-  if(bub)bub.innerHTML='<span class="who">츄비</span>'+josa(nm,'의')+' 결과를 정리하는 중이에요! 그 전에 요즘 상황을 조금만 알려줄래요? <b>자세히 적을수록</b> 리포트와 상담 답변이 우리 집 얘기처럼 정확해져요. 화이팅이에요 🐾';
+  const ta=document.getElementById('concern-text');if(ta)ta.value='';
+  if(CONCERN_MODE==='parent'){
+    if(bub)bub.innerHTML='<span class="who">츄비</span>내 성향 결과를 정리하는 중이에요! 그 전에 — 요즘 <b>부모로서 마음에 걸리는 것</b>이 있나요? 아이 얘기든 내 얘기든 좋아요. 적어주신 그 고민 기준으로 리포트가 답해드려요.';
+    if(ta)ta.placeholder='예: 나도 모르게 소리부터 질러요… / 남편이랑 육아 방식이 너무 달라요… — 이 고민에 맞춘 해답이 리포트에 담겨요';
+  }else{
+    const kid=S.kids[S.activeK];const nm=kid&&kid.name?kid.name:'아이';
+    if(bub)bub.innerHTML='<span class="who">츄비</span>'+josa(nm,'의')+' 결과를 정리하는 중이에요! 그 전에 요즘 상황을 조금만 알려줄래요? <b>자세히 적을수록</b> 리포트와 상담 답변이 우리 집 얘기처럼 정확해져요. 화이팅이에요 🐾';
+    if(ta)ta.placeholder='예: 아침마다 등원 거부가 심해서 매일 전쟁이에요… 이 고민에 맞춘 해답이 리포트에 담겨요';
+  }
 }
 function concernGo(skipInput){
   /* 주관식 고민은 필수 (사장님 지시 2026-08-25) — 「고민 맞춤 해답」이 이 글로 만들어진다.
@@ -3161,9 +3349,16 @@ function concernGo(skipInput){
     if(ta){ta.style.borderColor='#d33';ta.focus();ta.oninput=function(){if(this.value.trim().length>=2){this.style.borderColor='';if(need)need.style.display='none';}};}
     return;
   }
-  S.concernDone=true;
   const ev=[...document.querySelectorAll('#concern-chips .opt.sel')].map(b=>b.textContent);
-  S.concern={events:ev,text:tx};
+  if(CONCERN_MODE==='parent'){
+    /* 부모 본인 고민 — 역할별 저장 (부모 리포트 「고민 맞춤 해답」 + 상담 컨텍스트) */
+    if(!S.concernP)S.concernP={};
+    S.concernP[S.activeP||'엄마']={events:ev,text:tx};
+    CONCERN_MODE='child';   /* 다음 진입 대비 기본값 복원 */
+  }else{
+    S.concernDone=true;
+    S.concern={events:ev,text:tx};
+  }
   save();
   const next=CONCERN_NEXT||computeFit;CONCERN_NEXT=null;
   next();
@@ -4761,7 +4956,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (513) ===== */
+/* ===== js/chat.js (514) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -5127,6 +5322,7 @@ function sysPrompt(){
   if(CHAT.intake.need)ctx.push('지금 원하는 것: '+CHAT.intake.need);
   if(CHAT.intake.style)ctx.push('집안 규칙 스타일: '+CHAT.intake.style+STYLE_HINT[CHAT.intake.style]);
   if(S.concern&&(S.concern.text||(S.concern.events&&S.concern.events.length)))ctx.push('보호자가 직접 적은 현재 상황: '+[(S.concern.events||[]).join(','),S.concern.text].filter(Boolean).join(' / '));
+  {const pc=(S.concernP||{})[S.activeP];if(pc&&pc.text)ctx.push('이 양육자('+(S.activeP||'')+')가 부모 검사 때 적은 자기 고민: '+pc.text);}
   if(_kid&&_kid.scene&&Object.keys(_kid.scene).length)ctx.push('실제 관찰된 우리 집 장면: '+Object.values(_kid.scene).map(s2=>`"${s2.q}"→${s2.label}`).join(' / ')+' — 이 구체 장면을 답변에 활용한다');
   if(S.family)ctx.push('보호자의 원가족(회고): 따뜻함 '+S.family.care.toFixed(1)+', 통제 '+S.family.ctrl.toFixed(1)+' — 대물림은 경향일 뿐 운명이 아니라는 톤 유지');
   return `${persona}
