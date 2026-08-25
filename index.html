@@ -820,9 +820,10 @@ details.acc>*:not(summary){margin-top:10px}
       <button class="opt" style="padding:9px 13px;font-size:.85rem" onclick="this.classList.toggle('sel')">기관·학교 변경</button>
       <button class="opt" style="padding:9px 13px;font-size:.85rem" onclick="this.classList.toggle('sel')">부모 사이 갈등</button>
     </div>
-    <textarea id="concern-text" maxlength="300" placeholder="최근 고민이나 변화, 하고 싶은 말을 편하게 적어주세요. 자세할수록 리포트와 상담이 정확해져요 (예: 아침마다 등원 거부가 심해서 매일 전쟁이에요…)" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:none;margin-top:10px"></textarea>
+    <p class="small" style="margin:12px 0 0">요즘 가장 큰 고민 한 가지 <b style="color:var(--pink,#e57)">(필수)</b> — 한 줄이면 충분해요</p>
+    <textarea id="concern-text" maxlength="300" placeholder="예: 아침마다 등원 거부가 심해서 매일 전쟁이에요… 이 고민에 맞춘 해답이 리포트에 담겨요" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:none;margin-top:6px"></textarea>
+    <p class="small" id="concern-need" style="display:none;color:#d33;margin-top:6px">고민을 한 줄만 적어주세요 — 리포트의 「적어주신 고민 맞춤 해답」이 이 글로 만들어져요</p>
     <button class="btn mt8" onclick="concernGo(false)">리포트 보기</button>
-    <button class="btn ghost mt8" onclick="concernGo(true)">입력 없이 바로 보기</button>
   </div>
 </section>
 
@@ -3112,7 +3113,7 @@ function scoreFamily(){
   inviteReward();
 
 }
-/* ===== js/render/fit.js (151) ===== */
+/* ===== js/render/fit.js (158) ===== */
 function pairKey(){return (S.activeP||'엄마')+'×'+(S.activeK!=null&&S.kids[S.activeK]?S.kids[S.activeK].name:'아이');}
 function goFit(){
   const ps=Object.keys(S.parents).filter(n=>S.parents[n]&&S.parents[n].score);
@@ -3150,12 +3151,19 @@ function concernIntro(){
   if(bub)bub.innerHTML='<span class="who">츄비</span>'+josa(nm,'의')+' 결과를 정리하는 중이에요! 그 전에 요즘 상황을 조금만 알려줄래요? <b>자세히 적을수록</b> 리포트와 상담 답변이 우리 집 얘기처럼 정확해져요. 화이팅이에요 🐾';
 }
 function concernGo(skipInput){
-  S.concernDone=true;
-  if(!skipInput){
-    const ev=[...document.querySelectorAll('#concern-chips .opt.sel')].map(b=>b.textContent);
-    const tx=document.getElementById('concern-text').value.trim();
-    S.concern={events:ev,text:tx};
+  /* 주관식 고민은 필수 (사장님 지시 2026-08-25) — 「고민 맞춤 해답」이 이 글로 만들어진다.
+     skipInput 인자는 옛 버튼 호환용으로만 남김: 어느 경로든 빈 입력은 통과 못 함. */
+  const ta=document.getElementById('concern-text');
+  const tx=(ta?ta.value:'').trim();
+  const need=document.getElementById('concern-need');
+  if(tx.length<2){
+    if(need)need.style.display='block';
+    if(ta){ta.style.borderColor='#d33';ta.focus();ta.oninput=function(){if(this.value.trim().length>=2){this.style.borderColor='';if(need)need.style.display='none';}};}
+    return;
   }
+  S.concernDone=true;
+  const ev=[...document.querySelectorAll('#concern-chips .opt.sel')].map(b=>b.textContent);
+  S.concern={events:ev,text:tx};
   save();
   const next=CONCERN_NEXT||computeFit;CONCERN_NEXT=null;
   next();
