@@ -936,11 +936,17 @@ details.acc>*:not(summary){margin-top:10px}
 
 
 <!-- ═══════════ 대나무숲 ═══════════ -->
+<!-- 🔴 2026-08-31 심플 개편(사장님 지시 "사주아이처럼 심플하게"): 들어가자마자 피드가 먼저.
+     글쓰기 폼·숲의 약속은 [사연 올리기] 버튼 뒤로 접었다. 로직(talk.js)은 그대로. -->
 <section class="screen" id="s-talk">
   <button class="back" onclick="show('s-home')">← 홈으로</button>
-  <div class="result-hero"><span class="tag" style="background:#E2708A">대나무숲</span><div class="typename">부모들의 대나무숲</div><div class="typedesc">판정도 재판도 없어요. 공감과 투표만.</div></div>
-  <div class="daily" style="padding:12px 16px"><span class="d-label">🌿 우리 숲의 약속</span><div class="d-text" style="font-size:.83rem;margin-top:4px">여긴 긍정적인 대나무숲이에요. 비난·저속한 표현, 특정인 저격 글은 발견 즉시 사라집니다. 실명·기관명은 가려주세요.</div></div>
-  <div class="card" style="padding:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px">
+    <span class="tag" style="background:#E2708A;margin:0">🎋 대나무숲</span>
+    <button class="btn pri" style="width:auto;padding:9px 14px;margin:0;font-size:.85rem" onclick="talkWriteToggle()">✍️ 사연 올리기</button>
+  </div>
+  <p class="small" style="margin-bottom:10px">판정도 재판도 없어요 — 공감과 투표만 · 익명</p>
+  <div class="card" id="talk-write" style="display:none;padding:14px">
+    <div class="daily" style="padding:10px 12px;margin-bottom:10px"><span class="d-label">🌿 우리 숲의 약속</span><div class="d-text" style="font-size:.8rem;margin-top:3px">비난·저속한 표현, 특정인 저격 글은 발견 즉시 사라져요. 실명·기관명은 가려주세요.</div></div>
     <textarea id="talk-input" maxlength="1200" placeholder="오늘 이런 일이 있었어요… 자유롭게 적어주세요" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:'Gowun Dodum';font-size:.92rem;min-height:90px;resize:vertical"></textarea>
     <button class="btn ghost mt8" style="padding:11px" onclick="aiPoll()">🗳 투표 받아보기</button>
     <p class="small mt8">🗳 투표 항목 (직접 쓰거나, AI가 채운 걸 고쳐도 돼요)</p>
@@ -6065,7 +6071,7 @@ async function unlockBook(){
   BOOK_UNLOCKED=true;const uk=bookKey();(UNLOCKS[uk]=UNLOCKS[uk]||{}).book=true;applyBookLock();save();
   toast('📕 <b>우리 집 이야기</b> 전체가 열렸어요<br><span style="font-size:.82rem;color:var(--sub)">마지막 장의 인쇄용 한 장까지 꼭 챙겨가세요</span>');
 }
-/* ===== js/talk.js (208) ===== */
+/* ===== js/talk.js (217) ===== */
 /* ══════════════ 대나무숲 — 서버 연동판 (2026-08-12) ══════════════
    사장님 확정 스펙: 사연 + 투표("어떻게 했어야 할까") + 발바닥 공감 + 연구원 한마디.
    댓글 없음(운영 부담) · 보상 없음(참여 붙으면 이벤트로) · 누적 피드.
@@ -6094,6 +6100,14 @@ function cleanCheck(t){
 }
 
 function goTalk(){show('s-talk');talkLoad(false);}
+
+/* 글쓰기 폼 접기/펼치기 — 피드 우선, 폼은 버튼 뒤로 (2026-08-31 심플 개편) */
+function talkWriteToggle(){
+  const w=document.getElementById('talk-write');if(!w)return;
+  const open=w.style.display==='none';
+  w.style.display=open?'block':'none';
+  if(open){const t=document.getElementById('talk-input');if(t)t.focus();w.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
 
 /* ── 홈 대나무숲 미리보기 (2026-08-17) ────────────────────────────────
    최신 사연 1건 + 츄비/칸쵸 한마디를 홈에 띄운다. 커뮤니티 진입 + 상담 광고 겸용.
@@ -6250,6 +6264,7 @@ async function addTalk(){
   }
   (S.myTalks=S.myTalks||[]).push(r.id);save();
   t.value='';[1,2,3].forEach(n=>document.getElementById('poll-'+n).value='');
+  const _w=document.getElementById('talk-write');if(_w)_w.style.display='none';   /* 올린 뒤 폼 접기 — 내 글이 바로 보이게 (2026-08-31) */
   talkLoad(false);
   /* 츄비 한마디 자동 (실패해도 글은 이미 올라가 있으니 조용히 넘어간다) */
   try{
