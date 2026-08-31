@@ -519,6 +519,27 @@ details.acc>*:not(summary){margin-top:10px}
       <input id="home-worry" placeholder="예) 아침마다 등원 전쟁이에요" onkeydown="if(event.key==='Enter')homeAsk()">
       <button class="ask-go" onclick="homeAsk()">처방받기</button>
     </div>
+    <!-- 미니 인테이크 (2026-08-31 사장님 지시 "별명·나이·성별·외동여부만 누를 수 있게") —
+         검사 전 첫 상담의 정확도용. 아이 프로필이 이미 있으면 안 뜨고 바로 상담으로 간다. -->
+    <div class="card" id="home-intake" style="display:none;margin-top:10px;text-align:left">
+      <p style="font-family:'Jua';font-size:1rem">처방 전에 딱 10초만요 🐾</p>
+      <p class="small" style="margin-top:2px">아이에 맞춰 처방이 정확해져요 (이름 대신 별명이면 충분!)</p>
+      <input id="hi-nick" placeholder="아이 별명 (예: 도토리)" style="display:block;width:100%;margin-top:10px;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;font-size:.9rem;font-family:inherit">
+      <p class="small" style="margin-top:11px">나이는 대충이면 돼요</p>
+      <div class="rank-tabs" id="hi-age" style="margin-top:6px;margin-bottom:0">
+        <button class="rtab" onclick="hiPick(this)">0~1세</button><button class="rtab" onclick="hiPick(this)">2~3세</button><button class="rtab" onclick="hiPick(this)">4~5세</button><button class="rtab" onclick="hiPick(this)">6~7세</button><button class="rtab" onclick="hiPick(this)">초등</button><button class="rtab" onclick="hiPick(this)">중등+</button>
+      </div>
+      <p class="small" style="margin-top:11px">성별</p>
+      <div class="rank-tabs" id="hi-sex" style="margin-top:6px;margin-bottom:0">
+        <button class="rtab" onclick="hiPick(this)">남아</button><button class="rtab" onclick="hiPick(this)">여아</button><button class="rtab" onclick="hiPick(this)">안 알릴래요</button>
+      </div>
+      <p class="small" style="margin-top:11px">형제</p>
+      <div class="rank-tabs" id="hi-sib" style="margin-top:6px;margin-bottom:0">
+        <button class="rtab" onclick="hiPick(this)">외동</button><button class="rtab" onclick="hiPick(this)">첫째</button><button class="rtab" onclick="hiPick(this)">중간</button><button class="rtab" onclick="hiPick(this)">막내</button>
+      </div>
+      <button class="btn pri mt8" style="margin-top:14px" onclick="homeIntakeGo()">맞춤 처방 보러 가기</button>
+      <p class="small" style="text-align:center;margin-top:9px;cursor:pointer" onclick="homeIntakeSkip()">건너뛰고 바로 처방 ›</p>
+    </div>
   </div>
 
   <!-- 고민 랭킹 — 뒷단(concerns 집계) 붙기 전까지 정적 시드.
@@ -2467,7 +2488,7 @@ const P_RX={
 /* 아이 상황 고민(CONCERN_RX)이 부모 검사에서 나왔을 때 → 부모가 쓸 기법(RX_PARENT) 연결 */
 const SIT_TECH={morning:'play',tantrum:'ignore',refuse:'notice',fight:'mirror',sleep:'notice',eat:'praise',phone:'notice',sensitive:'mirror',backtalk:'mirror'};
 const TECH_LABEL={praise:'칭찬 바꾸기',ignore:'무반응 견디기',play:'놀이로 바꾸기',notice:'미리 예고',mirror:'감정 읽기'};
-/* ===== js/state.js (190) ===== */
+/* ===== js/state.js (192) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -2618,6 +2639,7 @@ function save(){
       v:1, kids:S.kids, parents:S.parents, family:S.family,
       myRole:S.myRole, activeP:S.activeP, activeK:S.activeK,
       concern:S.concern, concernDone:S.concernDone, concernP:S.concernP||null,
+      homeKid:S.homeKid||null,   /* 홈 미니 인테이크(별명·나이대·성별·형제) — 검사 전 상담 개인화용 (2026-08-31) */
       kka:KKA, unlocks:UNLOCKS,
       chat:{free:CHAT.free,paid:CHAT.paid,presc:CHAT.presc,intake:CHAT.intake,intakeDone:CHAT.intakeDone,hist:CHAT.hist,until:CHAT.until,freeDay:CHAT.freeDay,lastDay:CHAT.lastDay},
       day:todayStr()
@@ -2635,6 +2657,7 @@ function load(){
   S.myRole=d.myRole||null;S.activeP=d.activeP||null;
   S.activeK=(d.activeK===0||d.activeK)?d.activeK:null;
   S.concern=d.concern||null;S.concernDone=!!d.concernDone;S.concernP=d.concernP||null;   /* 옛 저장분엔 없음 → null 무해 */
+  S.homeKid=d.homeKid||null;   /* 옛 저장분엔 없음 → null 무해 (2026-08-31) */
   if(S.activeK!=null&&S.kids[S.activeK])S.cScore=S.kids[S.activeK].score||null;
   if(S.activeP&&S.parents[S.activeP])S.pScore=S.parents[S.activeP].score||null;
   if(typeof d.kka==='number')KKA=d.kka;
@@ -3947,7 +3970,7 @@ function applySibLock(){
   if(c2){if(SIBP_UNLOCKED){c2.style.display='none';i2.classList.remove('locked-peek');}
          else{c2.style.display='flex';i2.classList.add('locked-peek');}}
 }
-/* ===== js/render/home.js (364) ===== */
+/* ===== js/render/home.js (377) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -4193,15 +4216,7 @@ function renderWorryChips(){
 let _worryTm=null;
 function askWorry(i){
   const w=WORRIES[i];if(!w)return;
-  clearTimeout(_worryTm);   /* 연타 시 앞선 타이머가 나중에 덮어쓰는 것 방지 */
-  goChat();
-  _worryTm=setTimeout(function(){
-    openChat('chuvi');
-    _worryTm=setTimeout(function(){
-      const inp=document.getElementById('chat-input');
-      if(inp){inp.value=w[1];inp.focus();}
-    },250);
-  },60);
+  goAskText(w[1]);   /* 칩도 같은 경로 — 인테이크 생략, 바로 전송 (2026-08-31 통일) */
 }
 function tabOn(t){document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('on'));const _b=document.getElementById('tab-'+t);if(_b)_b.classList.add('on');}   /* 널가드 — 탭이 아닌 화면(오늘의 한마디 등)에서 불려도 안 죽게 (2026-08-31) */
 
@@ -4212,23 +4227,44 @@ function goPaid(){
   show('s-paid');
 }
 
-/* ══ 홈 검색창 처방받기 — 입력 한 줄을 들고 상담 직행 (C3 메인, 2026-08-31) ══ */
+/* ══ 홈 검색창 처방받기 — 입력 한 줄을 들고 상담 직행 (C3 메인, 2026-08-31) ══
+   아이 프로필이 없으면(검사도 미니 인테이크도 전) 별명·나이·성별·형제만 10초 인테이크 후 이동 */
+let _homePending=null;
 function homeAsk(){
   const el=document.getElementById('home-worry');
   const v=((el&&el.value)||'').trim();
   if(!v){if(el)el.focus();return;}
-  goAskText(v);
+  askFromHome(v);
 }
-/* askWorry 와 같은 경로 — 임의 문장을 상담 입력창까지 실어 나른다 */
+function askFromHome(txt){
+  _homePending=txt;
+  const hasKid=(S.kids&&S.kids.some(k=>k&&(k.score||k.months!=null)))||S.homeKid;
+  if(hasKid){goAskText(txt);return;}
+  const b=document.getElementById('home-intake');
+  if(!b){goAskText(txt);return;}
+  b.style.display='block';
+  b.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function hiPick(el){el.parentElement.querySelectorAll('.rtab').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function _hiVal(id){const el=document.querySelector('#'+id+' .rtab.on');return el?el.textContent.trim():null;}
+function homeIntakeGo(){
+  const nick=((document.getElementById('hi-nick')||{}).value||'').trim();
+  S.homeKid={nick:nick||null,age:_hiVal('hi-age'),sex:_hiVal('hi-sex'),sib:_hiVal('hi-sib')};
+  try{save();}catch(e){}
+  const b=document.getElementById('home-intake');if(b)b.style.display='none';
+  goAskText(_homePending||'');
+}
+function homeIntakeSkip(){
+  const b=document.getElementById('home-intake');if(b)b.style.display='none';
+  goAskText(_homePending||'');
+}
+/* 고민 문장을 들고 상담 직행 — openChat 이 인테이크를 건너뛰고 바로 전송한다 (2026-08-31) */
 function goAskText(txt){
   clearTimeout(_worryTm);
   goChat();
   _worryTm=setTimeout(function(){
+    if(typeof CHAT!=='undefined')CHAT.pendingAsk=txt;
     openChat('chuvi');
-    _worryTm=setTimeout(function(){
-      const inp=document.getElementById('chat-input');
-      if(inp){inp.value=txt;inp.focus();}
-    },250);
   },60);
 }
 
@@ -4248,7 +4284,7 @@ function renderRank(){
 function rankGo(i){
   if(typeof WHEN_BY_BAND==='undefined')return;
   const w=(WHEN_BY_BAND[RANK_SEL]||[])[i];
-  if(w)goAskText(w+' — 이럴 땐 어떻게 해야 할까요?');
+  if(w)askFromHome(w+' — 이럴 땐 어떻게 해야 할까요?');
 }
 function goLibrary(){
   const list=document.getElementById('lib-list');list.innerHTML='';
@@ -5110,7 +5146,7 @@ function nextRoutes(from){
       <div style="flex:1"><b style="font-family:'Jua'">${r[1]}</b><p class="small">${r[2]}</p></div>
       <span class="small" style="color:var(--pri);white-space:nowrap">${r[4]} ›</span></div>`).join('');
 }
-/* ===== js/chat.js (514) ===== */
+/* ===== js/chat.js (527) ===== */
 /* ══════════════ 상담실 (대화형 상담) ══════════════ */
 
 /* ── AI 연결 ─────────────────────────────────────────────
@@ -5200,8 +5236,10 @@ function topFriction(){
   return hits.length?hits[0]:null;
 }
 function openChat(cat){
-  /* 첫 상담 게이트 — 검사 0개면 대화 대신 상담실 목록의 안내 카드로 (눌린 이유가 보이게 살짝 강조) */
-  if(!hasAnyTest()){
+  /* 첫 상담 게이트 — 검사 0개면 대화 대신 상담실 목록의 안내 카드로 (눌린 이유가 보이게 살짝 강조)
+     단, 홈에서 고민+미니 인테이크를 거쳐 온 경우(pendingAsk)는 게이트를 우회한다 —
+     시안 확정 흐름: 고민 한 줄 → 10초 인테이크 → 바로 처방 (2026-08-31 사장님) */
+  if(!hasAnyTest()&&!CHAT.pendingAsk){
     goChat();
     const g=document.getElementById('chat-gate');
     if(g){g.classList.remove('pulse');void g.offsetWidth;g.classList.add('pulse');}
@@ -5213,6 +5251,16 @@ function openChat(cat){
   const _f=document.getElementById('chat-cat-face');if(_f)_f.src=CAT_META[cat].face;
   if(typeof renderSnack==='function')renderSnack();   /* 까까·무료횟수·처방권 최신화 */
   show('s-chat');renderChat();
+  /* 🔴 홈 검색창·랭킹·상황어 칩에서 고민을 이미 적어서 온 경우 (2026-08-31 사장님 지적):
+     본인 말로 상황을 다 썼는데 버튼 인테이크(4문항)부터 들이밀면 이상하다 → 인테이크 생략,
+     들고 온 고민을 바로 첫 메시지로 전송한다. 적은 문장이 인테이크보다 정보가 많다. */
+  if(CHAT.pendingAsk){
+    const q=CHAT.pendingAsk;CHAT.pendingAsk=null;
+    CHAT.intakeDone=true;
+    const inp=document.getElementById('chat-input');
+    if(inp){inp.value=q;sendChat();}
+    return;
+  }
   if(!CHAT.intakeDone){runIntake();return;}
   if(!CHAT.hist[cat].length)openerMsg();
 }
@@ -5469,6 +5517,7 @@ function sysPrompt(){
   /* 아이 연령을 반드시 알린다 — 4세 처방과 사춘기 처방은 완전히 다르다 (2026-08-12) */
   const _kid=(S.kids&&S.activeK!=null)?S.kids[S.activeK]:null;
   if(_kid)ctx.push('아이: '+(_kid.name||'아이')+' · '+(_kid.label||'')+' — 처방·말투·놀이 난이도를 반드시 이 연령에 맞춘다');
+  else if(S.homeKid)ctx.push('보호자가 간단히 알려준 아이 정보(검사 전): '+[S.homeKid.nick?('별명 '+S.homeKid.nick):null,S.homeKid.age,S.homeKid.sex,S.homeKid.sib].filter(Boolean).join(' · ')+' — 처방·말투를 이 나이대에 맞추고, 별명이 있으면 별명으로 불러준다');
   if(S.pScore)ctx.push('양육자 성향(1~5): '+Object.entries(S.pScore).map(([k,v])=>`${P_LABEL[k]} ${v.toFixed(1)}`).join(', '));
   if(S.cScore)ctx.push('아이 기질(1~5): '+Object.entries(S.cScore).map(([k,v])=>`${C_DIMS[k]} ${v.toFixed(1)}`).join(', '));
   if(CHAT.intake.when)ctx.push('가장 힘든 시간대: '+CHAT.intake.when);
