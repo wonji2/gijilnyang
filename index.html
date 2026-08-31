@@ -423,6 +423,55 @@ details.acc>*:not(summary){margin-top:10px}
 .pay-sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;background:var(--card);border-radius:22px 22px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));z-index:201;box-shadow:0 -6px 24px rgba(0,0,0,.15);text-align:center}
 .pay-m{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;background:#fff;font-family:'Gowun Dodum';font-size:.98rem;cursor:pointer;margin-top:8px}
 .pay-m b{font-family:'Jua'}
+
+/* ══ 2026-08-31 메인 개편 (사장님 확정: C3 검색창 히어로 + 고민 랭킹 + C2식 타일 사진) ══ */
+.ask-title{font-family:'Jua';font-size:1.55rem;line-height:1.3;margin-top:6px}
+.ask-title b{color:var(--pri)}
+.ask-lead{display:flex;gap:9px;align-items:center;margin-top:10px}
+.ask-lead p{font-size:.85rem;color:var(--sub);line-height:1.5;flex:1;min-width:0}
+.askbox{display:flex;gap:8px;margin-top:12px;background:var(--card);border:1.5px solid var(--pri);border-radius:16px;padding:8px 8px 8px 14px;box-shadow:0 2px 10px rgba(124,92,201,.08)}
+.askbox input{flex:1;min-width:0;border:none;outline:none;font-size:.92rem;font-family:inherit;background:none}
+.askbox .ask-go{border:none;background:var(--pri);color:#fff;font-family:'Jua';font-size:.9rem;border-radius:12px;padding:11px 15px;cursor:pointer;white-space:nowrap}
+.rank-card{margin-top:14px}
+.rank-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.rank-head b{font-family:'Jua';font-size:1.02rem}
+.rank-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.rtab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:.76rem;cursor:pointer;font-family:inherit;white-space:nowrap}
+.rtab.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
+.rrow{display:flex;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.rrow:last-child{border-bottom:none}
+.rrow .rn{font-family:'Jua';color:var(--pri);width:16px;text-align:center;flex:0 0 auto}
+.rrow .rt{flex:1;min-width:0;font-size:.88rem}
+.hot{font-style:normal;font-size:.58rem;font-weight:800;color:#E0559A;background:#FDEDF4;border-radius:6px;padding:2px 5px;vertical-align:2px;margin-left:4px}
+.t-pho{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:top;border:1.5px solid var(--line);background:#fff;margin-bottom:auto;flex:0 0 auto}
+/* ── 상담사 선택 카드 (츄비 F / 칸쵸 T) ── */
+.ft-badge{font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:999px;vertical-align:2px;margin-left:2px}
+.ft-badge.f{background:#FDEDF4;color:#E0559A}
+.ft-badge.t{background:#EBF3FD;color:#3D7BD9}
+.ft-tags{font-size:.7rem;color:var(--pri);font-weight:700;margin-top:2px}
+.ft-go{font-size:.76rem;font-weight:700;color:var(--pri);margin-top:6px}
+/* ── 검사소 (s-paid) — 사주아이 메인 구조 ── */
+#s-paid{padding-bottom:84px}
+.hero2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+#s-paid .topbar{position:static;justify-content:flex-end;margin-bottom:2px}
+.hcard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .12s}
+.hcard:active{transform:scale(.97)}
+.himg{position:relative;height:124px;overflow:hidden;background:var(--lav-soft)}
+.himg img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.himg .htxt{position:absolute;left:11px;top:6px;font-family:'Jua';font-size:1.9rem;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+.hbody{padding:11px 12px 13px}
+.hbody b{font-family:'Jua';font-size:.95rem;display:block}
+.hbody p{font-size:.72rem;color:var(--sub);margin-top:4px;line-height:1.4}
+.hrow{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.kchip{font-size:.74rem;font-weight:800;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.cta2{background:var(--pri);color:#fff;font-size:.72rem;font-weight:700;border-radius:999px;padding:6px 12px}
+.prow{margin-top:10px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:transform .12s}
+.prow:active{transform:scale(.98)}
+.prow>img{width:46px;height:46px;border-radius:50%;object-fit:cover;object-position:top;border:1.5px solid var(--line);flex:0 0 auto;background:#fff}
+.prow .pi{flex:1;min-width:0}
+.prow .pi b{font-family:'Jua';font-size:.9rem}
+.prow .pi p{font-size:.72rem;color:var(--sub);margin-top:2px}
+.prow .arr{color:#C9CAD1;font-size:1.1rem}
 </style>
 </head>
 <body>
@@ -457,30 +506,30 @@ details.acc>*:not(summary){margin-top:10px}
   <!-- 🔴 2026-08-21 사장님 "메인 너무 길다 — 사주아이처럼 상품만 한눈에": 홈에서 인사말(home-greet)·
        츄비칸쵸 큰 사진(cats)·육아날씨 카드(노출)·대나무숲 미리보기·상담실 블록을 전부 제거.
        큰 사진과 인사는 신규용 스캐너 랜딩(s-scan)에만 남는다. 함수들은 남겨두고 호출만 끊음. -->
+  <!-- 🔴 2026-08-31 사장님 확정: 메인 = C3(검색창 히어로 + 고민 랭킹) + 아래 C2식 결제 타일.
+       기존 hero-tagline·hook·story 카피는 제거, hero-proof(근거 숫자)는 타일 아래로 이동(hp-lit 자동표기 유지). -->
   <div class="hero">
     <h1>기질냥구소</h1>
-    <!-- 🇰🇷 국내 집중 확정 (2026-08-17 사장님): 글로벌 접음. 대신 한국에서도 **심플하게**,
-         그리고 정체성을 첫 줄에 못 박는다 — "부모·자녀 기질 성향 궁합, 근거 있는".
-         사주·MBTI 와 갈리는 지점이 '근거' 이므로 숫자 배지를 바로 아래 붙인다. -->
-    <p class="hero-tagline">부모 × 자녀 <b>기질·성향 궁합</b></p>
-    <!-- 🐾 무료검사 직행 3버튼 (2026-08-21 사장님 지시) — 사주아이처럼 처음부터
-         아이 기질/부모 성향/예비 부모를 골라 본검사(무료)로 바로. 렌더는 home.js renderMainEntry().
-         신규 방문자의 첫 화면은 Layer 0 스캐너(s-scan)이고, 이 카드는 홈에 온 사람의 재진입 입구다. -->
-    <div id="main-entry"></div>
-    <p class="hero-hook">애한테 소리지르고<br>재우고 나서 후회한 밤이 있다면</p>
-    <p class="hero-story"><b>부모가 이상한 게 아니라, 기질 조합이 다른 겁니다.</b></p>
-    <!-- 근거 숫자 (2026-08-21 사장님 지시 "MBTI 4축보다 많게, 과장 없이"):
-         40 = 실제 측정·계산 지표 전체 합산 — 아이 기질 10축 + 아이 장면 2 + 아이 파생 5(C_DERIVED)
-         + 부모 성향 5축 + 양육 장면 6 + 부모 파생 4(P_DERIVED) + 원가족 2축 + 진로 흥미 6성향.
-         새 지표를 만들면 이 숫자도 같이 올린다. (부모 유형은 별도로 6갈래×세부 46유형 — calcPSub)
-         논문 수는 실측 DB를 100단위 내림 자동표기(hp-lit, main.js) — 매일 크론 적재분이 반영된다.
-         "어떻게 알려주나요?" 접기는 홈 축소 지시로 제거. -->
-    <div class="hero-proof" id="hero-proof">
-      <div class="hp-item"><b id="hp-lit">6,300+</b><span>논문·전문자료</span></div>
-      <div class="hp-item"><b>40</b><span>분석 지표</span></div>
-      <div class="hp-item"><b>3<span class="hp-u">분</span></b><span>검사 시간</span></div>
+    <p class="ask-title">요즘 육아,<br>뭐가 제일 <b>힘들어요?</b></p>
+    <div class="ask-lead">
+      <img class="pho md chuvi" src="assets/chuvi.png" alt="" width="46" height="46">
+      <p>한 줄만 적어주세요 — <b>아이 기질에 맞는 처방</b>으로 찾아드려요.</p>
+    </div>
+    <div class="askbox">
+      <input id="home-worry" placeholder="예) 아침마다 등원 전쟁이에요" onkeydown="if(event.key==='Enter')homeAsk()">
+      <button class="ask-go" onclick="homeAsk()">처방받기</button>
     </div>
   </div>
+
+  <!-- 고민 랭킹 — 뒷단(concerns 집계) 붙기 전까지 정적 시드.
+       🔴 UIUX 2-b 콜드스타트 규칙: 표본 부족 시 "이번 주" 표기 금지 → "많이 찾는 고민" -->
+  <div class="card rank-card">
+    <div class="rank-head"><b>많이 찾는 고민</b><span class="small">같은 고민, 나만이 아니에요</span></div>
+    <div class="rank-tabs" id="rank-tabs"></div>
+    <div id="rank-list"></div>
+  </div>
+
+  <div id="main-entry"></div>
 
   <div class="daily" id="daily-card" style="display:none">
     <span class="d-label">🌤 오늘의 육아 날씨 · 매일 무료</span>
@@ -496,20 +545,20 @@ details.acc>*:not(summary){margin-top:10px}
          뭐가 공짜인지 한눈에 보여야 진입장벽이 낮아진다. (2026-08-15) -->
     <div class="tile" style="background:var(--amber-soft)" role="button" tabindex="0" onclick="startTest('child')">
       <span class="price free">일부무료</span>
-      <div class="t-ico">🐣</div>
+      <img class="t-pho" src="assets/chuvi.png" alt="" width="40" height="40">
       <div class="big">아이 기질</div>
       <div class="sub">0세~중·고등 <span id="st-child"></span></div>
     </div>
     <div class="tile" style="background:var(--moss-soft)" role="button" tabindex="0" onclick="startTest('parent')">
       <span class="price free">일부무료</span>
-      <div class="t-ico">🌷</div>
+      <img class="t-pho" src="assets/kancho.png" alt="" width="40" height="40">
       <div class="big">부모 성향</div>
       <div class="sub">예비부모도 <span id="st-parent"></span></div>
     </div>
     <div class="tile" style="background:var(--pink-soft);grid-column:1/-1;min-height:96px" role="button" tabindex="0" onclick="goFit()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
       <div style="display:flex;align-items:center;gap:12px">
-        <div class="t-ico" style="margin:0;font-size:1.9rem">💞</div>
+        <img class="t-pho" style="margin:0" src="assets/chuvi.png" alt="" width="40" height="40">
         <div style="flex:1">
           <div class="big" style="font-size:1.15rem">부모 × 아이 궁합</div>
           <div class="sub">우리가 부딪히는 정확한 지점 <span id="st-fit">두 검사 완료 후</span></div>
@@ -519,36 +568,43 @@ details.acc>*:not(summary){margin-top:10px}
     </div>
     <div class="tile" style="background:var(--lav-soft)" role="button" tabindex="0" onclick="startTest('family')">
       <span class="price free">일부무료</span>
-      <div class="t-ico">🏡</div>
+      <img class="t-pho" src="assets/kancho.png" alt="" width="40" height="40">
       <div class="big">원가족</div>
       <div class="sub">내 육아의 뿌리 <span id="st-fam"></span></div>
     </div>
     <div class="tile" style="background:#FDF0F6" role="button" tabindex="0" onclick="startCareer()">
       <span class="price"><i class="ddeok-i"></i> 1</span>
-      <div class="t-ico">🔮</div>
+      <img class="t-pho" src="assets/kancho.png" alt="" width="40" height="40">
       <div class="big">미래 직업</div>
       <div class="sub">기질에 맞는 일 5가지</div>
     </div>
     <div class="tile" style="background:var(--moss-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="goMap()">
       <span class="price"><i class="ddeok-i"></i> 3</span>
-      <div class="t-ico" style="margin:0;font-size:1.8rem">🗺</div>
+      <img class="t-pho" style="margin:0" src="assets/chuvi.png" alt="" width="40" height="40">
       <div style="flex:1"><div class="big" style="font-size:1.15rem">가족 궁합 지도</div><div class="sub">누가 누구와 잘 맞는지 <span id="st-map">가족 3명부터</span></div></div>
       <span class="small">›</span>
     </div>
     <!-- 우리 집 사용설명서 — 형제 비교 (2026-08-21 기획서) -->
     <div class="tile" style="background:var(--amber-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px" role="button" tabindex="0" onclick="goSibling()">
       <span class="price free">일부무료</span>
-      <div class="t-ico" style="margin:0;font-size:1.8rem">📖</div>
+      <img class="t-pho" style="margin:0" src="assets/chuvi.png" alt="" width="40" height="40">
       <div style="flex:1"><div class="big" style="font-size:1.15rem">우리 집 사용설명서</div><div class="sub">같은 상황, 아이마다 다른 대사 <span id="st-sib">아이 2명부터</span></div></div>
       <span class="small">›</span>
     </div>
     <!-- 프리미엄 앵커 — 이게 있어야 1,000원이 싸 보인다 (수익구조_가격 2장) -->
     <div class="tile" style="background:var(--pri-soft);grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px;border:1.5px solid var(--pri)" role="button" tabindex="0" onclick="goBook()">
       <span class="price"><i class="ddeok-i"></i> 5</span>
-      <div class="t-ico" style="margin:0;font-size:1.8rem">📕</div>
+      <img class="t-pho" style="margin:0" src="assets/kancho.png" alt="" width="40" height="40">
       <div style="flex:1"><div class="big" style="font-size:1.15rem">우리 집 이야기</div><div class="sub">전부 한 권으로 · 인쇄본 <span id="st-book">두 검사 완료 후</span></div></div>
       <span class="small">›</span>
     </div>
+  </div>
+
+  <!-- 근거 숫자 — hp-lit 는 main.js 가 실측 DB 100단위 내림 자동표기 (홈 하단으로 이동 2026-08-31) -->
+  <div class="hero-proof" id="hero-proof">
+    <div class="hp-item"><b id="hp-lit">6,300+</b><span>논문·전문자료</span></div>
+    <div class="hp-item"><b>40</b><span>분석 지표</span></div>
+    <div class="hp-item"><b>3<span class="hp-u">분</span></b><span>검사 시간</span></div>
   </div>
 
   <!-- 판매 항목 아래 = 냥쪽상담실 (2026-08-12 사장님 지시)
@@ -1025,10 +1081,43 @@ details.acc>*:not(summary){margin-top:10px}
 <!-- 결제 바텀시트 컨테이너 (2026-08-21) — 내용은 wallet.js openPaySheet 가 그린다 -->
 <div id="pay-ov"></div>
 
+<!-- ═══════════ 검사소 (FAB) — 사주아이 메인 구조: 설명 0, 상품 카드가 곧 화면 (2026-08-31 사장님 확정) ═══════════ -->
+<section class="screen" id="s-paid">
+  <div class="topbar">
+    <button class="kka-pill" onclick="openWallet()" aria-label="까까상점 열기">
+      <svg class="ddeok" viewBox="0 0 24 24" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="10.2" ry="9.2" fill="#F4E6C9" stroke="#DCC49B" stroke-width="1.3"/>
+        <circle cx="8.4" cy="9.6" r="1.15" fill="#E6D2AC"/><circle cx="14.2" cy="8.9" r=".95" fill="#E6D2AC"/>
+        <circle cx="10.8" cy="14.2" r="1.05" fill="#E6D2AC"/><circle cx="15.8" cy="13.8" r=".85" fill="#E6D2AC"/>
+      </svg>
+      <b id="snack-n2">2</b><span class="kka-shop">까까상점 ›</span>
+    </button>
+  </div>
+  <div class="hero2">
+    <div class="hcard" role="button" tabindex="0" onclick="startTest('child')">
+      <div class="himg"><img src="assets/chuvi.png" alt=""><span class="htxt">기질</span></div>
+      <div class="hbody"><b>아이 기질 심화</b><p>왜 우리 애만 이럴까, 여기서 풀려요</p>
+      <div class="hrow"><span class="kchip"><i class="ddeok-i"></i> 1</span><span class="cta2">보러가기 ›</span></div></div>
+    </div>
+    <div class="hcard" role="button" tabindex="0" onclick="goFit()">
+      <div class="himg"><img src="assets/kancho.png" alt=""><span class="htxt">궁합</span></div>
+      <div class="hbody"><b>부모 × 아이 궁합</b><p>우리 둘, 찰떡일까 연습일까</p>
+      <div class="hrow"><span class="kchip"><i class="ddeok-i"></i> 1</span><span class="cta2">보러가기 ›</span></div></div>
+    </div>
+  </div>
+  <div class="prow" role="button" tabindex="0" onclick="goFit()"><img src="assets/kancho.png" alt=""><div class="pi"><b>심층 코칭</b><p>요즘 그 행동, 이유부터 해법까지</p></div><span class="kchip"><i class="ddeok-i"></i> 2</span><span class="arr">›</span></div>
+  <div class="prow" role="button" tabindex="0" onclick="startTest('family')"><img src="assets/chuvi.png" alt=""><div class="pi"><b>원가족 심화</b><p>나는 왜 이런 부모가 됐을까</p></div><span class="kchip"><i class="ddeok-i"></i> 1</span><span class="arr">›</span></div>
+  <div class="prow" role="button" tabindex="0" onclick="goSibling()"><img src="assets/chuvi.png" alt=""><div class="pi"><b>우리 집 사용설명서</b><p>같은 상황, 아이마다 다른 말</p></div><span class="kchip"><i class="ddeok-i"></i> 1</span><span class="arr">›</span></div>
+  <div class="prow" role="button" tabindex="0" onclick="startCareer()"><img src="assets/kancho.png" alt=""><div class="pi"><b>미래 직업</b><p>우리 애는 커서 뭐가 될까</p></div><span class="kchip"><i class="ddeok-i"></i> 1</span><span class="arr">›</span></div>
+  <div class="prow" role="button" tabindex="0" onclick="goMap()"><img src="assets/chuvi.png" alt=""><div class="pi"><b>가족 궁합 지도</b><p>누가 누구와 잘 맞는지 한 장에</p></div><span class="kchip"><i class="ddeok-i"></i> 3</span><span class="arr">›</span></div>
+  <div class="prow" role="button" tabindex="0" onclick="goBook()"><img src="assets/kancho.png" alt=""><div class="pi"><b>우리 집 이야기</b><p>전부 한 권으로 · 인쇄본</p></div><span class="kchip"><i class="ddeok-i"></i> 5</span><span class="arr">›</span></div>
+</section>
+
 <nav class="tabbar" aria-label="주요 메뉴">
   <button class="on" id="tab-home" onclick="show('s-home');tabOn('home')"><span class="ico">🏠</span>기질냥구소</button>
   <button id="tab-chat" onclick="goChat();tabOn('chat')"><span class="ico">💬</span>상담실</button>
-  <button class="fab" id="tab-daily" onclick="goDaily()"><span class="ico"><svg width="30" height="30" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 17 L11.5 7 L21 12.5"/><path d="M35 17 L36.5 7 L27 12.5"/><path d="M24 12 C33 12 39 18.5 39 26 C39 33.5 32.5 39 24 39 C15.5 39 9 33.5 9 26 C9 18.5 15 12 24 12 Z"/><path d="M19 24.5 v2"/><path d="M29 24.5 v2"/><path d="M24 30 l-2 -2 h4 z" fill="#fff"/></svg></span>오늘의 한마디</button>
+  <!-- 🔴 2026-08-31 사장님 확정: FAB = 검사소(까까 유료 검사 모음, s-paid). 오늘의 한마디 진입은 내정보로 이동 -->
+  <button class="fab" id="tab-paid" onclick="goPaid();tabOn('paid')"><span class="ico"><svg width="30" height="30" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 17 L11.5 7 L21 12.5"/><path d="M35 17 L36.5 7 L27 12.5"/><path d="M24 12 C33 12 39 18.5 39 26 C39 33.5 32.5 39 24 39 C15.5 39 9 33.5 9 26 C9 18.5 15 12 24 12 Z"/><path d="M19 24.5 v2"/><path d="M29 24.5 v2"/><path d="M24 30 l-2 -2 h4 z" fill="#fff"/></svg></span>검사소</button>
   <button id="tab-talk" onclick="goTalk();tabOn('talk')"><span class="ico">🌳</span>대나무숲</button>
   <button id="tab-lib" onclick="goLibrary();tabOn('lib')"><span class="ico">🐾</span>내정보</button>
 </nav>
@@ -1047,13 +1136,24 @@ details.acc>*:not(summary){margin-top:10px}
   <div id="chat-gate" style="display:none;margin-bottom:14px"></div>
   <!-- 고민 상황어 칩 — 홈 축소(2026-08-21)로 홈에서 이사. 누르면 그 고민을 들고 상담 직행 -->
   <div class="chips" id="worry-chips" style="margin-bottom:12px"></div>
-  <div class="card chat-cat-card" role="button" tabindex="0" onclick="openChat('chuvi')" style="display:flex;gap:12px;align-items:center;cursor:pointer">
+  <!-- 🔴 2026-08-31 사장님 확정: 상담사 선택 카드 — 츄비=F/칸쵸=T, MZ 톤 소개 (액션목업 승인분) -->
+  <div class="card chat-cat-card" role="button" tabindex="0" onclick="openChat('chuvi')" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer">
     <img class="pho lg chuvi" src="assets/chuvi.png" alt="츄비 연구원" width="60" height="60">
-    <div style="flex:1"><h3 style="font-size:1.02rem">츄비 연구원 <span class="tag amber" style="font-size:.6rem;vertical-align:2px;margin:0">공감분석</span></h3><p class="small">어떤 얘기든 공감이 필요하면 · 마음부터 듣습니다</p></div>
+    <div style="flex:1;min-width:0">
+      <h3 style="font-size:1.02rem">츄비 <span class="ft-badge f">F 100%</span></h3>
+      <p class="ft-tags">#공감만렙 #일단내편</p>
+      <p class="small" style="margin-top:4px;line-height:1.5">"헐… 진짜 힘들었겠다ㅠㅠ"부터 시작해요. 팩폭 없이 마음부터 안아주는 스타일. <b>답보다 위로가 급한 날.</b></p>
+      <p class="ft-go">츄비랑 상담하기 ›</p>
+    </div>
   </div>
-  <div class="card chat-cat-card" role="button" tabindex="0" onclick="openChat('kancho')" style="display:flex;gap:12px;align-items:center;cursor:pointer">
+  <div class="card chat-cat-card" role="button" tabindex="0" onclick="openChat('kancho')" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer">
     <img class="pho lg kancho" src="assets/kancho.png" alt="칸쵸 연구원" width="60" height="60">
-    <div style="flex:1"><h3 style="font-size:1.02rem">칸쵸 연구원 <span class="tag moss" style="font-size:.6rem;vertical-align:2px;margin:0">팩트분석</span></h3><p class="small">감정 빼고 객관적인 조언이 필요하면 · 원인부터 짚습니다</p></div>
+    <div style="flex:1;min-width:0">
+      <h3 style="font-size:1.02rem">칸쵸 <span class="ft-badge t">T 100%</span></h3>
+      <p class="ft-tags">#프로팩폭러 #결론부터</p>
+      <p class="small" style="margin-top:4px;line-height:1.5">"그래서 원인이 뭐냐면 —" 위로는 짧게, 분석은 확실하게. <b>답이 급한 날.</b></p>
+      <p class="ft-go">칸쵸랑 상담하기 ›</p>
+    </div>
   </div>
 </section>
 
@@ -2361,7 +2461,7 @@ const P_RX={
 /* 아이 상황 고민(CONCERN_RX)이 부모 검사에서 나왔을 때 → 부모가 쓸 기법(RX_PARENT) 연결 */
 const SIT_TECH={morning:'play',tantrum:'ignore',refuse:'notice',fight:'mirror',sleep:'notice',eat:'praise',phone:'notice',sensitive:'mirror',backtalk:'mirror'};
 const TECH_LABEL={praise:'칭찬 바꾸기',ignore:'무반응 견디기',play:'놀이로 바꾸기',notice:'미리 예고',mirror:'감정 읽기'};
-/* ===== js/state.js (189) ===== */
+/* ===== js/state.js (190) ===== */
 /* ══════════════ 상태 ══════════════ */
 const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},kids:[],activeP:null,activeK:null};
 /* 새로고침돼도 돌아올 수 있는 화면 = 저장된 데이터만으로 다시 그릴 수 있는 결과 화면.
@@ -2369,7 +2469,7 @@ const S={mode:null,idx:0,pAns:null,cAns:null,pScore:null,cScore:null,parents:{},
 /* 복원 = 저장 데이터만으로 안전하게 다시 그릴 수 있는 화면만. (2026-08-12 감사)
    s-family-result: 원답(S.fAns) 미저장이라 복원 불가. s-career: career 객체 구조 의존이 커
    복원 시 크래시 위험 → 둘 다 제외(새로고침 시 홈으로 안전 폴백, 내정보에서 다시 열림). */
-const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1,'s-map':1,'s-sibling':1};   /* s-book·s-map 추가 2026-08-15 / s-sibling 2026-08-21: 유료 화면인데 뒤로가기/새로고침에 홈으로 튕기지 않게 */
+const RESTORABLE={'s-home':1,'s-child-result':1,'s-parent-result':1,'s-fit':1,'s-library':1,'s-daily':1,'s-talk':1,'s-book':1,'s-map':1,'s-sibling':1,'s-paid':1};   /* s-book·s-map 추가 2026-08-15 / s-sibling 2026-08-21 / s-paid(검사소 탭) 2026-08-31: 유료 화면인데 뒤로가기/새로고침에 홈으로 튕기지 않게 */
 let _navLock=false;   // popstate 로 화면을 되돌릴 땐 다시 pushState 하지 않게
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);
   if(window.__booted&&RESTORABLE[id]){try{localStorage.setItem('kn_view',id);}catch(e){}}
@@ -2394,6 +2494,7 @@ function renderScreen(id){
     else if(id==='s-library'){goLibrary();}   /* goX 는 자체적으로 show 를 부른다 */
     else if(id==='s-daily'){goDaily();}
     else if(id==='s-talk'){goTalk();}
+    else if(id==='s-paid'){goPaid();}
     else if(id==='s-home'){updateHome();show('s-home');}
     else return false;
     return true;
@@ -3840,7 +3941,7 @@ function applySibLock(){
   if(c2){if(SIBP_UNLOCKED){c2.style.display='none';i2.classList.remove('locked-peek');}
          else{c2.style.display='flex';i2.classList.add('locked-peek');}}
 }
-/* ===== js/render/home.js (317) ===== */
+/* ===== js/render/home.js (364) ===== */
 /* 🔴 2026-08-12 홈 개편으로 menu 존(st-chat·st-lib)이 사라졌다.
    updateHome 이 그 요소를 널가드 없이 만지다가 검사 완료 시점(scoreChild→updateHome)에
    통째로 죽는 회귀가 났다. 홈 구조를 바꿀 때는 여길 반드시 같이 본다. */
@@ -3854,6 +3955,7 @@ function updateHome(){
   if(S.pScore||S.cScore)_st('st-chat','열기');
   renderDaily();   /* 홈 카드는 상시 숨김(2026-08-21) — s-daily 가 문장을 재사용하므로 계산만 유지 */
   renderMainEntry();   /* 무료검사 직행 3버튼 (2026-08-21) */
+  renderRank();    /* 고민 랭킹 — C3 메인 확정 (2026-08-31) */
   /* 🔴 2026-08-21 홈 축소(사장님 "사주아이처럼 상품만 한눈에"): renderHomeGreet()·renderTalkPeek()
      호출 제거, 상황어 칩은 상담실 목록(s-chat-list)으로 이사. 함수들은 남겨둠(복구 시 호출만 살리면 됨). */
   /* 🔴 2026-08-17 사장님 지시로 진입 토스트 제거 — "들어가자마자 위에서 밑으로 뜨는 배너 이상해 빼".
@@ -4095,7 +4197,53 @@ function askWorry(i){
     },250);
   },60);
 }
-function tabOn(t){document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('on'));document.getElementById('tab-'+t).classList.add('on');}
+function tabOn(t){document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('on'));const _b=document.getElementById('tab-'+t);if(_b)_b.classList.add('on');}   /* 널가드 — 탭이 아닌 화면(오늘의 한마디 등)에서 불려도 안 죽게 (2026-08-31) */
+
+/* ══ 검사소 (FAB, s-paid) — 사주아이 메인 구조 (2026-08-31 사장님 확정) ══ */
+function goPaid(){
+  const n=document.getElementById('snack-n2');
+  if(n&&typeof KKA!=='undefined')n.textContent=KKA;
+  show('s-paid');
+}
+
+/* ══ 홈 검색창 처방받기 — 입력 한 줄을 들고 상담 직행 (C3 메인, 2026-08-31) ══ */
+function homeAsk(){
+  const el=document.getElementById('home-worry');
+  const v=((el&&el.value)||'').trim();
+  if(!v){if(el)el.focus();return;}
+  goAskText(v);
+}
+/* askWorry 와 같은 경로 — 임의 문장을 상담 입력창까지 실어 나른다 */
+function goAskText(txt){
+  clearTimeout(_worryTm);
+  goChat();
+  _worryTm=setTimeout(function(){
+    openChat('chuvi');
+    _worryTm=setTimeout(function(){
+      const inp=document.getElementById('chat-input');
+      if(inp){inp.value=txt;inp.focus();}
+    },250);
+  },60);
+}
+
+/* ══ 고민 랭킹 (홈, C3) — 뒷단 집계 전 정적 시드. 항목은 상담 인테이크와 같은 WHEN_BY_BAND 재사용.
+   🔴 콜드스타트 규칙(UIUX 2-b): 표본 없이 "이번 주" 표기 금지 — 라벨은 "많이 찾는 고민" ══ */
+const RANK_BANDS=[['t','영아 0~2세'],['p','유아 3~7세'],['s','초등'],['a','중고생']];
+let RANK_SEL='p';   /* 제일 흔한 손님 = 유치원 */
+function renderRank(){
+  const tabs=document.getElementById('rank-tabs'),list=document.getElementById('rank-list');
+  if(!tabs||!list)return;
+  if(typeof WHEN_BY_BAND==='undefined')return;   /* chat.js 가 아직 안 실렸으면 조용히 건너뜀 */
+  tabs.innerHTML=RANK_BANDS.map(b=>`<button class="rtab${b[0]===RANK_SEL?' on':''}" onclick="RANK_SEL='${b[0]}';renderRank()">${b[1]}</button>`).join('');
+  const items=(WHEN_BY_BAND[RANK_SEL]||[]).slice(0,4);
+  list.innerHTML=items.map((w,i)=>
+    `<div class="rrow" role="button" tabindex="0" onclick="rankGo(${i})"><b class="rn">${i+1}</b><span class="rt">${w}${i===0?' <i class="hot">HOT</i>':''}</span><span class="small">›</span></div>`).join('');
+}
+function rankGo(i){
+  if(typeof WHEN_BY_BAND==='undefined')return;
+  const w=(WHEN_BY_BAND[RANK_SEL]||[])[i];
+  if(w)goAskText(w+' — 이럴 땐 어떻게 해야 할까요?');
+}
 function goLibrary(){
   const list=document.getElementById('lib-list');list.innerHTML='';
   const items=[];
@@ -6126,7 +6274,7 @@ function askLikeThis(i){
     },250);
   },60);
 }
-/* ===== js/render/library2.js (175) ===== */
+/* ===== js/render/library2.js (178) ===== */
 /* ══════════════ 내정보(격자) · 오늘의 한마디 화면 · 카운트다운 ══════════════
    내정보은 기록장이 아니라 "안 산 것 진열대"다 (사주아이 /library 실측).
    빈칸이 곧 광고이고, 미구매 항목을 지우지 않는다.
@@ -6183,6 +6331,9 @@ function goLibrary(){
            <button class="btn ghost" style="margin:0" onclick="chooseWho('child')">＋ 아이 추가 · 검사하기</button>
            <button class="btn ghost mt8" style="margin-top:8px" onclick="chooseWho('parent')">＋ 다른 양육자 검사하기</button>
          </div>`
+      + `<div class="card" role="button" tabindex="0" onclick="goDaily()" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer">
+           <b style="font-family:'Jua'">🌤 오늘의 한마디</b><span class="small" style="color:var(--pri)">매일 무료 ›</span>
+         </div>`   /* FAB 가 검사소로 바뀌며 진입 이사 (2026-08-31) */
       + `<div class="card">${nextRoutes('lib')}</div>`;
   show('s-library');
 }
@@ -6248,7 +6399,7 @@ function libDelParent(n){
 
 /* ── 오늘의 한마디: 중앙 FAB 목적지 (매일 바뀌는 무료 콘텐츠 = 매일 올 이유) ── */
 function goDaily(){
-  tabOn('daily');
+  tabOn('lib');   /* FAB(tab-daily)가 검사소(tab-paid)로 바뀜 — 진입처인 내정보 탭을 켠다 (2026-08-31) */
   const el=document.getElementById('daily-body');
   const kid=S.kids[S.activeK]||S.kids[0]||{};
   const t=dailyText();
